@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Models;
+namespace DBL
+{
+    public class teacherDB : BaseDB<teacher>
+    {
+        public async Task<teacher> LoginAsync(string first_name, string email, string password)
+        {
+            string sql = @"SELECT * FROM mylastyear.teachers where first_name=@first_name AND email=@email AND password=@password;";
+            Dictionary<string, object> chackit = new Dictionary<string, object>();
+            chackit.Add("first_name", first_name);
+            chackit.Add("email", email);
+            chackit.Add("password", password);
+            List<teacher> teachers = await SelectAllAsync(sql, chackit);
+            if (teachers.Count == 1)
+            {
+                return teachers[0];
+
+            }
+            return null;
+        }
+        public teacherDB() { }
+        public async Task<bool> inserteacher(teacher teacher)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("first_name", teacher.first_name);
+            data.Add("last_name", teacher.last_name);
+            data.Add("email", teacher.email);
+            data.Add("password", teacher.password);
+            data.Add("bio", teacher.bio);
+            data.Add("hourly_rate", teacher.hourly_rate);
+            data.Add("isprivate", teacher.isprivate);
+            int num = await base.InsertAsync(data);
+            if (num > 0)
+            {
+                return true;
+            }
+            else { return false; }
+
+        }
+
+        protected override async Task<List<teacher>> CreateListModelAsync(List<object[]> rows)
+        {
+            List<teacher> teachers = new List<teacher>();
+            foreach (object[] row in rows)
+            {
+                teacher teacher = await CreateModelAsync(row);
+                teachers.Add(teacher);
+
+            }
+            return teachers;
+        }
+
+        protected override async Task<teacher> CreateModelAsync(object[] row)
+        {
+            teacher teacher = new teacher();
+            teacher.Id = int.Parse(row[0].ToString());
+            teacher.first_name = row[1].ToString();
+            teacher.last_name = row[2].ToString();
+            teacher.email = row[3].ToString();
+            teacher.password = row[4].ToString();
+            teacher.bio= row[5].ToString();
+            teacher.hourly_rate= int.Parse(row[6].ToString());
+            if (row[7] == null)
+            {
+                teacher.isprivate = 1;
+            }
+            else
+            {
+                teacher.isprivate = int.Parse(row[7].ToString());
+            }
+            return teacher;
+        }
+
+        protected override List<string> GetPrimaryKeyName()
+        {
+            List<string> list = new List<string>() { "teacherid" };
+            return list;
+            
+        }
+
+        protected override string GetTableName()
+        {
+            return "teachers";
+        }
+    }
+}

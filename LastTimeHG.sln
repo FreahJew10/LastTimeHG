@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1", "BlazorApp1\BlazorApp1.csproj", "{4509F318-6FDE-4D36-85BA-C36BBA37CA4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBL", "DBL\DBL.csproj", "{53C830F7-35A9-4DDD-AC3C-C08773A07D6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{BC0F1D69-E2B9-4AA5-A6D0-22888E66E93E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4509F318-6FDE-4D36-85BA-C36BBA37CA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4509F318-6FDE-4D36-85BA-C36BBA37CA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4509F318-6FDE-4D36-85BA-C36BBA37CA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4509F318-6FDE-4D36-85BA-C36BBA37CA4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53C830F7-35A9-4DDD-AC3C-C08773A07D6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53C830F7-35A9-4DDD-AC3C-C08773A07D6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53C830F7-35A9-4DDD-AC3C-C08773A07D6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53C830F7-35A9-4DDD-AC3C-C08773A07D6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC0F1D69-E2B9-4AA5-A6D0-22888E66E93E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC0F1D69-E2B9-4AA5-A6D0-22888E66E93E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC0F1D69-E2B9-4AA5-A6D0-22888E66E93E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC0F1D69-E2B9-4AA5-A6D0-22888E66E93E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC0F9E8F-B788-4978-8ADB-718694800BDB}
+	EndGlobalSection
+EndGlobal

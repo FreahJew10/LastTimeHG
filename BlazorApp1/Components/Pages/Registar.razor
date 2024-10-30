@@ -1,0 +1,496 @@
+﻿@page "/reg"
+@using Models;
+@using DBL;
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+<br>
+<br>
+<div class="background">
+    <div class="shape"></div>
+    <div class="shape"></div>
+</div>
+<div class="cont">
+    <div class="form sign-in">
+        <h2>Create your Account student</h2>
+        <label>
+            <span>Name</span>
+            <input @bind-value="first_name" type="text" />
+        </label>
+        <label>
+            <span>Name</span>
+            <input @bind-value="last_name" type="text" />
+        </label>
+        <label>
+            <span>Email</span>
+            <input @bind-value="email" />
+        </label>
+        <label>
+            <span>Password</span>
+            <input @bind-value="password" type="password" />
+        </label>
+        <button type="button" class="submit" @onclick="regstudent">Sign Up</button>
+    </div>
+    <div class="sub-cont">
+        <div class="img">
+            <div class="img__text m--up">
+
+                <h3>so you are a student? Please Sign up!</h3>
+            </div>
+            <div class="img__text m--in">
+
+                <h3> your are a teacher so sigh up.</h3>
+            </div>
+            <div class="img__btn">
+                <span class="m--up">if teacher</span>
+                <span class="m--in">if student</span>
+            </div>
+        </div>
+        <div class="form sign-up">
+            <h2>Create your Account teacher</h2>
+            <label>
+                <span>Name</span>
+                <input @bind-value="first_name" type="text" />
+            </label>
+            <label>
+                <span>Name</span>
+                <input @bind-value="last_name" type="text" />
+            </label>
+            <label>
+                <span>Email</span>
+                <input @bind-value="email" />
+            </label>
+            <label>
+                <span>Password</span>
+                <input @bind-value="password" type="password" />
+            </label>
+
+            <label>
+                <span>are you private teacher (optional but "yes" is defult)</span>
+                <select @onchange="onChange" class="form-select" data-control="select2" data-placeholder="Select an option">
+                    <option value="1">yes</option>
+                    <option value="0">no</option>
+                </select>
+                <button type="button" class="submit" @onclick="regteacher">Sign Up</button>
+            </label>
+            <button type="button" class="submit" @onclick="regteacher">Sign Up</button>
+
+
+        </div>
+        <h3>@msg</h3>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.img__btn').addEventListener('click', function () {
+        document.querySelector('.cont').classList.toggle('s--signup');
+    });
+</script>
+<style>
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .background .shape {
+        height: 200px;
+        width: 200px;
+        position: absolute;
+        border-radius: 50%;
+    }
+
+
+    .background {
+        width: 430px;
+        height: 520px;
+        position: absolute;
+        transform: translate(-50%,-50%);
+        left: 50%;
+        top: 50%;
+    }
+
+    .shape:first-child {
+        background: linear-gradient( #1845ad, #23a2f6 );
+        left: -450px;
+        top: -190px;
+    }
+
+    .shape:last-child {
+        background: linear-gradient( to right, #ff512f, #f09819 );
+        right: -10px;
+        bottom: -100px;
+    }
+
+    body {
+        font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+        background-color: lightseagreen;
+    }
+
+    input,
+    button {
+        border: none;
+        outline: none;
+        background: none;
+        font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    }
+
+    .tip {
+        font-size: 20px;
+        margin: 40px auto 50px;
+        text-align: center;
+    }
+
+    .cont {
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        width: 900px;
+        height: 550px;
+        margin: 0 auto 100px;
+        background: #fff;
+        box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.3), 10px 10px 15px rgba(70, 70, 70, 0.15), inset -10px -10px 15px rgba(255, 255, 255, 0.3), inset 10px 10px 15px rgba(70, 70, 70, 0.15);
+    }
+
+    .form {
+        position: relative;
+        width: 640px;
+        height: 100%;
+        -webkit-transition: -webkit-transform 1.2s ease-in-out;
+        transition: -webkit-transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+        padding: 50px 30px 0;
+    }
+
+    .sub-cont {
+        overflow: hidden;
+        position: absolute;
+        left: 640px;
+        top: 0;
+        width: 900px;
+        height: 100%;
+        padding-left: 260px;
+        background: #fff;
+        -webkit-transition: -webkit-transform 1.2s ease-in-out;
+        transition: -webkit-transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+    }
+
+    .cont.s--signup .sub-cont {
+        -webkit-transform: translate3d(-640px, 0, 0);
+        transform: translate3d(-640px, 0, 0);
+    }
+
+    button {
+        display: block;
+        margin: 0 auto;
+        width: 260px;
+        height: 36px;
+        border-radius: 30px;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .img {
+        overflow: hidden;
+        z-index: 2;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 260px;
+        height: 100%;
+        padding-top: 360px;
+    }
+
+        .img:before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 900px;
+            height: 100%;
+            background-image: url("ext.jpg");
+            opacity: .8;
+            background-size: cover;
+            -webkit-transition: -webkit-transform 1.2s ease-in-out;
+            transition: transform 1.2s ease-in-out;
+            transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+        }
+
+        .img:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+    .cont.s--signup .img:before {
+        -webkit-transform: translate3d(640px, 0, 0);
+        transform: translate3d(640px, 0, 0);
+    }
+
+    .img__text {
+        z-index: 2;
+        position: absolute;
+        left: 0;
+        top: 50px;
+        width: 100%;
+        padding: 0 20px;
+        text-align: center;
+        color: #fff;
+        -webkit-transition: -webkit-transform 1.2s ease-in-out;
+        transition: -webkit-transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+    }
+
+        .img__text h2 {
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .img__text p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+    .cont.s--signup .img__text.m--up {
+        -webkit-transform: translateX(520px);
+        transform: translateX(520px);
+    }
+
+    .img__text.m--in {
+        -webkit-transform: translateX(-520px);
+        transform: translateX(-520px);
+    }
+
+    .cont.s--signup .img__text.m--in {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+
+    .img__btn {
+        overflow: hidden;
+        z-index: 2;
+        position: relative;
+        width: 100px;
+        height: 36px;
+        margin: 0 auto;
+        background: transparent;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .img__btn:after {
+            content: '';
+            z-index: 2;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #fff;
+            border-radius: 30px;
+        }
+
+        .img__btn span {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: -webkit-box;
+            display: flex;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            -webkit-transition: -webkit-transform 1.2s;
+            transition: -webkit-transform 1.2s;
+            transition: transform 1.2s;
+            transition: transform 1.2s, -webkit-transform 1.2s;
+        }
+
+            .img__btn span.m--in {
+                -webkit-transform: translateY(-72px);
+                transform: translateY(-72px);
+            }
+
+    .cont.s--signup .img__btn span.m--in {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+
+    .cont.s--signup .img__btn span.m--up {
+        -webkit-transform: translateY(72px);
+        transform: translateY(72px);
+    }
+
+    h2 {
+        width: 100%;
+        font-size: 26px;
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        width: 260px;
+        margin: 25px auto 0;
+        text-align: center;
+    }
+
+        label span {
+            font-size: 12px;
+            color: #cfcfcf;
+            text-transform: uppercase;
+        }
+
+    input {
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+        padding-bottom: 5px;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+        text-align: center;
+    }
+
+    .forgot-pass {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 12px;
+        color: #cfcfcf;
+    }
+
+    .submit {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        background: #d4af7a;
+        text-transform: uppercase;
+    }
+
+    .fb-btn {
+        border: 2px solid #d3dae9;
+        color: #8fa1c7;
+    }
+
+        .fb-btn span {
+            font-weight: bold;
+            color: #455a81;
+        }
+
+    .sign-in {
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
+    }
+
+    .cont.s--signup .sign-in {
+        -webkit-transition-timing-function: ease-in-out;
+        transition-timing-function: ease-in-out;
+        -webkit-transition-duration: 1.2s;
+        transition-duration: 1.2s;
+        -webkit-transform: translate3d(640px, 0, 0);
+        transform: translate3d(640px, 0, 0);
+    }
+
+    .sign-up {
+        -webkit-transform: translate3d(-900px, 0, 0);
+        transform: translate3d(-900px, 0, 0);
+    }
+
+    .cont.s--signup .sign-up {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+</style>
+@code {
+    string password = "";
+    string email = "";
+    string first_name = "";
+    string msg = "";
+    string last_name = "";
+    // public List<string> ispr = new List<string>() { "yes", "no" };
+    // private string DropDownListValue { get; set; } = string.Empty;
+    private string isprivate { get; set; }
+
+
+    private void onChange(ChangeEventArgs e)
+    {
+        isprivate = e.Value.ToString();
+    }
+
+
+
+    async Task regstudent()
+    {
+      
+        student student = new student(first_name, last_name, email, password);
+        studentDB studentDB = new DBL.studentDB();
+        if (password != "" && first_name != "" && email != "" && last_name != "")
+        {
+            if (await studentDB.insertstudent(student))
+            {
+                msg = "welcome " + student.first_name;
+                await Task.Delay(1000);
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+
+                await js.InvokeVoidAsync("Registration failed: database error");
+            }
+
+        }
+        else
+        {
+            await js.InvokeVoidAsync("Registration failed: form error");
+
+        }
+
+    }
+    async Task regteacher()
+    {
+        int privatet = 1;
+        if (!string.IsNullOrEmpty(isprivate))
+        {
+            if (isprivate == "0")
+            {
+                privatet = 0;
+            }
+        }
+        teacher teacher = new teacher(first_name, last_name, email, password,privatet);
+        teacherDB teacherDB = new DBL.teacherDB();
+        if (password != "" && first_name != "" && email != "" && last_name != "")
+        {
+            if (await teacherDB.inserteacher(teacher))
+            {
+                msg = "welcome the teacher " + teacher.first_name;
+                await Task.Delay(1000);
+                navigationManager.NavigateTo("/");
+
+            }
+            else
+            {
+                msg = "Registration failed: database error";
+            }
+
+        }
+        else
+        {
+            msg = "Registration failed: form error";
+        }
+
+    }
+}

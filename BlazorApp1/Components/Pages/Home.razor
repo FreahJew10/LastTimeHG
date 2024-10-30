@@ -1,0 +1,228 @@
+﻿@page "/"
+@using Models
+@using DBL
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+<div class="container-fluid px-0">
+
+    <div class="container-fluid px-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+            <a class="navbar-brand" href="#">base before i will change the look </a>
+            @if (userT !=null||userS!=null)
+            {
+                if (userT !=null)
+                {
+                    <a class="navbar-brand" href="#">hello the teacher @userT.first_name </a>
+                }
+                else
+                {
+                    <a class="navbar-brand" href="#">hello the student @userS.first_name </a>
+                }
+            }
+            <div class="position-absolute top-0 end-0 mt-3 mr-3">
+@* 
+                @if (user.userimg == null)
+                {
+                    <img src="https://t3.ftcdn.net/jpg/03/58/90/78/360_F_358907879_Vdu96gF4XVhjCZxN2kCG0THTsSQi8IhT.jpg" alt="Ad Pic" style="max-height: 70px; margin-top: -6px; margin-right: 12px;" />
+
+                }
+                else
+                {
+                    <img src="data:image;base64, @System.Convert.ToBase64String(user.userimg)" style="max-height: 70px; margin-top: -6px; margin-right: 12px;" />
+                } *@
+
+                @*   <img src="path/to/your/image.jpg" alt="Ad Pic" style="max-height: 50px;" /> *@
+                <!-- Adjust the path and styling according to your image -->
+
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reg">regidter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Promotions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                    @if (userT != null || userS != null)
+                    {
+                        if (userT != null)
+                        {
+                            <a class="navbar-brand" href="#">hello the teacher @userT.first_name </a>
+                        }
+                        else
+                        {
+                            <a class="navbar-brand" href="#">hello the student @userS.first_name </a>
+                        }
+                    }
+                </ul>
+                @* @if (user.name != null)
+                {
+                    <h2 style=" text-align:center; -webkit-text-fill-color:white">welcome @user.name</h2>
+                } *@
+            </div>
+
+        </nav>
+
+        <!-- Your existing content here -->
+    </div>
+
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="podium.png" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">for the podium</h5>
+                        <p class="card-text">Try your luck with enter to the podium list there are just three of them!!</p>
+                        <a href="pod" class="btn btn-danger">Learn more</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="login.png" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">login!! </h5>
+                        <p class="card-text">
+                            Try it just on login and strat the game it will be fun!
+                        </p>
+                        <a href="login" class="btn btn-danger">now!!</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="reg.png" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">you dont have an account? sign up now</h5>
+                        <p class="card-text">
+                            If you're a fan of luck machine, you'll love our  video machine games. We have
+                            all the most popular variations of takeing your money, as well as some unique games you won't find anywhere else . And with
+                            our generous payouts, you could hit it big and we could steal your money!
+                        </p>
+                        <a href="reg" class="btn btn-danger">registar now!!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-danger text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h2 class="font-weight-bold">Write a comment and we'll make sure to ignore it </h2>
+                    <p class="lead">Get our most invested threats</p>
+                    @* <form>
+                    <div class="form-group">
+                    <input @bind-value="com" class="form-control" placeholder="Enter your comment">
+                    </div>
+                    <button @onclick="com1" type="submit" class="btn btn-light">comment</button>
+                    <a href="u" class="text-white">see all comments</a>
+                    </form> *@
+                </div>
+                <div class="col-md-6">
+                    <h2 class="font-weight-bold">Contact us</h2>
+                    <p class="lead">If you have any questions or comments, we'd hate to hear from you.</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone mr-2"></i>050-900-9443</li>
+                        <li><i class="fas fa-envelope mr-2"></i>Razperli114@gmail.com</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>Ort Rogozin,Migdal Haemek</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p>&copy; 2023 Casino Royale. All rights reserved.</p>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled list-inline mb-0 float-md-right">
+                        <li class="list-inline-item">
+                            <a href="#" class="text-white">Terms of use</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#" class="text-white">Privacy policy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<style>
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .card-title {
+        font-size: 24px;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+
+    .navbar-brand {
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    .lead {
+        font-size: 20px;
+    }
+
+    form input {
+        height: 50px;
+        font-size: 16px;
+    }
+
+    footer {
+        font-size: 14px;
+    }
+</style>
+@code {
+    public student userS = null;
+    public teacher userT = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
+    {
+
+        if (firstRender)
+        {
+            var user1 = await MySession.GetAsync<student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+
+                StateHasChanged();
+            }
+            var user2 = await MySession.GetAsync<teacher>("teacher");
+            if(user2.Success)
+            {
+                userT = user2.Value;
+                StateHasChanged();
+            }
+
+        }
+        
+
+
+    }
+}
