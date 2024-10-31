@@ -1,0 +1,44 @@
+﻿@using Models
+@using DBL
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@page "/Usermenegment"
+
+@if (userT !=null)
+{
+    <h1>gayyyyy</h1>
+}
+else
+{
+    <h1>noooo</h1>
+}
+
+
+
+@code {
+      public student userS = null;
+    public teacher userT = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
+    {
+
+        if (firstRender)
+        {
+            var user1 = await MySession.GetAsync<student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+
+                StateHasChanged();
+            }
+            var user2 = await MySession.GetAsync<teacher>("teacher");
+            if (user2.Success)
+            {
+                userT = user2.Value;
+                StateHasChanged();
+            }
+
+        }
+    }
+}
