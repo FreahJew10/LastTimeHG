@@ -2,6 +2,7 @@
 using Org.BouncyCastle.Bcpg;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,18 @@ namespace DBL
             return null;
         }
 
+        public async Task<bool> updateAsync(student student)
+        {
+            Dictionary<string, object> fillValues = new Dictionary<string, object>();
+            fillValues.Add("first_name", student.first_name);
+            fillValues.Add("password", student.password);
+
+            Dictionary<string, object> filterValues = new Dictionary<string, object>();
+            filterValues.Add("userID", student.Id);
+
+            int num = await base.UpdateAsync(fillValues, filterValues);
+            return (num > 0);
+        }
         public async Task<bool> deletestudent(student student)
         {
             Dictionary<string, object> filterValues = new Dictionary<string, object>();
