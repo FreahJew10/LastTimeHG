@@ -35,7 +35,7 @@ namespace DBL
             fillValues.Add("password", student.password);
 
             Dictionary<string, object> filterValues = new Dictionary<string, object>();
-            filterValues.Add("userID", student.Id);
+            filterValues.Add("studentid", student.Id);
 
             int num = await base.UpdateAsync(fillValues, filterValues);
             return (num > 0);

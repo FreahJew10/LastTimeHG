@@ -106,13 +106,24 @@
 
                 <div class="w3-container w3-card w3-white w3-margin-bottom">
                     <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Work Experience</h2>
+                    
                     <div class="w3-container">
                         <h5 class="w3-opacity"><b>change your password</b></h5>
-                        <input type="password" class="w3-text-teal" @bind-value="new_password"><input>
+                        
+                            <input type="password" name="text" class="input" placeholder="Enter your password!" @bind-value="new_password">
                         <h5 class="w3-opacity"><b>repeat</b></h5>
-                        <input type="password" class="w3-text-teal" @bind-value="repeat_password"><input>
-                        <button class="button-28" role="button"> Button 28</button>
-                        <hr>
+
+                            <input type="password" name="text" class="input" placeholder="Enter your password!" @bind-value="repeat_password">
+                        
+                            @if (userS != null)
+                            {
+                                <button class="button-28" role="button" @onclick="UpdateS"> doit</button>
+                            }
+                            else
+                            {
+                                <button class="button-28" role="button" @onclick="UpdateS"> Button 28</button>
+                            }
+                            <hr>
 
                     </div>
                     <div class="w3-container">
@@ -163,8 +174,23 @@
     </div>
 
     <style>
-        <!-- HTML ! -->
-        
+      /* the css of the input new password */ 
+            .input {
+                border: 2px solid #e8e8e8;
+                padding: 15px;
+                border-radius: 10px;
+                background-color: white;
+                font-size: small;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .input:focus {
+                outline-color: white;
+                background-color: lightgray;
+                color: #e8e8e8;
+                box-shadow: 5px 5px #888888;
+            }
 
         /* CSS */
         .button-28 {
@@ -234,6 +260,42 @@
 
     string new_password = "";
     string repeat_password = "";
+    public async Task UpdateS()
+    {
+        student student = new student();
+        student.email = userS.email;
+        student.Id = userS.Id;
+        student.first_name = userS.first_name;
+        student.last_name = userS.last_name;
+        studentDB s = new studentDB();
+        if (new_password!=""&&repeat_password!="")
+        {
+            Console.WriteLine("hf");
+            if (new_password==repeat_password)
+            {
+                Console.WriteLine("yy");
+                student.password = new_password;
+                s.updateAsync(student);
+                 
+               // await js.InvokeVoidAsync("alert", @$"");
+              
+            }
+            else
+            {
+                await js.InvokeVoidAsync("alert", @$" 'new password' does not match 'repeat password'");
+            }
+
+
+        }
+        else
+        {
+            await js.InvokeVoidAsync("alert", @$"you didnt fill 'new password' or 'repeat password'");
+        }
+        StateHasChanged();
+
+
+
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {
 
@@ -255,5 +317,6 @@
             }
 
         }
+
     }
 }
