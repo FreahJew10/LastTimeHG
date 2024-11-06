@@ -19,11 +19,11 @@ namespace DBL
             chackit.Add("first_name", first_name);
             chackit.Add("email", email);
             chackit.Add("password", password);
-            List<student> students =await SelectAllAsync(sql,chackit);
-            if (students.Count==1) 
+            List<student> students = await SelectAllAsync(sql, chackit);
+            if (students.Count == 1)
             {
-               return students[0]; 
-            
+                return students[0];
+
             }
             return null;
         }
@@ -57,7 +57,7 @@ namespace DBL
             data.Add("last_name", student.last_name);
             data.Add("email", student.email);
             data.Add("password", student.password);
-            
+
             int num = await base.InsertAsync(data);
             if (num > 0)
             {
@@ -69,11 +69,11 @@ namespace DBL
         protected override async Task<List<student>> CreateListModelAsync(List<object[]> rows)
         {
             List<student> students = new List<student>();
-            foreach (object[] row in rows) 
-            { 
-              student student = await CreateModelAsync(row);
+            foreach (object[] row in rows)
+            {
+                student student = await CreateModelAsync(row);
                 students.Add(student);
-            
+
             }
             return students;
         }
@@ -81,11 +81,44 @@ namespace DBL
         protected override async Task<student> CreateModelAsync(object[] row)
         {
             student student = new student();
-            student.Id= int.Parse(row[0].ToString());
-            student.first_name= row[1].ToString();
-            student.last_name = row[2].ToString();
-            student.email= row[3].ToString();
-            student.password=row[4].ToString();
+            string chack_if_friend = "";
+            int x = 0;
+           try
+            {
+                x= int.Parse(row[0].ToString());
+                chack_if_friend = "josh";
+            }
+            catch 
+            {
+                chack_if_friend = "17";
+            
+            }
+            if (chack_if_friend=="josh")
+            {
+                student.Id = int.Parse(row[0].ToString());
+                student.first_name = row[1].ToString();
+                student.last_name = row[2].ToString();
+                student.email = row[3].ToString();
+                student.password = row[4].ToString();
+
+                string query = @"Select
+            mylastyear.student.first_name,
+            mylastyear.student.last_name,
+            mylastyear.student.email
+            From
+            mylastyear.student Inner Join
+            mylastyear.friends On mylastyear.friends.studentfriendId = mylastyear.student.studentid
+            where mylastyear.friends.studentid=@studentid";
+                Dictionary<string, object> myprimerykey = new Dictionary<string, object>();
+                myprimerykey.Add("studentid", student.Id);
+                student.friends = await SelectAllAsync(query, myprimerykey);
+                await Console.Out.WriteLineAsync("dd");
+            } 
+            else {
+                student.first_name = row[1].ToString();
+                student.last_name = row[2].ToString();
+                student.email = row[3].ToString();
+            }
             return student;
         }
 
@@ -98,7 +131,7 @@ namespace DBL
         protected override string GetTableName()
         {
             return "student";
-           
+
         }
     }
 }
