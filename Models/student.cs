@@ -8,24 +8,24 @@ namespace Models
 {
     public class student:Person
     {
-        public List<student> friends;
+        public List<Person> friends { get; set; }
         public student() { }
         public student(int id, string firstName, string lastName, string email, string password)
             :base(id, firstName, lastName, email, password) 
         { 
-         friends = new List<student>();
+         friends = new List<Person>();
         
         }
-        public student(int id, string firstName, string lastName, string email, string password,List<student>friends)
+        public student(int id, string firstName, string lastName, string email, string password,List<Person> friends)
             :base(id, firstName, lastName, email, password)
         { this.friends = friends; }
         public student(string firstName, string lastName, string email, string password)
             :base (firstName, lastName, email, password) 
         {
-            friends=new List<student>();
+            friends=new List<Person>();
 
         }
-        public student( string firstName, string lastName, string email, string password,List<student>friends)
+        public student( string firstName, string lastName, string email, string password,List<Person> friends)
             :base(firstName, lastName, email, password)
         {
             this.friends = friends;

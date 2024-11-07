@@ -196,9 +196,9 @@
         font-size: 14px;
     }
 </style>
-@if (userS!=null)
+@if (userS!=null&&userS.friends!=null)
 {
-    foreach(student friend in userS.friends)
+    foreach(Person friend in userS.friends)
     {
         <h3>@friend.first_name</h3>
 
@@ -217,7 +217,7 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-
+                
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");

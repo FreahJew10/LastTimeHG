@@ -9,7 +9,7 @@
             this.first_name = firstName;
             this.email = email;
             this.password = password;
-            this.last_name = lastName;
+            this.last_name = lastName;   
             //this.picture = picture;
         }
         //public student(int id, string firstName, string lastName, string email, string password /* byte[] picture*/)

@@ -11,7 +11,7 @@ namespace Models
         public friends() { }
         public friends(int studentid,int studentfriendId)
         { 
-        this.studentid = studentid;
+            this.studentid = studentid;
             this.studentfriendId=studentfriendId;
         
         }

@@ -81,27 +81,16 @@ namespace DBL
         protected override async Task<student> CreateModelAsync(object[] row)
         {
             student student = new student();
-            string chack_if_friend = "";
-            int x = 0;
-           try
-            {
-                x= int.Parse(row[0].ToString());
-                chack_if_friend = "josh";
-            }
-            catch 
-            {
-                chack_if_friend = "17";
-            
-            }
-            if (chack_if_friend=="josh")
-            {
+         
+             PersonStudentDB personStudentDB = new PersonStudentDB();
+           
                 student.Id = int.Parse(row[0].ToString());
                 student.first_name = row[1].ToString();
                 student.last_name = row[2].ToString();
                 student.email = row[3].ToString();
                 student.password = row[4].ToString();
-
-                string query = @"Select
+               student.friends =await personStudentDB.GiveAllFriends(student.Id);
+           /* string query = @"Select
             mylastyear.student.first_name,
             mylastyear.student.last_name,
             mylastyear.student.email
@@ -109,16 +98,11 @@ namespace DBL
             mylastyear.student Inner Join
             mylastyear.friends On mylastyear.friends.studentfriendId = mylastyear.student.studentid
             where mylastyear.friends.studentid=@studentid";
-                Dictionary<string, object> myprimerykey = new Dictionary<string, object>();
-                myprimerykey.Add("studentid", student.Id);
-                student.friends = await SelectAllAsync(query, myprimerykey);
-                await Console.Out.WriteLineAsync("dd");
-            } 
-            else {
-                student.first_name = row[1].ToString();
-                student.last_name = row[2].ToString();
-                student.email = row[3].ToString();
-            }
+            Dictionary<string, object> myprimerykey = new Dictionary<string, object>();
+            myprimerykey.Add("studentid", student.Id);
+            student.friends = await SelectAllAsync(query, myprimerykey);
+            await Console.Out.WriteLineAsync("dd");*/
+
             return student;
         }
 
