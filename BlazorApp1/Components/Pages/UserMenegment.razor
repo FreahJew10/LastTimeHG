@@ -1,5 +1,6 @@
 ﻿@using Models
 @using DBL
+@using Microsoft.AspNetCore.Components.QuickGrid;
 @inject IJSRuntime js
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage MySession
@@ -150,14 +151,19 @@
                         <p>Web Development! All I need to know in one place</p>
                         <hr>
                     </div>
-                    <div class="w3-container">
-                        <h5 class="w3-opacity"><b>London Business School</b></h5>
-                        <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>2013 - 2015</h6>
-                        <p>Master Degree</p>
-                        <hr>
-                    </div>
+                        @if (userS != null)
+                        {
+                            <div class="w3-container">
+                                <QuickGrid Class="table table-striped"
+                                Items=@userS.friends.AsQueryable() >
+                                    <PropertyColumn Title="first_name" Property="@(x=>x.first_name)" Sortable="true"></PropertyColumn>
+                                    <PropertyColumn Title="last name" Property="@(x=>x.last_name)" Sortable="true"></PropertyColumn>
+                                    <PropertyColumn Title="email" Property="@(x=>x.email)"></PropertyColumn>
 
-                    <div class="w3-container">
+                                </QuickGrid>
+                            </div>
+                        }
+                        <div class="w3-container">
                         <h5 class="w3-opacity"><b>School of Coding</b></h5>
                         <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>2010 - 2013</h6>
                         <p>Bachelor Degree</p><br>
@@ -270,15 +276,51 @@
         studentDB s = new studentDB();
         if (new_password!=""&&repeat_password!="")
         {
-            Console.WriteLine("hf");
+           
             if (new_password==repeat_password)
             {
                 Console.WriteLine("yy");
                 student.password = new_password;
                 s.updateAsync(student);
                  
-               // await js.InvokeVoidAsync("alert", @$"");
+                await js.InvokeVoidAsync("alert", @$"nice");
               
+            }
+            else
+            {
+                await js.InvokeVoidAsync("alert", @$" 'new password' does not match 'repeat password'");
+            }
+
+
+        }
+        else
+        {
+            await js.InvokeVoidAsync("alert", @$"you didnt fill 'new password' or 'repeat password'");
+        }
+        StateHasChanged();
+
+
+
+    }
+    public async Task UpdateT()
+    {
+        teacher teacher = new teacher();
+        teacher.email = userS.email;
+        teacher.Id = userS.Id;
+        teacher.first_name = userS.first_name;
+       teacher.last_name = userS.last_name;
+        teacherDB s = new teacherDB();
+        if (new_password != "" && repeat_password != "")
+        {
+            
+            if (new_password == repeat_password)
+            {
+              
+                teacher.password = new_password;
+                s.updateAsync(teacher);
+
+                await js.InvokeVoidAsync("alert", @$"nice");
+
             }
             else
             {

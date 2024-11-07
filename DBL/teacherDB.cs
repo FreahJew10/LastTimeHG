@@ -8,6 +8,19 @@ namespace DBL
 {
     public class teacherDB : BaseDB<teacher>
     {
+
+        public async Task<bool> updateAsync(teacher teacher)
+        {
+            Dictionary<string, object> fillValues = new Dictionary<string, object>();
+            fillValues.Add("first_name", teacher.first_name);
+            fillValues.Add("password", teacher.password);
+
+            Dictionary<string, object> filterValues = new Dictionary<string, object>();
+            filterValues.Add("studentid", teacher.Id);
+
+            int num = await base.UpdateAsync(fillValues, filterValues);
+            return (num > 0);
+        }
         public async Task<teacher> LoginAsync(string first_name, string email, string password)
         {
             string sql = @"SELECT * FROM mylastyear.teachers where first_name=@first_name AND email=@email AND password=@password;";
