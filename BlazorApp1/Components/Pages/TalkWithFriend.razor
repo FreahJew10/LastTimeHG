@@ -7,7 +7,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Models
 @using DBL
-@implements IAsyncDisposable
+@* @implements IAsyncDisposable *@
 
 
 @if (s != null)
@@ -76,6 +76,8 @@
             await InvokeAsync(StateHasChanged);
         });
         await hubConnection.StartAsync();
+        
+
     }
     public async Task send()
     {
@@ -83,8 +85,8 @@
         {
             await hubConnection.SendAsync("SendMessage",userS as Person, massageinput);
             // await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
-            // isUserReadOnly = true;
-            // massageinput = "";
+            isUserReadOnly = true;
+            massageinput = "";
         }
         
     }
@@ -119,6 +121,7 @@
             {
                 userS = user1.Value;
 
+                userS.userid = hubConnection.ConnectionId;
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");

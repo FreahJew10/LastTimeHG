@@ -4,32 +4,52 @@ using Models;
 using DBL;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 namespace BlazorApp1.Hubs
 {
+
     public class ChatHub:Hub
     {
-         static Dictionary<string, List<string>> NtoIdMappingTable = new Dictionary<string, List<string>>();
+       
+        private UserManager<IdentityUser> UserManager { get; set; }
+        static Dictionary<string, List<string>> NtoIdMappingTable = new Dictionary<string, List<string>>();
         //public async Task SendMessage(Person Iperson, string massage, Person Fperson)
         //{
         //    // await Clients.User(Fperson.email).SendAsync("ReceiveMassage", Iperson.first_name, massage);
-        //    await Clients.All.SendAsync("ReceiveMassage", Iperson, massage);
+        //    await Clients.All.SendAsync("ReceiveMassage", Iperson, massage + $@" {Context.ConnectionId}");
         //}
-        public ChatHub() { }
+
         public async Task SendMessage(Person person, string massage)
         {
-           
-            await Clients.Client(person.userid).SendAsync("ReceiveMassage", person, massage);
+
+            await Clients.All.SendAsync("ReceiveMassage", person, massage + $@"{Context.ConnectionId}");
         }
         public string GetConnectionId()
         {
             return Context.ConnectionId;
         }
 
+        public async Task RequestUserId()
+        {
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Context.ConnectionId;
+            await Clients.Caller.SendAsync("ReceiveUserId", userId);
+        }
 
-       
         public string GetUserId()
         {
-            return Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Context.ConnectionId;
+            // Method 1: Try multiple ways to get the user ID
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = Context.User?.Identity?.Name;
+            }
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = Context.ConnectionId; // Fallback to connection ID
+            }
+            return userId;
         }
 
 

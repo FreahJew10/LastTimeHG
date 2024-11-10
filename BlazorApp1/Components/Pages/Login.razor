@@ -375,19 +375,21 @@
     private bool isSignUpMode = false;
     private HubConnection hubConnection;
     private string currentUserId;
+    
     public  async Task LogInToSudent()
     {
-       
+        hubConnection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/chathub")).WithAutomaticReconnect().Build();
         studentDB studentDB = new studentDB();
-        
+
         Student student = await studentDB.LoginAsync(firstName, email, password);
         if (student!=null)
         {
-            student.userid = GetConnectionId();
+            
+           
             await MySession.SetAsync("student",student);
             navigationManager.NavigateTo("/");
 
-
+            
         }
         else
         {
@@ -398,13 +400,15 @@
         }
 
     }
-
     private async Task GetCurrentUserId()
     {
         try
         {
-            // Call the hub method to get user ID
             currentUserId = await hubConnection.InvokeAsync<string>("GetUserId");
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                Console.WriteLine("User ID is null or empty");
+            }
             StateHasChanged();
         }
         catch (Exception ex)
@@ -412,6 +416,8 @@
             Console.WriteLine($"Error getting user ID: {ex.Message}");
         }
     }
+
+
     public async Task LogInToTeacher()
     {
         teacherDB teacherDB = new teacherDB();
