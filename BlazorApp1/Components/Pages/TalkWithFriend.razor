@@ -1,0 +1,133 @@
+﻿@page "/ShowProduct/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using Models
+@using DBL
+@implements IAsyncDisposable
+
+
+@if (s != null)
+{
+    <h1>@s.first_name</h1>
+
+
+    <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded "style="height:500px">
+        @if(!usermessages.Any())
+        {
+            <p>there are no massges yet, talk! </p>
+        }
+        @foreach(SignalrPersonMessage signalrPersonMessage in usermessages)
+        {
+            <div class="row mb-3 d-flex">
+                <div class="card shadow" style="width:18rem">
+                    <div class=" card-header">
+                        @signalrPersonMessage.person.first_name;
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">@signalrPersonMessage.massage</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="small">@signalrPersonMessage.datesent.ToString("HH:mm|MMM dd")</span>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+    </div>
+    <div class="container" >
+        <div class="row">
+            <div class="col-6">
+                <textarea @bind="massageinput" class="form-control"  placeholder="start ttyping..."></textarea>
+            </div>
+            <div class="col-3">
+                <button type="button" @onclick="send" disabled="@(!Isconnected)" class="btn-primary">send</button>
+            </div>
+
+        </div>
+
+
+ 
+    </div>
+}
+<script src="/js/signalr/dist/browser/signalr.js"></script>
+<script src="/js/chat.js"></script>
+@code {
+    [Parameter] public int id { get; set; }
+    private Person s = null;
+    public student userS = null;
+    public teacher userT = null;
+    private HubConnection hubConnection;
+    private List<SignalrPersonMessage> usermessages = new();
+    private string massageinput;
+    private bool isUserReadOnly;
+    public bool Isconnected => hubConnection.State == HubConnectionState.Connected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/chathub")).WithAutomaticReconnect().Build();
+        hubConnection.On<Person, Person,string>("ReceiveMassage", async (student,friend,message) =>
+        {
+            usermessages.Add(new SignalrPersonMessage {person=student,friend=friend , massage = message, curruntperson = student == userS, datesent = DateTime.Now });
+            await InvokeAsync(StateHasChanged);
+        });
+        await hubConnection.StartAsync();
+    }
+    public async Task send()
+    {
+        if(!string.IsNullOrEmpty(massageinput))
+        {
+            // await hubConnection.SendAsync("SendMessage",userS as Person, massageinput);
+            await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
+            isUserReadOnly = true;
+            massageinput = "";
+        }
+        
+    }
+
+    protected override async void OnParametersSet()
+    {
+        if (id == null)
+            id = 0;
+        else
+        {
+            PersonStudentDB personStudentDB = new PersonStudentDB();
+            s = (Person)await personStudentDB.SelectByPkAsync(id);
+            // pLst = await productDB.GetBestProductAsync(4);
+            StateHasChanged();
+        }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if(hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
+    {
+
+        if (firstRender)
+        {
+            var user1 = await MySession.GetAsync<student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+
+                StateHasChanged();
+            }
+            var user2 = await MySession.GetAsync<teacher>("teacher");
+            if (user2.Success)
+            {
+                userT = user2.Value;
+                StateHasChanged();
+            }
+           
+        }
+    }
+}

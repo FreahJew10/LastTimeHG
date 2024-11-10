@@ -156,10 +156,15 @@
                             <div class="w3-container">
                                 <QuickGrid Class="table table-striped"
                                 Items=@userS.friends.AsQueryable() >
-                                    <PropertyColumn Title="first_name" Property="@(x=>x.first_name)" Sortable="true"></PropertyColumn>
+
+                                    <PropertyColumn Title="first_name" Property="@(x=>x.first_name)" Sortable="true" ></PropertyColumn>
+
                                     <PropertyColumn Title="last name" Property="@(x=>x.last_name)" Sortable="true"></PropertyColumn>
                                     <PropertyColumn Title="email" Property="@(x=>x.email)"></PropertyColumn>
-
+                                    @foreach (Person person in userS.friends)
+                                    {
+                                        <TemplateColumn Title="talk"><a href="ShowProduct/@person.Id.ToString()">Open</a></TemplateColumn>
+                                    }
                                 </QuickGrid>
                             </div>
                         }

@@ -10,6 +10,11 @@
         "js/bootstrap.bundle.min.js",
         "css/bootstrap.min.css"
       ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "aspnet-signalr@1.0.27",
+      "destination": "wwwroot/lib/aspnet-signalr/"
     }
   ]
 }

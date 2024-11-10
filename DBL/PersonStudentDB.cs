@@ -9,6 +9,28 @@ namespace DBL
 {
     public class PersonStudentDB : BaseDB<Person>
     {
+      
+        public async Task<Person> SelectByPkAsync(int id)
+        {
+            string q = $@"Select
+             student.first_name,
+             student.last_name,
+             student.email,
+             
+             student.studentid As studentid1
+         From
+         mylastyear.student
+         Where
+         mylastyear.student.studentid = @studentid";
+            Dictionary<string, object> p = new Dictionary<string, object>();
+            p.Add("studentid", id);
+            List<Person> list = await SelectAllAsync(q,p);
+            if (list.Count == 1)
+                return list[0];
+            else
+                return null;
+        }
+
         public async Task<List<Person>> GiveAllFriends(int studentid)
         {
             string q = @$"Select
@@ -49,7 +71,14 @@ namespace DBL
             student_friends.first_name = row[0].ToString();
             student_friends.last_name = row[1].ToString();
             student_friends.email = row[2].ToString();
-            student_friends.Id = int.Parse(row[4].ToString());
+            if (row.Length > 4)//כאשר אתה רוצה לראות את החברים שלי
+            {
+                student_friends.Id = int.Parse(row[4].ToString());
+            }
+            else// כאשר אתה נכנס לדף שיחה
+            {
+                student_friends.Id = int.Parse(row[3].ToString());
+            }
             return student_friends;
         }
 

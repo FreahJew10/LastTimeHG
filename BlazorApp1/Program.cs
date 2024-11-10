@@ -1,5 +1,6 @@
 using BlazorApp1.Components;
-
+using Microsoft.AspNetCore.ResponseCompression;
+using BlazorApp1.Hubs;
 namespace BlazorApp1
 {
     public class Program
@@ -11,8 +12,14 @@ namespace BlazorApp1
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            builder.Services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 
+            });
+            builder.Services.AddSignalR();
             var app = builder.Build();
+            
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -26,10 +33,12 @@ namespace BlazorApp1
 
             app.UseStaticFiles();
             app.UseAntiforgery();
-
+            //app.UseResponseCompression();
+            app.MapHub<ChatHub>("/chathub");
+            
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
-
+           
             app.Run();
         }
     }
