@@ -3,23 +3,25 @@
     public class Person
     {
         
-        public Person(int id, string firstName, string lastName, string  email,string password /*, byte[] picture*/)
+        public Person(int id, string firstName, string lastName, string  email,string password /*, byte[] picture*/,string  userid)
         {
             this.Id = id;
             this.first_name = firstName;
             this.email = email;
             this.password = password;
             this.last_name = lastName;   
+            this.userid = userid;   
             //this.picture = picture;
         }
-        //public student(int id, string firstName, string lastName, string email, string password /* byte[] picture*/)
-        //{
+        public Person(int id, string firstName, string lastName, string email, string password /* byte[] picture*/)
+        {
 
-        //    this.firstname = firstName;
-        //    this.email = email;
-        //    this.password = password;
-        //    this.lastname = lastName;
-        //}
+            this.first_name = firstName;
+            this.email = email;
+            this.password = password;
+            this.last_name = lastName;
+            userid = "";
+        }
         public Person( string firstName, string lastName, string email, string password)
         {
 
@@ -28,6 +30,7 @@
             this.password = password;
             this.last_name = lastName;
             // this.picture = null;
+            userid = "";
         }
         public Person()
         {
@@ -39,5 +42,6 @@
         public string password { get; set; }
         public string last_name { get; set; }
      //   public byte[] picture { get; set; }
+   public  string userid { get; set; }
     }
 }

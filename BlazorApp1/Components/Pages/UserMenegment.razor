@@ -265,15 +265,15 @@
 }
 
 @code {
-    public student userS = null;
+    public Student userS = null;
     public teacher userT = null;
-    public student basicuser = null;
+    public Student basicuser = null;
 
     string new_password = "";
     string repeat_password = "";
     public async Task UpdateS()
     {
-        student student = new student();
+        Student student = new Student();
         student.email = userS.email;
         student.Id = userS.Id;
         student.first_name = userS.first_name;
@@ -348,7 +348,7 @@
 
         if (firstRender)
         {
-            var user1 = await MySession.GetAsync<student>("student");
+            var user1 = await MySession.GetAsync<Student>("student");
             if (user1.Success)
             {
                 userS = user1.Value;

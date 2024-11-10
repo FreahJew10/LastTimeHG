@@ -436,7 +436,7 @@
     async Task regstudent()
     {
       
-        student student = new student(first_name, last_name, email, password);
+        Student student = new Student(first_name, last_name, email, password);
         studentDB studentDB = new DBL.studentDB();
         if (password != "" && first_name != "" && email != "" && last_name != "")
         {

@@ -206,14 +206,14 @@
 }
 
 @code {
-    public student userS = null;
+    public Student userS = null;
     public teacher userT = null;
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {
 
         if (firstRender)
         {
-            var user1 = await MySession.GetAsync<student>("student");
+            var user1 = await MySession.GetAsync<Student>("student");
             if (user1.Success)
             {
                 userS = user1.Value;

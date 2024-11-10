@@ -1,4 +1,4 @@
-﻿@page "/ShowProduct/{Id:int}"
+﻿  @page "/ShowProduct/{Id:int}"
 @inject NavigationManager navigationManager
 @inject IJSRuntime js
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -59,7 +59,7 @@
 @code {
     [Parameter] public int id { get; set; }
     private Person s = null;
-    public student userS = null;
+    public Student userS = null;
     public teacher userT = null;
     private HubConnection hubConnection;
     private List<SignalrPersonMessage> usermessages = new();
@@ -70,9 +70,9 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/chathub")).WithAutomaticReconnect().Build();
-        hubConnection.On<Person, Person,string>("ReceiveMassage", async (student,friend,message) =>
+        hubConnection.On<Person,string>("ReceiveMassage", async (student,message) =>
         {
-            usermessages.Add(new SignalrPersonMessage {person=student,friend=friend , massage = message, curruntperson = student == userS, datesent = DateTime.Now });
+            usermessages.Add(new SignalrPersonMessage {person=student, massage = message, curruntperson = student == userS, datesent = DateTime.Now });
             await InvokeAsync(StateHasChanged);
         });
         await hubConnection.StartAsync();
@@ -81,10 +81,10 @@
     {
         if(!string.IsNullOrEmpty(massageinput))
         {
-            // await hubConnection.SendAsync("SendMessage",userS as Person, massageinput);
-            await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
-            isUserReadOnly = true;
-            massageinput = "";
+            await hubConnection.SendAsync("SendMessage",userS as Person, massageinput);
+            // await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
+            // isUserReadOnly = true;
+            // massageinput = "";
         }
         
     }
@@ -114,7 +114,7 @@
 
         if (firstRender)
         {
-            var user1 = await MySession.GetAsync<student>("student");
+            var user1 = await MySession.GetAsync<Student>("student");
             if (user1.Success)
             {
                 userS = user1.Value;

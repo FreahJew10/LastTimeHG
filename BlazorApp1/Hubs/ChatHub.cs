@@ -3,24 +3,40 @@ using System.Net.Mail;
 using Models;
 using DBL;
 using Org.BouncyCastle.Asn1.Ocsp;
+using System.Security.Claims;
 namespace BlazorApp1.Hubs
 {
     public class ChatHub:Hub
     {
          static Dictionary<string, List<string>> NtoIdMappingTable = new Dictionary<string, List<string>>();
-        //public async Task SendMessage(Person Iperson,string massage,Person Fperson)
+        //public async Task SendMessage(Person Iperson, string massage, Person Fperson)
         //{
-        //   // await Clients.User(Fperson.email).SendAsync("ReceiveMassage", Iperson.first_name, massage);
+        //    // await Clients.User(Fperson.email).SendAsync("ReceiveMassage", Iperson.first_name, massage);
         //    await Clients.All.SendAsync("ReceiveMassage", Iperson, massage);
         //}
+        public ChatHub() { }
         public async Task SendMessage(Person person, string massage)
         {
-            await Clients.All.SendAsync("ReceiveMassage", person, massage);
+           
+            await Clients.Client(person.userid).SendAsync("ReceiveMassage", person, massage);
         }
         public string GetConnectionId()
         {
             return Context.ConnectionId;
         }
+
+
+       
+        public string GetUserId()
+        {
+            return Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Context.ConnectionId;
+        }
+
+
+
+
+
+
         //public async Task MessageBetweenFriends(Person user, Person receiver, string message)
         //{
         //    string userId = NtoIdMappingTable.GetValueOrDefault(receiver.email);

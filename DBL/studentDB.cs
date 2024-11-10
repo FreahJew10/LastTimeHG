@@ -7,19 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace DBL
 {
-    public class studentDB : BaseDB<student>
+    public class studentDB : BaseDB<Student>
     {
 
-        public async Task<student> LoginAsync(string first_name, string email, string password)
+        public async Task<Student> LoginAsync(string first_name, string email, string password)
         {
             string sql = @"SELECT * FROM mylastyear.student where first_name=@first_name AND email=@email AND password=@password;";
             Dictionary<string, object> chackit = new Dictionary<string, object>();
             chackit.Add("first_name", first_name);
             chackit.Add("email", email);
             chackit.Add("password", password);
-            List<student> students = await SelectAllAsync(sql, chackit);
+            List<Student> students = await SelectAllAsync(sql, chackit);
             if (students.Count == 1)
             {
                 return students[0];
@@ -28,7 +29,7 @@ namespace DBL
             return null;
         }
 
-        public async Task<bool> updateAsync(student student)
+        public async Task<bool> updateAsync(Student student)
         {
             Dictionary<string, object> fillValues = new Dictionary<string, object>();
             fillValues.Add("first_name", student.first_name);
@@ -40,7 +41,7 @@ namespace DBL
             int num = await base.UpdateAsync(fillValues, filterValues);
             return (num > 0);
         }
-        public async Task<bool> deletestudent(student student)
+        public async Task<bool> deletestudent(Student student)
         {
             Dictionary<string, object> filterValues = new Dictionary<string, object>();
             filterValues.Add("Id", student.Id);
@@ -50,7 +51,7 @@ namespace DBL
 
         }
 
-        public async Task<bool> insertstudent(student student)
+        public async Task<bool> insertstudent(Student student)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("first_name", student.first_name);
@@ -66,21 +67,21 @@ namespace DBL
             else { return false; }
 
         }
-        protected override async Task<List<student>> CreateListModelAsync(List<object[]> rows)
+        protected override async Task<List<Student>> CreateListModelAsync(List<object[]> rows)
         {
-            List<student> students = new List<student>();
+            List<Student> students = new List<Student>();
             foreach (object[] row in rows)
             {
-                student student = await CreateModelAsync(row);
+                Student student = await CreateModelAsync(row);
                 students.Add(student);
 
             }
             return students;
         }
 
-        protected override async Task<student> CreateModelAsync(object[] row)
+        protected override async Task<Student> CreateModelAsync(object[] row)
         {
-            student student = new student();
+            Student student = new Student();
          
              PersonStudentDB personStudentDB = new PersonStudentDB();
            
@@ -90,6 +91,7 @@ namespace DBL
                 student.email = row[3].ToString();
                 student.password = row[4].ToString();
                student.friends =await personStudentDB.GiveAllFriends(student.Id);
+           
            /* string query = @"Select
             mylastyear.student.first_name,
             mylastyear.student.last_name,

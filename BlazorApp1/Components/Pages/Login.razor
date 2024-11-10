@@ -5,6 +5,8 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage MySession
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using BlazorApp1.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
 <br>
 <br>
     <div class="cont">
@@ -371,14 +373,17 @@
     private string email;
     private string password;
     private bool isSignUpMode = false;
-
+    private HubConnection hubConnection;
+    private string currentUserId;
     public  async Task LogInToSudent()
     {
+       
         studentDB studentDB = new studentDB();
-        student student = await studentDB.LoginAsync(firstName, email, password);
+        
+        Student student = await studentDB.LoginAsync(firstName, email, password);
         if (student!=null)
         {
-
+            student.userid = GetConnectionId();
             await MySession.SetAsync("student",student);
             navigationManager.NavigateTo("/");
 
@@ -392,6 +397,20 @@
 
         }
 
+    }
+
+    private async Task GetCurrentUserId()
+    {
+        try
+        {
+            // Call the hub method to get user ID
+            currentUserId = await hubConnection.InvokeAsync<string>("GetUserId");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting user ID: {ex.Message}");
+        }
     }
     public async Task LogInToTeacher()
     {
