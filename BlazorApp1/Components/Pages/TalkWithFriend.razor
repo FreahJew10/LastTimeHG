@@ -7,12 +7,13 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Models
 @using DBL
+@using Hubs
 @* @implements IAsyncDisposable *@
 
 
-@if (s != null)
+@if (friend != null)
 {
-    <h1>@s.first_name</h1>
+    <h1>@friend.first_name</h1>
 
 
     <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded "style="height:500px">
@@ -45,7 +46,7 @@
                 <textarea @bind="massageinput" class="form-control"  placeholder="start ttyping..."></textarea>
             </div>
             <div class="col-3">
-                <button type="button" @onclick="send" disabled="@(!Isconnected)" class="btn-primary">send</button>
+                <button type="button" @onclick="SendToFriend" disabled="@(!Isconnected)" class="btn-primary">send</button>
             </div>
 
         </div>
@@ -58,7 +59,7 @@
 <script src="/js/chat.js"></script>
 @code {
     [Parameter] public int id { get; set; }
-    private Person s = null;
+    private Person friend = null;
     public Student userS = null;
     public teacher userT = null;
     private HubConnection hubConnection;
@@ -66,29 +67,47 @@
     private string massageinput;
     private bool isUserReadOnly;
     public bool Isconnected => hubConnection.State == HubConnectionState.Connected;
-
+    private string myConId = "";
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/chathub")).WithAutomaticReconnect().Build();
-        hubConnection.On<Person,string>("ReceiveMassage", async (student,message) =>
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+        .WithAutomaticReconnect()
+        .Build();
+
+        hubConnection.On<Person,string>("ReceiveMassage", async (me,message) =>
         {
-            usermessages.Add(new SignalrPersonMessage {person=student, massage = message, curruntperson = student == userS, datesent = DateTime.Now });
+            usermessages.Add(new SignalrPersonMessage {person=me, massage = message, curruntperson = me == userS, datesent = DateTime.Now });
             await InvokeAsync(StateHasChanged);
         });
         await hubConnection.StartAsync();
-        
 
+        myConId = hubConnection.ConnectionId;
+      
     }
-    public async Task send()
+    public async Task SendToFriend()
     {
-        if(!string.IsNullOrEmpty(massageinput))
+        if(!string.IsNullOrEmpty(massageinput)&& hubConnection!=null)
         {
-            await hubConnection.SendAsync("SendMessage",userS as Person, massageinput);
-            // await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
-            isUserReadOnly = true;
-            massageinput = "";
+          
+            if (StaticChatHub.conids != null)
+            {
+               
+               
+                if (await StaticChatHub.IsMyFriendHere(friend.email) > 0)
+                {
+                    
+
+                    List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
+                    await hubConnection.SendAsync("SendMessageToFriend", myfreindconidS,massageinput,userS);
+                }
+                // await hubConnection.SendAsync("SendMessage",friend, massageinput);
+                // await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
+                isUserReadOnly = true;
+                massageinput = "";
+            }
         }
-        
+
     }
 
     protected override async void OnParametersSet()
@@ -98,19 +117,20 @@
         else
         {
             PersonStudentDB personStudentDB = new PersonStudentDB();
-            s = (Person)await personStudentDB.SelectByPkAsync(id);
+            friend = (Person)await personStudentDB.SelectByPkAsync(id);
             // pLst = await productDB.GetBestProductAsync(4);
             StateHasChanged();
         }
     }
-    public async ValueTask DisposeAsync()
-    {
-        if(hubConnection is not null)
-        {
-            await hubConnection.DisposeAsync();
-        }
+  
+    // public async ValueTask DisposeAsync()
+    //  {
+    //      if(hubConnection is not null)
+    //      {
+    //          await hubConnection.DisposeAsync();
+    //      }
 
-    }
+    //  }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {
 
@@ -120,8 +140,8 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-
-                userS.userid = hubConnection.ConnectionId;
+                StaticChatHub.conids.Add(userS.email, myConId);
+              
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");

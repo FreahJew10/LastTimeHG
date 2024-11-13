@@ -1,5 +1,6 @@
 ﻿namespace Models
 {
+    using Microsoft.AspNetCore.SignalR;
     public class Person
     {
         
