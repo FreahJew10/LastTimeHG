@@ -84,7 +84,6 @@
 
         myConId = hubConnection.ConnectionId;
       
-    }
     public async Task SendToFriend()
     {
         if(!string.IsNullOrEmpty(massageinput)&& hubConnection!=null)
@@ -131,7 +130,15 @@
     //      }
 
     //  }
-    protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
+    public async Task setconid()
+    {
+        if (flag)
+        {
+            StaticChatHub.conids.Add(userS.email, myConId);
+            flag = false;
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)///  
     {
 
         if (firstRender)
@@ -140,7 +147,7 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-                StaticChatHub.conids.Add(userS.email, myConId);
+                setconid();
               
                 StateHasChanged();
             }
