@@ -68,6 +68,7 @@
     private bool isUserReadOnly;
     public bool Isconnected => hubConnection.State == HubConnectionState.Connected;
     private string myConId = "";
+    private bool flag = true;
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
@@ -83,19 +84,29 @@
         await hubConnection.StartAsync();
 
         myConId = hubConnection.ConnectionId;
-      
+
+    }
+
     public async Task SendToFriend()
     {
+        if (userS != null)
+        {
+            if (await StaticChatHub.IfKeyHasVal(userS.email))
+            {
+                flag = true;
+                await setconid();
+            }
+        }
         if(!string.IsNullOrEmpty(massageinput)&& hubConnection!=null)
         {
-          
+
             if (StaticChatHub.conids != null)
             {
-               
-               
+
+
                 if (await StaticChatHub.IsMyFriendHere(friend.email) > 0)
                 {
-                    
+
 
                     List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
                     await hubConnection.SendAsync("SendMessageToFriend", myfreindconidS,massageinput,userS);
@@ -121,7 +132,7 @@
             StateHasChanged();
         }
     }
-  
+
     // public async ValueTask DisposeAsync()
     //  {
     //      if(hubConnection is not null)
@@ -134,8 +145,9 @@
     {
         if (flag)
         {
-            StaticChatHub.conids.Add(userS.email, myConId);
+          StaticChatHub.conids.Add(userS.email, myConId);
             flag = false;
+            StateHasChanged();
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  
@@ -147,8 +159,8 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-                setconid();
-              
+               await setconid();
+
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");
