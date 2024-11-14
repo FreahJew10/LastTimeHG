@@ -83,20 +83,20 @@
         });
         await hubConnection.StartAsync();
 
-        myConId = hubConnection.ConnectionId;
+        myConId =hubConnection.ConnectionId;
 
     }
 
     public async Task SendToFriend()
     {
-        if (userS != null)
-        {
-            if (await StaticChatHub.IfKeyHasVal(userS.email))
-            {
-                flag = true;
-                await setconid();
-            }
-        }
+        // if (userS != null)
+        // {
+        //     if (await StaticChatHub.IfKeyHasVal(userS.email))
+        //     {
+        //         flag = true;
+        //         await setconid();
+        //     }
+        // }
         if(!string.IsNullOrEmpty(massageinput)&& hubConnection!=null)
         {
 
