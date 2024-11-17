@@ -76,14 +76,13 @@
         .WithAutomaticReconnect()
         .Build();
 
-        hubConnection.On<Person,string>("ReceiveMassage", async (me,message) =>
+        hubConnection.On<Person, string>("ReceiveMassage", async (me, message) =>
         {
-            usermessages.Add(new SignalrPersonMessage {person=me, massage = message, curruntperson = me == userS, datesent = DateTime.Now });
+            usermessages.Add(new SignalrPersonMessage { person = me, massage = message, curruntperson = me == userS, datesent = DateTime.Now });
             await InvokeAsync(StateHasChanged);
         });
         await hubConnection.StartAsync();
 
-        myConId =hubConnection.ConnectionId;
 
     }
 
