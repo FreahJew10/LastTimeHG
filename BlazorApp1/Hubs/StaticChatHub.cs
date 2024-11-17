@@ -6,7 +6,7 @@ namespace BlazorApp1.Hubs
     {
         public static Dictionary<string, string> conids { get; set; } = new Dictionary<string, string>();
 
-        public static async Task<int> IsMyFriendHere(string email)
+        public static Task<int> IsMyFriendHere(string email)
         {
             int count = 0;
             foreach (KeyValuePair<string, string> entry  in conids)
@@ -17,7 +17,7 @@ namespace BlazorApp1.Hubs
                }
             
             }
-            return count;
+            return Task.FromResult(count);
 
         }
         public static async Task<List<string>> GiveMyFriendCon(string email)
@@ -37,7 +37,7 @@ namespace BlazorApp1.Hubs
            return list;
             
         }
-        public static async Task< bool> IfKeyHasVal(string key) //בודק אם עבור מפתח מסויים שיש בספרייה יש גם ערך (נעשה בגלל בעיות שילוב של פעולות שפועלות בפתיחת הדף)
+        public static Task< bool> IfKeyHasVal(string key) //בודק אם עבור מפתח מסויים שיש בספרייה יש גם ערך (נעשה בגלל בעיות שילוב של פעולות שפועלות בפתיחת הדף)
                                            // onafterrender&&OnInitializedAsync
         {
 
@@ -45,12 +45,12 @@ namespace BlazorApp1.Hubs
             {
                 if (entry.Key == key)
                 {
-                    if(string.IsNullOrEmpty(entry.Value))
-                        return true;
+                    if( string.IsNullOrEmpty(entry.Value))
+                        return Task.FromResult(true);
                 }
 
             }
-            return false;
+            return Task.FromResult(false);
 
         } 
     }

@@ -127,7 +127,7 @@
         else
         {
             PersonStudentDB personStudentDB = new PersonStudentDB();
-            friend = (Person)await personStudentDB.SelectByPkAsync(id);
+            friend = await personStudentDB.SelectByPkAsync(id);
             // pLst = await productDB.GetBestProductAsync(4);
             StateHasChanged();
         }
