@@ -13,10 +13,7 @@
     <div class="cont">
         <div class="form sign-in">
             <h2>Welcome back student </h2>
-        <label>
-            <span>first name</span>
-            <input type="email" @bind-value="firstName" />
-        </label>
+       
             <label>
                 <span>Email</span>
                 <input type="email" @bind-value="email" />
@@ -46,10 +43,7 @@
             </div>
             <div class="form sign-up">
             <h2>Welcome back teacher </h2>
-            <label>
-                <span>first name</span>
-                <input type="email" @bind-value="firstName" />
-            </label>
+           
             <label>
                 <span>Email</span>
                 <input type="email" @bind-value="email" />
@@ -402,7 +396,7 @@
         
         studentDB studentDB = new studentDB();
       // await GetCurrentUserId();
-        Student student = await studentDB.LoginAsync(firstName, email, password);
+        Student student = await studentDB.LoginAsync( email, password);
         if (student!=null)
         {
 
@@ -432,7 +426,7 @@
     public async Task LogInToTeacher()
     {
         teacherDB teacherDB = new teacherDB();
-        teacher teacher = await teacherDB.LoginAsync(firstName,email,password) ;
+        teacher teacher = await teacherDB.LoginAsync(email,password) ;
         if (teacher!=null)
         {
             await MySession.SetAsync("teacher", teacher);

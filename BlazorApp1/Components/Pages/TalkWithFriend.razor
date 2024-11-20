@@ -16,12 +16,12 @@
     <h1>@friend.first_name</h1>
 
 
-    <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded "style="height:500px">
-        @if(!usermessages.Any())
+    <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
+        @if (!usermessages.Any())
         {
             <p>there are no massges yet, talk! </p>
         }
-        @foreach(SignalrPersonMessage signalrPersonMessage in usermessages)
+        @foreach (SignalrPersonMessage signalrPersonMessage in usermessages)
         {
             <div class="row mb-3 d-flex">
                 <div class="card shadow" style="width:18rem">
@@ -40,10 +40,10 @@
 
 
     </div>
-    <div class="container" >
+    <div class="container">
         <div class="row">
             <div class="col-6">
-                <textarea @bind="massageinput" class="form-control"  placeholder="start ttyping..."></textarea>
+                <textarea @bind="massageinput" class="form-control" placeholder="start ttyping..."></textarea>
             </div>
             <div class="col-3">
                 <button type="button" @onclick="SendToFriend" disabled="@(!Isconnected)" class="btn-primary">send</button>
@@ -52,7 +52,7 @@
         </div>
 
 
- 
+
     </div>
 }
 <script src="/js/signalr/dist/browser/signalr.js"></script>
@@ -84,6 +84,9 @@
         await hubConnection.StartAsync();
 
 
+        myConId = hubConnection.ConnectionId;
+        Console.WriteLine(myConId);
+
     }
 
     public async Task SendToFriend()
@@ -96,19 +99,20 @@
         //         await setconid();
         //     }
         // }
-        if(!string.IsNullOrEmpty(massageinput)&& hubConnection!=null)
+
+        if (!string.IsNullOrEmpty(massageinput) && hubConnection != null)
         {
 
             if (StaticChatHub.conids != null)
             {
 
 
-                if (await StaticChatHub.IsMyFriendHere(friend.email) > 0)
+                if (await StaticChatHub.IsMyFriendHereOrme(friend.email) > 0)
                 {
 
 
                     List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
-                    await hubConnection.SendAsync("SendMessageToFriend", myfreindconidS,massageinput,userS);
+                    await hubConnection.SendAsync("SendMessageToFriend", myfreindconidS, massageinput, userS);
                 }
                 // await hubConnection.SendAsync("SendMessage",friend, massageinput);
                 // await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);
@@ -125,9 +129,15 @@
             id = 0;
         else
         {
+            myConId = hubConnection.ConnectionId;
             PersonStudentDB personStudentDB = new PersonStudentDB();
             friend = await personStudentDB.SelectByPkAsync(id);
             // pLst = await productDB.GetBestProductAsync(4);
+            if(userS!=null&&await StaticChatHub.IsMyFriendHereOrme(userS.email) ==0)
+            {
+
+                StaticChatHub.conids.Add(userS.email, myConId);
+            }
             StateHasChanged();
         }
     }
@@ -140,25 +150,35 @@
     //      }
 
     //  }
+
+
     public async Task setconid()
     {
         if (flag)
         {
-          StaticChatHub.conids.Add(userS.email, myConId);
+            //if(StaticChatHub.)
+            Console.WriteLine(myConId);
+            StaticChatHub.conids.Add(userS.email, myConId);
             flag = false;
-            StateHasChanged();
+
         }
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender)///  
+    protected override async Task OnAfterRenderAsync(bool firstRender)///
     {
 
         if (firstRender)
         {
+            Console.WriteLine("first re");
             var user1 = await MySession.GetAsync<Student>("student");
             if (user1.Success)
             {
                 userS = user1.Value;
-               await setconid();
+                
+                
+
+                if (!string.IsNullOrEmpty(myConId))
+                    await setconid();
+
 
                 StateHasChanged();
             }
@@ -168,7 +188,12 @@
                 userT = user2.Value;
                 StateHasChanged();
             }
-           
+
         }
+        // else if (!string.IsNullOrEmpty(myConId))
+        // {
+        //     await setconid();
+        // }
+
     }
 }

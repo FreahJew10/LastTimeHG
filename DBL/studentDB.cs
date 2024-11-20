@@ -13,11 +13,11 @@ namespace DBL
     public class studentDB : BaseDB<Student>
     {
 
-        public async Task<Student> LoginAsync(string first_name, string email, string password)
+        public async Task<Student> LoginAsync( string email, string password)
         {
-            string sql = @"SELECT * FROM mylastyear.student where first_name=@first_name AND email=@email AND password=@password;";
+            string sql = @"SELECT * FROM mylastyear.student where email=@email AND password=@password;";
             Dictionary<string, object> chackit = new Dictionary<string, object>();
-            chackit.Add("first_name", first_name);
+            
             chackit.Add("email", email);
             chackit.Add("password", password);
             List<Student> students = await SelectAllAsync(sql, chackit);

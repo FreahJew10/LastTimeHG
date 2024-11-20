@@ -21,11 +21,11 @@ namespace DBL
             int num = await base.UpdateAsync(fillValues, filterValues);
             return (num > 0);
         }
-        public async Task<teacher> LoginAsync(string first_name, string email, string password)
+        public async Task<teacher> LoginAsync( string email, string password)
         {
-            string sql = @"SELECT * FROM mylastyear.teachers where first_name=@first_name AND email=@email AND password=@password;";
+            string sql = @"SELECT * FROM mylastyear.teachers where email=@email AND password=@password;";
             Dictionary<string, object> chackit = new Dictionary<string, object>();
-            chackit.Add("first_name", first_name);
+            
             chackit.Add("email", email);
             chackit.Add("password", password);
             List<teacher> teachers = await SelectAllAsync(sql, chackit);
