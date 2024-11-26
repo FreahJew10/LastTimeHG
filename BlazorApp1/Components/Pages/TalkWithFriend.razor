@@ -16,7 +16,44 @@
     <h1>@friend.first_name</h1>
 
 
-    @* <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
+
+    <style>
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .message {
+            max-width: 60%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            position: relative;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .incoming {
+            background-color: #e4e6eb;
+            align-self: flex-start;
+        }
+
+        .outgoing {
+            background-color: #0084ff;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .message .timestamp {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
+        }
+    </style>
+ @*   <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
         @if (!usermessages.Any())
         {
             <p>there are no massges yet, talk! </p>

@@ -154,7 +154,34 @@
                         @if (userS != null)
                         {
                             <div class="w3-container">
-                                <QuickGrid Class="table table-striped"
+                                <table class="table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>talk</th>
+                                            <th>name</th>
+                                            <th>email</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (Person person in userS.friends)
+                                        {
+                                            <tr>
+                                                @if(await friendsD.AreWeBothFriends(userS.Id,person.Id)==1)
+                                                {
+                                                    <td><a href="ShowProduct/@person.userid.ToString()"> talk</a></td>
+                                                <td>@person.first_name</td>
+                                                
+                                                <td>
+                                                   @person.email
+                                                </td>
+                                                }
+                                            </tr>
+                                        }
+                                        
+                                    </tbody>
+                                </table>
+                              @*   <QuickGrid Class="table table-striped"
                                 Items=@userS.friends.AsQueryable() >
 
                                     <PropertyColumn Title="first_name" Property="@(x=>x.first_name)" Sortable="true" ></PropertyColumn>
@@ -163,6 +190,8 @@
                                     <PropertyColumn Title="email" Property="@(x=>x.email)"></PropertyColumn>
                                     @foreach (Person person in userS.friends)
                                     {
+                                        if (await friendsD.AreWeBothFriends(userS.Id, person.Id) == 1)
+                                        {
                                         <TemplateColumn Title="talk"><a href="ShowProduct/@person.Id.ToString()">Open</a></TemplateColumn>
                                     }
                                 </QuickGrid>
