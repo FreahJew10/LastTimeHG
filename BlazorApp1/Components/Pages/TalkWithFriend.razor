@@ -15,28 +15,156 @@
 {
     <h1>@friend.first_name</h1>
 
-
+    <div class="chat-container">
+        @foreach (SignalrPersonMessage message in usermessages)
+        {
+            if (message.person == userS)
+            {
+                string m = message.massage;
+                DateTime dateTime = message.datesent;
+                <div class="message outgoing">
+                    <p> @m</p>
+                    <span class="timestamp">@dateTime</span>
+                </div>
+            }
+            else if(message.person.Id==id)
+            {
+               
+                    string m = message.massage;
+                    DateTime dateTime = message.datesent;
+                    <div class="message incoming">
+                        <p>@m</p>
+                        <span class="timestamp">@dateTime</span>
+                    </div>
+            
+      
+            }
+        }
+        <!-- Input Area -->
+        <div class="input-container">
+            <input @bind="massageinput" class="message-input" placeholder="Type a message..." />
+            <button @onclick="SendToFriend" class="send-button">Send</button>
+        </div>
+    </div>
 
     <style>
-        .chat-container {
+        .input-container {
             display: flex;
-            flex-direction: column;
             gap: 10px;
-            padding: 20px;
+            margin-top: 15px;
+            width: 100%;
         }
 
+        .message-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .send-button {
+            background-color: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .send-button:hover {
+                background-color: #005bb5;
+            }
         .message {
-            max-width: 60%;
-            padding: 10px 15px;
-            border-radius: 20px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+        /////////
+        .incoming::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -10px;
+            width: 10px;
+            height: 10px;
+            background-color: #e4e6eb;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        .outgoing::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: -10px;
+            width: 10px;
+            height: 10px;
+            background-color: #0084ff;
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
+
+        /////////////////
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+
+        .chat-container {
+            CONTAIN-INTRINSIC-BLOCK-SIZE: AUTO 100PX;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 1200px;
+            padding: 50px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            position: relative;
+            align-content: space-around;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+
+
+        .message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
             position: relative;
             font-family: Arial, sans-serif;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .incoming {
             background-color: #e4e6eb;
             align-self: flex-start;
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            position: relative;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
         }
 
         .outgoing {
@@ -46,11 +174,12 @@
         }
 
         .message .timestamp {
-            font-size: 10px;
+            font-size: 9px;
             color: #666;
-            margin-top: 5px;
+            margin-top: 3px;
             display: block;
             text-align: right;
+        }
         }
     </style>
  @*   <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
@@ -76,8 +205,8 @@
         }
 
 
-    </div>
-    <div class="container">
+    </div> *@
+    @* <div class="container">
         <div class="row">
             <div class="col-6">
                 <textarea @bind="massageinput" class="form-control" placeholder="start ttyping..."></textarea>
@@ -90,7 +219,7 @@
 
 
 
-    </div>
+    </div> *@
 }
 <script src="/js/signalr/dist/browser/signalr.js"></script>
 <script src="/js/chat.js"></script>
@@ -149,7 +278,8 @@
 
 
                     List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
-                    await hubConnection.SendAsync("SendMessageToFriend", myfreindconidS, massageinput, userS);
+                    usermessages.Add(new SignalrPersonMessage { person = userS, massage = massageinput, curruntperson = true, datesent = DateTime.Now });
+                await hubConnection.SendAsync("SendMessageToFriend", myfreindconidS, massageinput, userS);
                 }
                 // await hubConnection.SendAsync("SendMessage",friend, massageinput);
                 // await hubConnection.SendAsync("MessageBetweenFriends", userS as Person,s,massageinput);

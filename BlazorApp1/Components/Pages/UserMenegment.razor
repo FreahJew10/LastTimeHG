@@ -10,7 +10,7 @@
 {
 
 <head>
-    <title>W3.CSS Template</title>
+    <title>wait a minute</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -118,11 +118,11 @@
                         
                             @if (userS != null)
                             {
-                                <button class="button-28" role="button" @onclick="UpdateS"> doit</button>
+                                <button class="button-28" role="button" @onclick="UpdateT"> doit</button>
                             }
                             else
                             {
-                                <button class="button-28" role="button" @onclick="UpdateS"> Button 28</button>
+                                <button class="button-28" role="button" @onclick="UpdateS"> doit 28</button>
                             }
                             <hr>
 
@@ -153,6 +153,7 @@
                     </div>
                         @if (userS != null)
                         {
+
                             <div class="w3-container">
                                 <table class="table w-100">
                                     <thead>
@@ -164,18 +165,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (Person person in userS.friends)
+                                        @foreach (Person person in my_friends_that_im_their_friend_to)
                                         {
+                                           
                                             <tr>
-                                                @if(await friendsD.AreWeBothFriends(userS.Id,person.Id)==1)
-                                                {
-                                                    <td><a href="ShowProduct/@person.userid.ToString()"> talk</a></td>
+                                               
+                                                <td><a href="ShowProduct/@person.Id.ToString()"> talk</a></td>
                                                 <td>@person.first_name</td>
                                                 
                                                 <td>
                                                    @person.email
                                                 </td>
-                                                }
+                                                
                                             </tr>
                                         }
                                         
@@ -188,13 +189,15 @@
 
                                     <PropertyColumn Title="last name" Property="@(x=>x.last_name)" Sortable="true"></PropertyColumn>
                                     <PropertyColumn Title="email" Property="@(x=>x.email)"></PropertyColumn>
-                                    @foreach (Person person in userS.friends)
+                                    @* <PropertyColumn Title="email" Property="@(x=>x.id)"<a href="ShowProduct/@x.ToString()">></PropertyColumn> *@
+                                   @*  @foreach (Person person in userS.friends)
                                     {
-                                        if (await friendsD.AreWeBothFriends(userS.Id, person.Id) == 1)
+                                        if (await friendsD.AreWeBothFriends(userS.Id, person.Id)==1)
                                         {
-                                        <TemplateColumn Title="talk"><a href="ShowProduct/@person.Id.ToString()">Open</a></TemplateColumn>
+                                            <TemplateColumn Title="talk"><a href="ShowProduct/@person.Id.ToString()">Open</a></TemplateColumn>
+                                        }
                                     }
-                                </QuickGrid>
+                                </QuickGrid> *@ 
                             </div>
                         }
                         <div class="w3-container">
@@ -297,9 +300,11 @@
     public Student userS = null;
     public teacher userT = null;
     public Student basicuser = null;
-
+    public  friendsDB friendsD = new friendsDB();
     string new_password = "";
     string repeat_password = "";
+    Person person = new Person();
+    List<Person> my_friends_that_im_their_friend_to = new List<Person>();
     public async Task UpdateS()
     {
         Student student = new Student();
@@ -308,17 +313,18 @@
         student.first_name = userS.first_name;
         student.last_name = userS.last_name;
         studentDB s = new studentDB();
+
         if (new_password!=""&&repeat_password!="")
         {
-           
+
             if (new_password==repeat_password)
             {
                 Console.WriteLine("yy");
                 student.password = new_password;
-                s.updateAsync(student);
-                 
+                await s.updateAsync(student);
+
                 await js.InvokeVoidAsync("alert", @$"nice");
-              
+
             }
             else
             {
@@ -342,16 +348,16 @@
         teacher.email = userS.email;
         teacher.Id = userS.Id;
         teacher.first_name = userS.first_name;
-       teacher.last_name = userS.last_name;
+        teacher.last_name = userS.last_name;
         teacherDB s = new teacherDB();
         if (new_password != "" && repeat_password != "")
         {
-            
+
             if (new_password == repeat_password)
             {
-              
+
                 teacher.password = new_password;
-                s.updateAsync(teacher);
+                await   s.updateAsync(teacher);
 
                 await js.InvokeVoidAsync("alert", @$"nice");
 
@@ -382,6 +388,7 @@
             {
                 userS = user1.Value;
                 basicuser = user1.Value;
+                my_friends_that_im_their_friend_to =await friendsD.GiveAll_AreWeBothFriends_(userS);
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");

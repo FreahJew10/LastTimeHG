@@ -9,7 +9,17 @@ namespace DBL
 {
     public class friendsDB : BaseDB<friends>
     {
-
+        public async Task<List<Person>> GiveAll_AreWeBothFriends_(Student me)//מביאה את כל החברים שלי שאני גם חבר שלהם
+        {
+            List<Person> we_are_both_friends = new List<Person>();
+            foreach(Person friend in me.friends)
+            {
+                Person temp =await GiveMyFriend(me.Id, friend.Id);
+                if (temp!=null)
+                {
+                    we_are_both_friends.Add(temp);
+                }
+            
             
             }
 
@@ -33,7 +43,7 @@ namespace DBL
             }
             return 0;
         }
-        private async Task<bool> DoesRelationshipExist(int mystudentid, int friendid)
+        private async Task<bool> DoesRelationshipExist(int mystudentid, int friendid)//האם הוא חבר שלי?
         {
             string sql = @$"Select
             mylastyear.friends.studentid,
@@ -44,6 +54,8 @@ namespace DBL
             mylastyear.friends.studentid = @mystudentid And
             mylastyear.friends.studentfriendId = @friendid";
             Dictionary<string,object> data = new Dictionary<string,object>();
+            data.Add("mystudentid", mystudentid);
+            data.Add("friendid",friendid);
             List<friends> friends = await SelectAllAsync(sql, data);
             if (friends.Count == 1)
                 return  true;
@@ -54,7 +66,7 @@ namespace DBL
         {
             List<friends> friends = new List<friends>();
             foreach (object[] row in rows)
-        {
+            {
                 friends student = await CreateModelAsync(row);
                 friends.Add(student);
 
@@ -62,7 +74,7 @@ namespace DBL
             return friends;
         }
 
-        protected async override Task<friends> CreateModelAsync(object[] row)
+        protected  override async Task<friends> CreateModelAsync(object[] row)
         {
             friends myfriend = new friends();
             myfriend.studentid = int.Parse(row[0].ToString());

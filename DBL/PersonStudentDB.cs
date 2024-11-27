@@ -10,7 +10,7 @@ namespace DBL
     public class PersonStudentDB : BaseDB<Person>
     {
       
-        public async Task<Person> SelectByPkAsync(int id)
+        public async Task<Person> SelectByPkAsync(int id)//מביאה חבר לפי מפתח ראשי
         {
             string q = $@"Select
              student.first_name,
