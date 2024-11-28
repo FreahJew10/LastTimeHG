@@ -7,17 +7,45 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\lib\**" />
+    <Compile Remove="wwwroot\try\js\**" />
+    <Content Remove="wwwroot\lib\**" />
+    <Content Remove="wwwroot\try\js\**" />
+    <EmbeddedResource Remove="wwwroot\lib\**" />
+    <EmbeddedResource Remove="wwwroot\try\js\**" />
+    <None Remove="wwwroot\lib\**" />
+    <None Remove="wwwroot\try\js\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DBL\DBL.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\lib\" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
+    <None Include="wwwroot\try\assets\fonts\flexslider-icon.svg" />
+    <None Include="wwwroot\try\assets\fonts\fontawesome-webfont.svg" />
+    <None Include="wwwroot\try\assets\fonts\fontawesome-webfont.woff2" />
+    <None Include="wwwroot\try\assets\fonts\slick.svg" />
+    <None Include="wwwroot\try\assets\js\custom.js" />
+    <None Include="wwwroot\try\assets\js\isotope.min.js" />
+    <None Include="wwwroot\try\assets\js\lightbox.js" />
+    <None Include="wwwroot\try\assets\js\owl-carousel.js" />
+    <None Include="wwwroot\try\assets\js\slick-slider.js" />
+    <None Include="wwwroot\try\assets\js\tabs.js" />
+    <None Include="wwwroot\try\assets\js\video.js" />
+    <None Include="wwwroot\try\vendor\bootstrap\js\bootstrap.min.js" />
+    <None Include="wwwroot\try\vendor\jquery\jquery.js" />
+    <None Include="wwwroot\try\vendor\jquery\jquery.min.js" />
+    <None Include="wwwroot\try\vendor\jquery\jquery.min.map" />
+    <None Include="wwwroot\try\vendor\jquery\jquery.slim.js" />
+    <None Include="wwwroot\try\vendor\jquery\jquery.slim.min.js" />
+    <None Include="wwwroot\try\vendor\jquery\jquery.slim.min.map" />
   </ItemGroup>
 
 </Project>
