@@ -5,7 +5,7 @@ namespace BlazorApp1.Hubs
     public static class StaticChatHub
     {
         public static Dictionary<string, string> conids { get; set; } = new Dictionary<string, string>();
-
+        public static Dictionary<string, List<string>> multyconidFORnotifications { get; set; } = new Dictionary<string, List<string>>();
         public static async Task<int> IsMyFriendHereOrme(string email)
         {
             int count = 0;

@@ -9,14 +9,33 @@ namespace DBL
 {
     public class PersonStudentDB : BaseDB<Person>
     {
-      
+        public async Task<List<Person>> SelectstudentByString(string pram)//מוצא אנשים לפי חיפוש 
+        {
+            List<Person> list = new List<Person>();
+            string sql = $@"Select
+    
+    mylastyear.student.first_name,
+    mylastyear.student.last_name,
+    mylastyear.student.email,
+mylastyear.student.studentid
+From
+    mylastyear.student
+Where
+    (mylastyear.student.first_name RLike @pram) Or
+    (mylastyear.student.email RLike @pram)";
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            properties.Add("pram", pram);
+            list = await SelectAllAsync(sql, properties);
+            return list;
+
+        }
         public async Task<Person> SelectByPkAsync(int id)//מביאה חבר לפי מפתח ראשי
         {
             string q = $@"Select
              student.first_name,
              student.last_name,
              student.email,
-             
+             student1.studentid
              student.studentid As studentid1
          From
          mylastyear.student

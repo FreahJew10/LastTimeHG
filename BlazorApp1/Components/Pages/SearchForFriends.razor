@@ -1,0 +1,25 @@
+﻿@page "/SearchForFriends"
+@using Models
+@using DBL
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+<h3>SearchForFriends</h3>
+
+@code {
+    public Student userS = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
+    {
+        if (firstRender)
+        {
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+                
+                StateHasChanged();
+            }
+        }
+    }
+}

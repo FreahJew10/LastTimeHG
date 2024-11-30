@@ -216,7 +216,6 @@ a.menu-link { display: none; }
     border: 2px solid transparent;
     transition: all 0.5s;
 }
-}
 
 .main-menu li.has-submenu a:after {
     content: '\f107';
