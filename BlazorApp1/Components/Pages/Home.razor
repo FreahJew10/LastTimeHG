@@ -613,7 +613,7 @@
                                             <td>
                                                 @person.email
                                             </td>
-                                            <td>
+                                           @*  <td>
                                                 @kindoffriend[0].ToString();
 
                                             </td>
@@ -624,11 +624,11 @@
                                             <td>
                                                 @kindoffriend[2].ToString();
 
-                                            </td>
+                                            </td> *@
                                             @if(!kindoffriend[0])
                                             {
 
-                                                @* <td>< class="btn-danger" @onclick="@(AddAsMyFriend(person))"></></td> *@
+                                                <td><a href="SearchForFriends/@person.Id.ToString()"> show</a></td>
                                             }
                                         </tr>
                                     }

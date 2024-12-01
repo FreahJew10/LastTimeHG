@@ -32,13 +32,13 @@ Where
         public async Task<Person> SelectByPkAsync(int id)//מביאה חבר לפי מפתח ראשי
         {
             string q = $@"Select
-             student.first_name,
-             student.last_name,
-             student.email,
-             student1.studentid
-             student.studentid As studentid1
-         From
-         mylastyear.student
+    
+    mylastyear.student.first_name,
+    mylastyear.student.last_name,
+    mylastyear.student.email,
+mylastyear.student.studentid
+From
+    mylastyear.student
          Where
          mylastyear.student.studentid = @studentid";
             Dictionary<string, object> p = new Dictionary<string, object>();
