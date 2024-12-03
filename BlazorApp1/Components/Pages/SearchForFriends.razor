@@ -1,12 +1,15 @@
 ﻿@page "/SearchForFriends/{Id:int}"
+@inject NavigationManager navigationManager
 @using Models
 @using DBL
 @inject IJSRuntime js
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage MySession
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using Hubs
 <h3>SearchForFriends</h3>
-@if(userS!=null)
+@if(friend!=null)
 {
     <section class="vh-100">
         <div class="container py-5 h-100">
@@ -34,9 +37,24 @@
                                     <i class="fab fa-skype fa-lg"></i>
                                 </button>
                             </div>
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
-                                Message now
-                            </button>
+                            @if (arewebothfriends==0)
+                            {
+                                <button type="button"  data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
+                                    add as friend and send request
+                                </button>
+                            }
+                            else if(arewebothfriends==3)
+                            {
+
+                            }
+                            else if(arewebothfriends==2)
+                            {
+
+                            }
+                            else
+                            {
+                                
+                            }
                             <div class="d-flex justify-content-between text-center mt-5 mb-2">
                                 <div>
                                     <p class="mb-2 h5">8471</p>
@@ -59,27 +77,87 @@
         </div>
     </section>
 }
+@if(userS!=null)
+{
+    <h2>@conid</h2>
+}
 
 @code {
-        [Parameter] public int id { get; set; }
+    [Parameter] public int id { get; set; }
     public Student userS = null;
-   public Person friend = null;
+    public Person friend = null;
+    public friendsDB friendsDB=new friendsDB();
+    int arewebothfriends;
+    private HubConnection hubConnection;
+    string notification = "";
+    List<string> strings = new List<string>();
+    string conid = "";
+    bool flag = true;
+    List<string> tryi = new List<string>(); 
+    public bool Isconnected => hubConnection.State == HubConnectionState.Connected;
+    PersonStudentDB personStudentDB = new PersonStudentDB();
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+       .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+       .WithAutomaticReconnect()
+       .Build();
+
+        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
+        {
+            tryi.Add(@$"{email} sent {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
+        await hubConnection.StartAsync();
+
+        conid=hubConnection.ConnectionId;
+
+
+
+
+    }
+
+    public async Task AddAsFriendAndSendRequest()
+    {
+        List<string> friendconIDs =await StaticChatHub.GiveMyFriendConFORnotifications(friend.email);
+        await hubConnection.SendAsync("SendNotificationToInformIAdedYouAsFriend", friendconIDs, "added you as friend", userS.email);
+    }
     protected override async void OnParametersSet()
     {
         if (id == null)
             id = 0;
         else
         {
-            
-            PersonStudentDB personStudentDB = new PersonStudentDB();
+
+
+
             friend = await personStudentDB.SelectByPkAsync(id);
             // pLst = await productDB.GetBestProductAsync(4);
-            if (userS != null)
-            {
+            if (userS != null && await StaticChatHub.IsMyFriendHereOrme(userS.email) == 0)
+            { 
+                conid = hubConnection.ConnectionId;
+                List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
+                strings.Add(conid);
+                StaticChatHub.multyconidFORnotifications[userS.email] = strings;
 
-                // StaticChatHub.conids.Add(userS.email, myConId);
             }
+
+
             StateHasChanged();
+        }
+    }
+    public async Task setconid()
+    {
+        if (flag)
+        {
+            //if(StaticChatHub.)
+
+            conid = hubConnection.ConnectionId;
+            List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
+            strings.Add(conid);
+            StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+            flag = false;
+
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
@@ -90,7 +168,11 @@
             if (user1.Success)
             {
                 userS = user1.Value;
+                if (!string.IsNullOrEmpty(conid))
+                    await setconid();
                 
+
+                arewebothfriends = await friendsDB.AreWeBothFriends(userS.Id, id);
                 StateHasChanged();
             }
         }

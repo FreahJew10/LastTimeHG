@@ -6,18 +6,33 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public class @event
+    public class Event
     {
-        public @event()
+        public Event()
         { }
-        public @event(string eventname, DateTime date, int teacherid)
+        public Event(string eventname, DateTime date, int teacherid,string kindofevent)
         {
             this.eventname = eventname;
             this.date = date;
             this.teacherid = teacherid;
-
+            this.kinofevent = kindofevent;
         }
-        public @event(string eventname, int teacherid)
+        public Event(string eventname, DateTime date, string kindofevent)
+        {
+            this.eventname = eventname;
+            this.date = date;
+            this.teacherid = 0;
+            this.kinofevent = kindofevent;
+        }
+        public Event(string eventname, string kindofevent)
+        {
+            DateTime date = DateTime.Now;
+            this.eventname = eventname;
+            this.date = date;
+            this.teacherid = 0;
+            this.kinofevent= kindofevent;
+        }
+        public Event(string eventname, int teacherid)
         {
             DateTime date = DateTime.Now;
             this.eventname = eventname;
@@ -29,6 +44,7 @@ namespace Models
         public string eventname { get; set; }
         public DateTime date { get; set; }
         public int teacherid { get; set; }
+        public string kinofevent { get; set; }
 
 
     }

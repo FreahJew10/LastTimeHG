@@ -6,6 +6,44 @@ namespace BlazorApp1.Hubs
     {
         public static Dictionary<string, string> conids { get; set; } = new Dictionary<string, string>();
         public static Dictionary<string, List<string>> multyconidFORnotifications { get; set; } = new Dictionary<string, List<string>>();
+
+        public static async Task<List<string>> GiveMyFriendConFORnotifications(string email)// multyconidFORnotifications עבור 
+        {
+            List<string> list = new List<string>();
+            if (await IsMyFriendHereOrmeFORnotifications(email) > 0)
+            {
+                foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotifications)
+                {
+                    if (entry.Key == email)
+                    {
+                        foreach(string con in  entry.Value)
+                        { 
+                        list.Add(con);
+                        }
+                    }
+
+                }
+            }
+            return list;
+
+        }
+        public static async Task<int> IsMyFriendHereOrmeFORnotifications(string email)//עבורmultyconidFORnotifications 
+        {
+            int count = 0;
+            foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotifications)
+            {
+                if (entry.Key == email)
+                {
+                    count++;
+                }
+
+            }
+            return await Task.FromResult(count);
+
+        }
+       
+
+
         public static async Task<int> IsMyFriendHereOrme(string email)
         {
             int count = 0;

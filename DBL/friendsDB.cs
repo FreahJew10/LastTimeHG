@@ -9,7 +9,23 @@ namespace DBL
 {
     public class friendsDB : BaseDB<friends>
     {
-       
+
+
+        public async Task<bool> insertFriends(friends friends)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("studentid", friends.studentid);
+            data.Add("studentfriendId", friends.studentfriendId);
+           
+
+            int num = await base.InsertAsync(data);
+            if (num > 0)
+            {
+                return true;
+            }
+            else { return false; }
+
+        }
         public async Task<List<Person>> GiveAll_AreWeBothFriends_(Student me)//מביאה את כל החברים שלי שאני גם חבר שלהם
         {
             List<Person> we_are_both_friends = new List<Person>();
@@ -42,7 +58,13 @@ namespace DBL
             {
                 return 1;
             }
-            return 0;
+            else if(await DoesRelationshipExist(mystudentid, friendid))//רק אני חבר שלו
+                { return 2; }
+            else if(await DoesRelationshipExist(friendid, mystudentid))//vהוא חבר שלי ואני לא שלו
+            {
+                return 3;
+            }
+            return 0;//לא חברים בכלל
         }
         public async Task<bool> DoesRelationshipExist(int mystudentid, int friendid)//האם הוא חבר שלי?
         {

@@ -31,8 +31,13 @@ namespace BlazorApp1.Hubs
 
             await Clients.Clients(friendcon[0]).SendAsync("ReceiveMassage",me,massage);
         }
+        public async Task SendNotificationToInformIAdedYouAsFriend(List<string>tourconid,string notification,string email)
+        {
+            IReadOnlyList<string> friendcon = tourconid.ToList();
+            await Clients.Clients(tourconid).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+        }
 
-        
+
 
         public string GetConnectionId()
         {
