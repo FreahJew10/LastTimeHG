@@ -48,7 +48,7 @@
                     @if (userS != null)
                     {
                         <li><a href="#section1">hello! @userS.first_name</a></li>
-                        <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">SearchForFriends</a></li>
+                        @* <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">SearchForFriends</a></li> *@
                     }
                     else if (userT != null)
                     {
@@ -66,7 +66,7 @@
 
                             </ul>
                         </li>
-                        <li><a href="#section4">Courses</a></li>
+                      @*   <li><a href="#section4">Courses</a></li> *@
                         <!-- <li><a href="#section5">Video</a></li> -->
                         <li><a href="#section5">register</a></li>
                     }
@@ -792,7 +792,7 @@
         .WithAutomaticReconnect()
         .Build();
 
-        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
+        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email,notification) =>
         {
             this.notification = email + " " + notification;
             await js.InvokeVoidAsync("alert", @$"{this.notification}");
