@@ -33,7 +33,7 @@ Where
         {
             string q = $@"Select
     
-    mylastyear.student.first_name,
+     mylastyear.student.first_name,
     mylastyear.student.last_name,
     mylastyear.student.email,
 mylastyear.student.studentid
