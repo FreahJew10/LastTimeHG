@@ -20,11 +20,11 @@
                         <div class="card-body text-center">
                             <div class="mt-3 mb-4">
                                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
-                                     class="rounded-circle img-fluid" style="width: 100px;" />
+                                class="rounded-circle img-fluid" style="width: 100px;" />
                             </div>
                             <h4 class="mb-2">@friend.first_name @friend.last_name</h4>
                             <p class="text-muted mb-4">
-                               @friend.email
+                                @friend.email
                             </p>
                             <div class="mb-4 pb-2">
                                 <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-floating">
@@ -53,7 +53,7 @@
                             }
                             else
                             {
-                                
+
                             }
                             <div class="d-flex justify-content-between text-center mt-5 mb-2">
                                 <div>
@@ -136,9 +136,20 @@
             if (userS != null && await StaticChatHub.IsMyFriendHereOrme(userS.email) == 0)
             { 
                 conid = hubConnection.ConnectionId;
-                List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
-                strings.Add(conid);
-                StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+                try
+                {
+                    if (await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
+                    {
+                        conid = hubConnection.ConnectionId;
+                        List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
+                        strings.Add(conid);
+                        StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+                    }
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
             }
 
@@ -151,11 +162,20 @@
         if (flag)
         {
             //if(StaticChatHub.)
-
-            conid = hubConnection.ConnectionId;
-            List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
-            strings.Add(conid);
-            StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+            try
+            {
+                if (await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
+                {
+                    conid = hubConnection.ConnectionId;
+                    List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
+                    strings.Add(conid);
+                    StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             flag = false;
 
         }

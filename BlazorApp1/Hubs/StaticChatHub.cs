@@ -7,6 +7,21 @@ namespace BlazorApp1.Hubs
         public static Dictionary<string, string> conids { get; set; } = new Dictionary<string, string>();
         public static Dictionary<string, List<string>> multyconidFORnotifications { get; set; } = new Dictionary<string, List<string>>();
 
+        public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, string conid)// תחת האמייל של היוזרmultyconidFORnotifications האם נמצא כבר חיבור לדף ב
+        {
+            if ( multyconidFORnotifications.ContainsKey(email))
+            {
+                foreach (string conids in multyconidFORnotifications[email])
+                {
+                    if (conids == conid)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public static async Task<List<string>> GiveMyFriendConFORnotifications(string email)// multyconidFORnotifications עבור 
         {
             List<string> list = new List<string>();

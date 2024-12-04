@@ -66,7 +66,7 @@
 
                             </ul>
                         </li>
-                      @*   <li><a href="#section4">Courses</a></li> *@
+                        @*   <li><a href="#section4">Courses</a></li> *@
                         <!-- <li><a href="#section5">Video</a></li> -->
                         <li><a href="#section5">register</a></li>
                     }
@@ -615,7 +615,7 @@
                                             <td>
                                                 @person.email
                                             </td>
-                                           @*  <td>
+                                            @*  <td>
                                                 @kindoffriend[0].ToString();
 
                                             </td>
@@ -681,7 +681,7 @@
                 </div>
             </div>
         </section>
- 
+
         <footer style="position:inherit">
             <div class="container">
                 <div class="row">
@@ -695,7 +695,7 @@
                 </div>
             </div>
         </footer> 
-     
+
 
         <!-- Scripts -->
 
@@ -711,50 +711,50 @@
             $('.nav li:first').addClass('active');
 
             var showSection = function showSection(section, isAnimate) {
-                var
-                    direction = section.replace(/#/, ''),
-                    reqSection = $('.section').filter('[data-section="' + direction + '"]'),
-                    reqSectionPos = reqSection.offset().top - 0;
+            var
+            direction = section.replace(/#/, ''),
+            reqSection = $('.section').filter('[data-section="' + direction + '"]'),
+            reqSectionPos = reqSection.offset().top - 0;
 
-                if (isAnimate) {
-                    $('body, html').animate({
-                        scrollTop: reqSectionPos
-                    },
-                        800);
-                } else {
-                    $('body, html').scrollTop(reqSectionPos);
-                }
+            if (isAnimate) {
+            $('body, html').animate({
+            scrollTop: reqSectionPos
+            },
+            800);
+            } else {
+            $('body, html').scrollTop(reqSectionPos);
+            }
 
             };
 
             var checkSection = function checkSection() {
-                $('.section').each(function () {
-                    var
-                        $this = $(this),
-                        topEdge = $this.offset().top - 80,
-                        bottomEdge = topEdge + $this.height(),
-                        wScroll = $(window).scrollTop();
-                    if (topEdge < wScroll && bottomEdge > wScroll) {
-                        var
-                            currentId = $this.data('section'),
-                            reqLink = $('a').filter('[href*=\\#' + currentId + ']');
-                        reqLink.closest('li').addClass('active').
-                            siblings().removeClass('active');
-                    }
-                });
+            $('.section').each(function () {
+            var
+            $this = $(this),
+            topEdge = $this.offset().top - 80,
+            bottomEdge = topEdge + $this.height(),
+            wScroll = $(window).scrollTop();
+            if (topEdge < wScroll && bottomEdge > wScroll) {
+            var
+            currentId = $this.data('section'),
+            reqLink = $('a').filter('[href*=\\#' + currentId + ']');
+            reqLink.closest('li').addClass('active').
+            siblings().removeClass('active');
+            }
+            });
             };
 
             $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
-                if ($(e.target).hasClass('external')) {
-                    return;
-                }
-                e.preventDefault();
-                $('#menu').removeClass('active');
-                showSection($(this).attr('href'), true);
+            if ($(e.target).hasClass('external')) {
+            return;
+            }
+            e.preventDefault();
+            $('#menu').removeClass('active');
+            showSection($(this).attr('href'), true);
             });
 
             $(window).scroll(function () {
-                checkSection();
+            checkSection();
             });
         </script>
 
@@ -870,10 +870,12 @@
             {
                 userS = user1.Value;
                 basicuser = user1.Value;
-
-                List<string> notifCon = new List<string>();
-                notifCon.Add(hubConnection.ConnectionId);
-                StaticChatHub.multyconidFORnotifications.Add(userS.email, notifCon);
+            if(await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
+                {
+                    List<string> notifCon = new List<string>();
+                    notifCon.Add(hubConnection.ConnectionId);
+                    StaticChatHub.multyconidFORnotifications.Add(userS.email, notifCon);
+                }
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");
