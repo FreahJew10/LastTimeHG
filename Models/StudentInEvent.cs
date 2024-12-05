@@ -9,14 +9,14 @@ namespace Models
     public class StudentInEvent
     {
         public StudentInEvent() { }
-        public StudentInEvent(int studentid, int eventid)
+        public StudentInEvent(int studentid, int randomuniqcode)
         {
             this.studentid = studentid;
-            this.eventid = eventid;
+            this.randomuniqcode = randomuniqcode;
         }
     
         public int studentid { get; set; }
-        public int eventid { get; set; }
+        public int randomuniqcode { get; set; }
 
     }
 }

@@ -10,13 +10,15 @@ namespace Models
     {
         public Event()
         { }
-        public Event(string eventname, DateTime date, int teacherid,string kindofevent)
+        public Event(string eventname, DateTime date, int teacherid,string kindofevent,int randomuniqcode)
         {
-            this.eventname = eventname;
+            
             this.date = date;
             this.teacherid = teacherid;
             this.kinofevent = kindofevent;
+            this.randomuniqcode = randomuniqcode;
         }
+      
         public Event(string eventname, DateTime date, string kindofevent)
         {
             this.eventname = eventname;
@@ -40,11 +42,13 @@ namespace Models
             this.teacherid = teacherid;
 
         }
-        public int eventid { get; set; }
+       
+
         public string eventname { get; set; }
         public DateTime date { get; set; }
         public int teacherid { get; set; }
         public string kinofevent { get; set; }
+        public int randomuniqcode {  get; set; }
 
 
     }

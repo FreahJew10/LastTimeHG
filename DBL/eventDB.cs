@@ -15,6 +15,7 @@ namespace DBL
             data.Add("date", @event.date);
             data.Add("teacherid",@event.teacherid);
             data.Add("kindofevent", @event.kinofevent);
+            data.Add("randomuniqcode", @event.randomuniqcode);
 
             int num = await base.InsertAsync(data);
             if (num > 0)
@@ -39,11 +40,11 @@ namespace DBL
         protected override async Task<Event> CreateModelAsync(object[] row)
         {
             Event even_t = new Event();
-            even_t.eventid = int.Parse(row[0].ToString());
-            even_t.eventname = row[1].ToString();
-            even_t.date = DateTime.Parse(row[2].ToString());
-            even_t.teacherid = int.Parse(row[3].ToString());
-            even_t.kinofevent= row[4].ToString();
+            
+            even_t.eventname = row[0].ToString();
+            even_t.date = DateTime.Parse(row[1].ToString());
+            even_t.teacherid = int.Parse(row[2].ToString());
+            even_t.kinofevent= row[3].ToString();
             return even_t;
         }
 
