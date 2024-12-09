@@ -34,7 +34,7 @@ namespace BlazorApp1.Hubs
         public async Task SendNotificationToInformIAdedYouAsFriend(List<string>tourconid,string notification,string email)
         {
             IReadOnlyList<string> friendcon = tourconid.ToList();
-            await Clients.Clients(tourconid).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+            await Clients.Clients(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
         }
 
 

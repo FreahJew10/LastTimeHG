@@ -870,7 +870,7 @@
             {
                 userS = user1.Value;
                 basicuser = user1.Value;
-            if(await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
+            if(!await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
                 {
                     List<string> notifCon = new List<string>();
                     notifCon.Add(hubConnection.ConnectionId);

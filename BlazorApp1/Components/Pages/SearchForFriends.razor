@@ -98,19 +98,20 @@
     PersonStudentDB personStudentDB = new PersonStudentDB();
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-       .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
-       .WithAutomaticReconnect()
-       .Build();
+       //  hubConnection = new HubConnectionBuilder()
+       // .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+       // .WithAutomaticReconnect()
+       // .Build();
 
-        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
-        {
-            tryi.Add(@$"{email} sent {notification}");
-            await InvokeAsync(StateHasChanged);
-        });
-        await hubConnection.StartAsync();
+        /* hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
+             {
+             tryi.Add(@$"{email} sent {notification}");
+             await InvokeAsync(StateHasChanged);
+         });*/
 
-        conid=hubConnection.ConnectionId;
+       
+
+        //conid=hubConnection.ConnectionId;
 
 
 
@@ -119,9 +120,29 @@
 
     public async Task AddAsFriendAndSendRequest()
     {
+        hubConnection = new HubConnectionBuilder()
+   .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+   .WithAutomaticReconnect()
+   .Build();
+        await hubConnection.StartAsync();
+
+     /*   await hubConnection.StartAsync();
+        if (await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(friend.email, hubConnection.ConnectionId))
+        {
+            conid = hubConnection.ConnectionId;
+            List<string> strings = StaticChatHub.multyconidFORnotifications[friend.email];
+            strings.Add(conid);
+            StaticChatHub.multyconidFORnotifications[friend.email] = strings;
+        }
+        else
+        {
+            List<string> notifCon = new List<string>();
+            notifCon.Add(hubConnection.ConnectionId);
+            StaticChatHub.multyconidFORnotifications.Add(friend.email, notifCon);
+        }*/
         List<string> friendconIDs =await StaticChatHub.GiveMyFriendConFORnotifications(friend.email);
-        Random random = new Random();
-        int randomeventcod = random.Next(0, 999999999);
+      /* Random random = new Random();
+        int randomeventcod = random.Next(-999999999,999999999);
         Event @event = new Event("new notification", DateTime.Now,0, "notification",randomeventcod);
         friends friends = new friends(userS.Id, id);
         StudentInEvent studentInEvent1 = new StudentInEvent(userS.Id, randomeventcod);//לעכשיו אני מכניס את הרנדום אינוונט קוד ואז אני אעשה אינסרט לפיו
@@ -136,9 +157,19 @@
         StudentInEventDB studentInEventDB = new StudentInEventDB();
         await  friendsDB.insertFriends(friends);
         await eventDB.insertEvent(@event);
-        await studentInEventDB.insertStedentInEvent(studentInEvents);
+        await studentInEventDB.insertStedentInEvent(studentInEvents);*/
 
         await hubConnection.SendAsync("SendNotificationToInformIAdedYouAsFriend", friendconIDs, "added you as friend", userS.email);
+      
+
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if(hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+
     }
     protected override async void OnParametersSet()
     {
@@ -162,6 +193,12 @@
                         List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
                         strings.Add(conid);
                         StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+                    }
+                    else
+                    {
+                        List<string> notifCon = new List<string>();
+                        notifCon.Add(hubConnection.ConnectionId);
+                        StaticChatHub.multyconidFORnotifications.Add(userS.email, notifCon);
                     }
                 }
                 catch(Exception e)
