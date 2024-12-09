@@ -59,6 +59,17 @@ namespace BlazorApp1.Hubs
        
 
 
+
+        /// <summary>
+        /// עבור הספרייה הסטטית conids 
+        /// שהיא בשביל צאט בין חברים
+        /// ↓
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+
+        
+
         public static async Task<int> IsMyFriendHereOrme(string email)
         {
             int count = 0;

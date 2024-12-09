@@ -13,8 +13,9 @@
 
 @if (friend != null)
 {
-    <h1>@friend.first_name</h1>
 
+    <h1>@friend.first_name</h1>
+    <h3>@friendconnected</h3>
     <div class="chat-container">
         @foreach (SignalrPersonMessage message in usermessages)
         {
@@ -29,160 +30,160 @@
             }
             else if(message.person.Id==id)
             {
-               
-                    string m = message.massage;
-                    DateTime dateTime = message.datesent;
-                    <div class="message incoming">
-                        <p>@m</p>
-                        <span class="timestamp">@dateTime</span>
-                    </div>
-            
-      
+
+                string m = message.massage;
+                DateTime dateTime = message.datesent;
+                <div class="message incoming">
+                    <p>@m</p>
+                    <span class="timestamp">@dateTime</span>
+                </div>
+
+
             }
         }
         <!-- Input Area -->
         <div class="input-container">
             <input @bind="massageinput" class="message-input" placeholder="Type a message..." />
-            <button @onclick="SendToFriend" class="send-button">Send</button>
+            <button @onclick="SendToFriend" class="send-button" >Send</button>
         </div>
     </div>
 
     <style>
         .input-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            width: 100%;
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        width: 100%;
         }
 
         .message-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
         }
 
         .send-button {
-            background-color: #0084ff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 14px;
+        background-color: #0084ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 14px;
         }
 
-            .send-button:hover {
-                background-color: #005bb5;
-            }
+        .send-button:hover {
+        background-color: #005bb5;
+        }
         .message {
-  animation: fadeIn 0.3s ease-in;
-}
+        animation: fadeIn 0.3s ease-in;
+        }
 
-keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+        keyframes fadeIn {
+        from {
+        opacity: 0;
+        transform: translateY(10px);
+        }
+        to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+        }
 
         /////////
         .incoming::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: -10px;
-            width: 10px;
-            height: 10px;
-            background-color: #e4e6eb;
-            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: -10px;
+        width: 10px;
+        height: 10px;
+        background-color: #e4e6eb;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
         }
 
         .outgoing::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            right: -10px;
-            width: 10px;
-            height: 10px;
-            background-color: #0084ff;
-            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        content: '';
+        position: absolute;
+        top: 15px;
+        right: -10px;
+        width: 10px;
+        height: 10px;
+        background-color: #0084ff;
+        clip-path: polygon(100% 0, 0 50%, 100% 100%);
         }
 
         /////////////////
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f2f5;
         }
 
         .chat-container {
-            CONTAIN-INTRINSIC-BLOCK-SIZE: AUTO 100PX;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 1200px;
-            padding: 50px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            position: relative;
-            align-content: space-around;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        CONTAIN-INTRINSIC-BLOCK-SIZE: AUTO 100PX;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 1200px;
+        padding: 50px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+        position: relative;
+        align-content: space-around;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         }
 
 
 
         .message {
-            max-width: 80%;
-            padding: 8px 12px;
-            border-radius: 15px;
-            position: relative;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
+        max-width: 80%;
+        padding: 8px 12px;
+        border-radius: 15px;
+        position: relative;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
         }
 
         .incoming {
-            background-color: #e4e6eb;
-            align-self: flex-start;
-            max-width: 80%;
-            padding: 8px 12px;
-            border-radius: 15px;
-            position: relative;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
+        background-color: #e4e6eb;
+        align-self: flex-start;
+        max-width: 80%;
+        padding: 8px 12px;
+        border-radius: 15px;
+        position: relative;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
         }
 
         .outgoing {
-            background-color: #0084ff;
-            color: white;
-            align-self: flex-end;
+        background-color: #0084ff;
+        color: white;
+        align-self: flex-end;
         }
 
         .message .timestamp {
-            font-size: 9px;
-            color: #666;
-            margin-top: 3px;
-            display: block;
-            text-align: right;
+        font-size: 9px;
+        color: #666;
+        margin-top: 3px;
+        display: block;
+        text-align: right;
         }
         }
     </style>
- @*   <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
+    @*   <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
         @if (!usermessages.Any())
         {
             <p>there are no massges yet, talk! </p>
@@ -235,6 +236,7 @@ keyframes fadeIn {
     public bool Isconnected => hubConnection.State == HubConnectionState.Connected;
     private string myConId = "";
     private bool flag = true;
+    bool friendconnected=false;
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
@@ -247,11 +249,23 @@ keyframes fadeIn {
             usermessages.Add(new SignalrPersonMessage { person = me, massage = message, curruntperson = me == userS, datesent = DateTime.Now });
             await InvokeAsync(StateHasChanged);
         });
+        hubConnection.On<bool>("Receivethatmyfriendisconnected", async (b) =>
+        {
+            friendconnected = b;
+            await InvokeAsync(StateHasChanged);
+
+        });
         await hubConnection.StartAsync();
 
 
         myConId = hubConnection.ConnectionId;
-        Console.WriteLine(myConId);
+        if(friend!=null&&await StaticChatHub.IsMyFriendHereOrme(friend.email)>0)
+        {
+            friendconnected = true;
+            List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
+            await hubConnection.SendAsync("SendMessageToFriendisFriendconnected", myfreindconidS);
+        }
+        
 
     }
 
@@ -303,7 +317,13 @@ keyframes fadeIn {
             if(userS!=null&&await StaticChatHub.IsMyFriendHereOrme(userS.email) ==0)
             {
 
-                StaticChatHub.conids.Add(userS.email, myConId);
+                StaticChatHub.conids.Add(userS.email, myConId);//למשתמש השני בגלל הבאג
+            }
+            if (friend != null && await StaticChatHub.IsMyFriendHereOrme(friend.email) > 0)
+            {
+                friendconnected = true;
+                List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
+                await hubConnection.SendAsync("SendMessageToFriendisFriendconnected", myfreindconidS);
             }
             StateHasChanged();
         }
@@ -346,7 +366,12 @@ keyframes fadeIn {
                 if (!string.IsNullOrEmpty(myConId))
                     await setconid();//לפעם הראשונה
 
-
+                if (friend != null && await StaticChatHub.IsMyFriendHereOrme(friend.email) > 0)
+                {
+                    friendconnected = true;
+                    List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
+                    await hubConnection.SendAsync("SendMessageToFriendisFriendconnected", myfreindconidS);
+                }
 
                 StateHasChanged();
             }

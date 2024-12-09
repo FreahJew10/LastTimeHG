@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Google.Protobuf;
 namespace BlazorApp1.Hubs
 {
 
@@ -26,12 +27,18 @@ namespace BlazorApp1.Hubs
 
         //    await Clients.All.SendAsync("ReceiveMassage", person, massage + $@"{Context.ConnectionId}");
         //}
-        public async Task SendMessageToFriend(List<string>friendcon, string massage,Person me)
+        public async Task SendMessageToFriend(List<string>friendcon, string massage,Person me)//פעולה כדי לשלוח לחבר ספציפי בחיבור ספציפי
         {
 
             await Clients.Clients(friendcon[0]).SendAsync("ReceiveMassage",me,massage);
         }
-        public async Task SendNotificationToInformIAdedYouAsFriend(List<string>tourconid,string notification,string email)
+        public async Task SendMessageToFriendisFriendconnected(List<string> friendcon)//ברגע שהחבר מתחבר הפעולה תשלח שהוא אכן מחובר
+        {
+            bool b=true;
+            await Clients.Clients(friendcon[0]).SendAsync("Receivethatmyfriendisconnected",true);
+        }
+
+        public async Task SendNotificationToInformIAdedYouAsFriend(List<string>tourconid,string notification,string email)// שולחת התראת "הוספתי אותך כחבר" כאשר אדם מוסיף כחבר בנוסף יכולה לשלוח את ההודעה לכמה חיבורים
         {
             IReadOnlyList<string> friendcon = tourconid.ToList();
             await Clients.Clients(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
