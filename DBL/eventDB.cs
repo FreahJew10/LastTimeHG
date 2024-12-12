@@ -8,6 +8,27 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
+        public async Task<List<Event>> GetAllEventsForSpecificStudent(int studentid)
+        {
+            string sql = @$"Select
+          mylastyear.event.randomuniqcode,
+          mylastyear.event.eventname,
+          mylastyear.event.date,
+          mylastyear.event.teacherid,
+          mylastyear.event.kindofevent
+          From
+          mylastyear.studentinevent Inner Join
+          mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
+          mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
+          Where
+          mylastyear.studentinevent.studentid = @s";
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("studentid", studentid);
+            List<Event> events = new List<Event>();
+            events = await SelectAllAsync(sql, data);
+            if (events.Count > 0) { return events; }
+            else { return null; }
+        }
         public async Task<bool> insertEvent(Event @event)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
@@ -25,6 +46,7 @@ namespace DBL
             else { return false; }
 
         }
+      
         protected override async Task<List<Event>> CreateListModelAsync(List<object[]> rows)
         {
             List<Event> events = new List<Event>();
