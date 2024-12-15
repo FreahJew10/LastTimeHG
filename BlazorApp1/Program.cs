@@ -1,7 +1,6 @@
 using BlazorApp1.Components;
 using Microsoft.AspNetCore.ResponseCompression;
 using BlazorApp1.Hubs;
-using Syncfusion.Blazor;
 namespace BlazorApp1
 {
     public class Program
@@ -13,7 +12,6 @@ namespace BlazorApp1
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
-            builder.Services.AddSyncfusionBlazor();
             builder.Services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
