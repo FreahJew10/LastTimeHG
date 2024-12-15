@@ -141,7 +141,7 @@
             StaticChatHub.multyconidFORnotifications.Add(friend.email, notifCon);
         }*/
         List<string> friendconIDs =await StaticChatHub.GiveMyFriendConFORnotifications(friend.email);
-      /* Random random = new Random();
+      Random random = new Random();
         int randomeventcod = random.Next(-999999999,999999999);
         Event @event = new Event("new notification", DateTime.Now,0, "notification",randomeventcod);
         friends friends = new friends(userS.Id, id);
@@ -157,7 +157,7 @@
         StudentInEventDB studentInEventDB = new StudentInEventDB();
         await  friendsDB.insertFriends(friends);
         await eventDB.insertEvent(@event);
-        await studentInEventDB.insertStedentInEvent(studentInEvents);*/
+        await studentInEventDB.insertStedentInEvent(studentInEvents);
 
         await hubConnection.SendAsync("SendNotificationToInformIAdedYouAsFriend", friendconIDs, "added you as friend", userS.email);
       
