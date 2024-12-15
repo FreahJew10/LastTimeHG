@@ -13,13 +13,12 @@ namespace BlazorApp1
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
-            
+            builder.Services.AddSyncfusionBlazor();
             builder.Services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 
             });
-            builder.Services.AddSyncfusionBlazor();
             builder.Services.AddSignalR();
             var app = builder.Build();
             
