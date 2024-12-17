@@ -1,0 +1,243 @@
+﻿@page "/calender"
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using Models
+@using DBL
+@using Hubs
+<h3>Custom Weekly Scheduler</h3>
+
+<h3>Scheduler</h3>
+<div class="calendar">
+    <div class="timeline">
+        <div class="spacer"></div>
+        <div class="time-marker">9 AM</div>
+        <div class="time-marker">10 AM</div>
+        <div class="time-marker">11 AM</div>
+        <div class="time-marker">12 PM</div>
+        <div class="time-marker">1 PM</div>
+        <div class="time-marker">2 PM</div>
+        <div class="time-marker">3 PM</div>
+        <div class="time-marker">4 PM</div>
+        <div class="time-marker">5 PM</div>
+        <div class="time-marker">6 PM</div>
+    </div>
+    <div class="days">
+        @foreach (var day in GetDaysInWeek())
+        {
+            <div class="day">
+                <div class="date">
+                    <p class="date-num">@day.ToString("dd")</p>
+                    <p class="date-day">@day.ToString("ddd")</p>
+                </div>
+                <div class="events">
+                    @foreach (var ev in GetEventsForDay(day))
+                    {
+                        <div class="event" style="grid-row-start:@(ev.date.Hour); grid-row-end:@(ev.date.Hour + 2);" @onclick="() => EditEvent(ev)">
+                            <p class="title">@ev.eventname</p>
+                            <p class="time">@ev.date.ToString("h tt") - @(ev.date.AddHours(2).ToString("h tt"))</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<EditForm Model="currentEvent" OnValidSubmit="SaveEvent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label>Title: <InputText @bind-Value="currentEvent.eventname" /></label>
+    <label>Start Time: <InputDate @bind-Value="currentEvent.date" /></label>
+    <button type="submit">Save Event</button>
+</EditForm>
+
+<button @onclick="DeleteEvent">Delete Event</button>
+
+<style>
+    /* Add your existing styles here */
+</style>
+
+@code {
+    private Event currentEvent = new Event();
+
+    private IEnumerable<DateTime> GetDaysInWeek()
+    {
+        var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+        return Enumerable.Range(0, 5).Select(i => startOfWeek.AddDays(i));
+    }
+
+    // private async IEnumerable<Event> GetEventsForDay(DateTime day)
+    // {
+    //     var eventDB = new EventDB();
+    //     return eventDB.GetAllEventsForSpecificStudent(userS.Id).Where(e => e.date.Date == day.Date);
+    // }
+
+    private void EditEvent(Event ev)
+    {
+        currentEvent = ev;
+    }
+
+    private async void SaveEvent()
+    {
+        var eventDB = new EventDB();
+        if (currentEvent.randomuniqcode == 0)
+        {
+            currentEvent.randomuniqcode = new Random().Next(1, 1000000);
+            await eventDB.insertEvent(currentEvent);
+        }
+        else
+        {
+            eventDB.insertEvent(currentEvent);
+        }
+        currentEvent = new Event();
+    }
+
+    private void DeleteEvent()
+    {
+        // var eventDB = new EventDB();
+        // eventDB.D(new Dictionary<string, object> { { "randomuniqcode", currentEvent.randomuniqcode } });
+        // currentEvent = new Event();
+    }
+}
+
+@* 
+<div class="scheduler-container">
+    <div class="scheduler-header">
+        <button @onclick="PreviousWeek">&lt;</button>
+        <h4>@weekStartDate.ToString("MMM dd, yyyy") - @weekStartDate.AddDays(6).ToString("MMM dd, yyyy")</h4>
+        <button @onclick="NextWeek">&gt;</button>
+    </div>
+
+    <div class="scheduler-grid">
+        <div class="time-column"></div>
+        @foreach (var day in Enumerable.Range(0, 7))
+        {
+            <div class="day-header">
+                <a href="/DetailsOfDay/@weekStartDate">cl</a>
+                
+            </div>
+        }
+
+        @foreach (var hour in Enumerable.Range(0, 24))
+        {
+            <div class="time-column">@hour:00</div>
+            @foreach (var day in Enumerable.Range(0, 7))
+            {
+                var currentDateTime = weekStartDate.AddDays(day).AddHours(hour);
+                <div class="scheduler-cell">
+                    @foreach (var ev in GetEventsForTimeSlot(currentDateTime))
+                    {
+                        <div class="scheduler-event">
+                            <span>@ev.eventname</span>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .scheduler-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        font-family: Arial, sans-serif;
+    }
+
+    .scheduler-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .scheduler-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        gap: 1px;
+    }
+
+    .time-column {
+        font-weight: bold;
+        text-align: center;
+        padding: 5px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+    }
+
+    .day-header {
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        background-color: #e0f7fa;
+        border: 1px solid #ccc;
+    }
+
+    .scheduler-cell {
+        border: 1px solid #ccc;
+        min-height: 60px;
+        padding: 5px;
+        background-color: white;
+    }
+
+    .scheduler-event {
+        background-color: #007bff;
+        color: white;
+        padding: 5px;
+        margin: 2px 0;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+</style>
+ *@
+@code {
+    private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+    private List<Event> events = new List<Event>();
+    public Student userS = null;
+    private void PreviousWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(-7);
+    }
+
+    private void NextWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(7);
+    }
+
+    private IEnumerable<Event> GetEventsForTimeSlot(DateTime dateTime)
+    {
+        return events.Where(e => e.date == dateTime);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)///
+    {
+
+        if (firstRender)
+        {
+            Console.WriteLine("first re");
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+
+
+                StateHasChanged();
+            }
+            // var user2 = await MySession.GetAsync<teacher>("teacher");
+            // if (user2.Success)
+            // {
+            //     userT = user2.Value;
+            //     StateHasChanged();
+            // }
+
+        }
+        // else if (!string.IsNullOrEmpty(myConId))
+        // {
+        //     await setconid();
+        // }
+
+    }
+}

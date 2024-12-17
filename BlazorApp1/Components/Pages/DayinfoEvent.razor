@@ -1,0 +1,203 @@
+﻿@inject NavigationManager navigationManager
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using Models
+@using DBL
+@using Hubs
+@page "/DetailsOfDay{Date:DateTime}"
+<h3>Details of Day</h3>
+
+<div class="details-container">
+    <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4>
+
+    <table class="events-table">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Time</th>
+                <th>Kind of Event</th>
+                <th>Teacher ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in dayEvents)
+            {
+                <tr>
+                    <td>@ev.eventname</td>
+                    <td>@ev.date.ToString("HH:mm")</td>
+                    <td>@ev.kinofevent</td>
+                    <td>@ev.teacherid</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => DeleteEvent(ev.randomuniqcode)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h5>Add New Event</h5>
+    <EditForm Model="newEvent" OnValidSubmit="AddEvent">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="eventname">Event Name</label>
+            <InputText id="eventname" class="form-control" @bind-Value="newEvent.eventname" />
+        </div>
+
+        <div class="form-group">
+            <label for="time">Time</label>
+            <InputDate id="time" class="form-control" @bind-Value="newEvent.date" />
+        </div>
+
+        <div class="form-group">
+            <label for="kinofevent">Kind of Event</label>
+            <InputText id="kinofevent" class="form-control" @bind-Value="newEvent.kinofevent" />
+        </div>
+
+        <div class="form-group">
+            <label for="teacherid">Teacher ID</label>
+            <InputNumber id="teacherid" class="form-control" @bind-Value="newEvent.teacherid" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Event</button>
+    </EditForm>
+</div>
+
+<style>
+    .details-container {
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    }
+
+    .events-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    }
+
+    .events-table th, .events-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    }
+
+    .events-table th {
+    background-color: #f4f4f4;
+    }
+
+    .form-group {
+    margin-bottom: 15px;
+    }
+
+    .btn-danger {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    }
+
+    .btn-danger:hover {
+    background-color: darkred;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public DateTime selectedDate { get; set; }
+    public Student userS = null;
+    private List<Event> dayEvents = new List<Event>();
+    private Event newEvent = new Event();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Initializing details for {selectedDate:yyyy-MM-dd}");
+        dayEvents = await LoadEventsForDay(selectedDate);
+        Console.WriteLine($"Loaded {dayEvents.Count} events for the day.");
+    }
+    // protected override async void OnParametersSet()
+    // {
+    //     if (selectedDate == null)
+    //         selectedDate = DateTime.Now;
+    //     else
+    //     {
+
+
+    //         StateHasChanged();
+    //     }
+    // }
+
+    private async Task<List<Event>> LoadEventsForDay(DateTime date)
+    {
+        Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
+        var eventDB = new EventDB();
+        var events = await eventDB.GetAllEventsForSpecificStudent(userS.Id);
+        Console.WriteLine($"Fetched {events.Count} events from database.");
+            return events;
+        return null;
+    }
+
+    private async Task AddEvent()
+    {
+        Console.WriteLine("Attempting to add a new event...");
+        var eventDB = new EventDB();
+        newEvent.date = selectedDate.Add(newEvent.date.TimeOfDay); // Keep the same day
+        newEvent.randomuniqcode = new Random().Next(1, 1000000); // Generate a unique code
+
+        bool success = await eventDB.insertEvent(newEvent);
+        if (success)
+        {
+            Console.WriteLine("Event added successfully to the database.");
+            dayEvents.Add(newEvent);
+            Console.WriteLine($"Added event: {newEvent.eventname} at {newEvent.date:HH:mm}");
+            newEvent = new Event(); // Reset the form
+        }
+        else
+        {
+            Console.WriteLine("Failed to add event to the database.");
+        }
+    }
+
+    private async Task DeleteEvent(int uniqueCode)
+    {
+        Console.WriteLine($"Attempting to delete event with unique code: {uniqueCode}");
+        var eventDB = new EventDB();
+       // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
+        dayEvents.RemoveAll(e => e.randomuniqcode == uniqueCode);
+        Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)///
+    {
+
+        if (firstRender)
+        {
+            Console.WriteLine("first re");
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+
+
+                StateHasChanged();
+            }
+            // var user2 = await MySession.GetAsync<teacher>("teacher");
+            // if (user2.Success)
+            // {
+            //     userT = user2.Value;
+            //     StateHasChanged();
+            // }
+
+        }
+        // else if (!string.IsNullOrEmpty(myConId))
+        // {
+        //     await setconid();
+        // }
+
+    }
+}
