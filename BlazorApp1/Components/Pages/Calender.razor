@@ -63,7 +63,7 @@
 
 @code {
     private Event currentEvent = new Event();
-
+    public List<Event> events = new List<Event>();
     private IEnumerable<DateTime> GetDaysInWeek()
     {
         var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
@@ -101,6 +101,51 @@
         // var eventDB = new EventDB();
         // eventDB.D(new Dictionary<string, object> { { "randomuniqcode", currentEvent.randomuniqcode } });
         // currentEvent = new Event();
+    }
+    private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+   
+    public Student userS = null;
+    private void PreviousWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(-7);
+    }
+
+    private void NextWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(7);
+    }
+
+    private IEnumerable<Event> GetEventsForTimeSlot(DateTime dateTime)
+    {
+        return events.Where(e => e.date == dateTime);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)///
+    {
+
+        if (firstRender)
+        {
+            Console.WriteLine("first re");
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+
+
+                StateHasChanged();
+            }
+            // var user2 = await MySession.GetAsync<teacher>("teacher");
+            // if (user2.Success)
+            // {
+            //     userT = user2.Value;
+            //     StateHasChanged();
+            // }
+
+        }
+        // else if (!string.IsNullOrEmpty(myConId))
+        // {
+        //     await setconid();
+        // }
+
     }
 }
 
@@ -194,50 +239,4 @@
     }
 </style>
  *@
-@code {
-    private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
-    private List<Event> events = new List<Event>();
-    public Student userS = null;
-    private void PreviousWeek()
-    {
-        weekStartDate = weekStartDate.AddDays(-7);
-    }
 
-    private void NextWeek()
-    {
-        weekStartDate = weekStartDate.AddDays(7);
-    }
-
-    private IEnumerable<Event> GetEventsForTimeSlot(DateTime dateTime)
-    {
-        return events.Where(e => e.date == dateTime);
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)///
-    {
-
-        if (firstRender)
-        {
-            Console.WriteLine("first re");
-            var user1 = await MySession.GetAsync<Student>("student");
-            if (user1.Success)
-            {
-                userS = user1.Value;
-
-
-                StateHasChanged();
-            }
-            // var user2 = await MySession.GetAsync<teacher>("teacher");
-            // if (user2.Success)
-            // {
-            //     userT = user2.Value;
-            //     StateHasChanged();
-            // }
-
-        }
-        // else if (!string.IsNullOrEmpty(myConId))
-        // {
-        //     await setconid();
-        // }
-
-    }
-}

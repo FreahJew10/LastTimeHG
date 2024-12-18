@@ -8,7 +8,10 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
-        
+        public async Task<List<Event>> GetAllEventsForSpecificStudenAndDate(int studentid,DateTime dateTime)
+        {
+            string sql=$@""
+        }
         public async Task<List<Event>> GetAllEventsForSpecificStudent(int studentid)
         {
             string sql = @$"Select
