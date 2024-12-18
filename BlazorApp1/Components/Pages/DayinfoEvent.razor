@@ -7,11 +7,11 @@
 @using Models
 @using DBL
 @using Hubs
-@page "/DetailsOfDay{Date:DateTime}"
+@page "/DetailsOfDay/{Date}"
 <h3>Details of Day</h3>
 
 <div class="details-container">
-    <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4>
+   @*  <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4> *@
 
     <table class="events-table">
         <thead>
@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var ev in dayEvents)
+            @foreach (Event ev in dayEvents)
             {
                 <tr>
                     <td>@ev.eventname</td>
@@ -110,34 +110,35 @@
 
 @code {
     [Parameter]
-    public DateTime selectedDate { get; set; }
+    public string Date { get; set; }
+    public DateTime selectedDate = new DateTime();
     public Student userS = null;
     private List<Event> dayEvents = new List<Event>();
     private Event newEvent = new Event();
 
-    protected override async Task OnInitializedAsync()
+  
+    protected override async void OnParametersSet()
     {
-        Console.WriteLine($"Initializing details for {selectedDate:yyyy-MM-dd}");
-        dayEvents = await LoadEventsForDay(selectedDate);
-        Console.WriteLine($"Loaded {dayEvents.Count} events for the day.");
+        if (Date == null)
+        {
+            selectedDate = DateTime.Now;
+        }
+            
+        else
+        {
+
+         selectedDate = DateTime.Parse(Date);
+         
+            
+            StateHasChanged();
+        }
     }
-    // protected override async void OnParametersSet()
-    // {
-    //     if (selectedDate == null)
-    //         selectedDate = DateTime.Now;
-    //     else
-    //     {
-
-
-    //         StateHasChanged();
-    //     }
-    // }
 
     private async Task<List<Event>> LoadEventsForDay(DateTime date)
     {
         Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
-        var eventDB = new EventDB();
-        var events = await eventDB.GetAllEventsForSpecificStudent(userS.Id);
+        EventDB eventDB = new EventDB();
+        List<Event> events = await eventDB.GetAllEventsForSpecificStudent(userS.Id);
         Console.WriteLine($"Fetched {events.Count} events from database.");
             return events;
         return null;
@@ -182,7 +183,7 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-
+                dayEvents = await LoadEventsForDay(selectedDate);
 
                 StateHasChanged();
             }

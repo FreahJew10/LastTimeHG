@@ -12,19 +12,27 @@ namespace DBL
         {
             string sql = $@" Select
           
+         Select
+          mylastyear.event.randomuniqcode,
           mylastyear.event.eventname,
           mylastyear.event.date,
           mylastyear.event.teacherid,
-          mylastyear.event.kindofevent,
-          mylastyear.event.randomuniqcode
+          mylastyear.event.kindofevent
           From
           mylastyear.studentinevent Inner Join
           mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
           mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
+          
           Where
-          mylastyear.studentinevent.studentid = @s and event.date rlike @datetme;";
+          mylastyear.studentinevent.studentid = @studentid and event.date rlike @datetme;";
             Dictionary <string,object> data = new Dictionary <string,object> ();
             DateTime time=new DateTime (dateTime.Year,dateTime.Month,dateTime.Day);
+            data.Add ("datetme", time);
+            data.Add("studentid", studentid);
+            List<Event> events = new List<Event>();
+            events = await SelectAllAsync(sql, data);
+            if (events.Count > 0) { return events; }
+            else { return null; }
         }
         public async Task<List<Event>> GetAllEventsForSpecificStudent(int studentid)
         {
@@ -39,7 +47,7 @@ namespace DBL
           mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
           mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
           Where
-          mylastyear.studentinevent.studentid = @s";
+          mylastyear.studentinevent.studentid = @studentid";
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("studentid", studentid);
             List<Event> events = new List<Event>();
@@ -79,11 +87,11 @@ namespace DBL
         protected override async Task<Event> CreateModelAsync(object[] row)
         {
             Event even_t = new Event();
-            
-            even_t.eventname = row[0].ToString();
-            even_t.date = DateTime.Parse(row[1].ToString());
-            even_t.teacherid = int.Parse(row[2].ToString());
-            even_t.kinofevent= row[3].ToString();
+            even_t.randomuniqcode = int.Parse(row[0].ToString());
+            even_t.eventname = row[1].ToString();
+            even_t.date = DateTime.Parse(row[2].ToString());
+            even_t.teacherid = int.Parse(row[3].ToString());
+            even_t.kinofevent= row[4].ToString();
             return even_t;
         }
 
