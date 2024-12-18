@@ -10,7 +10,21 @@ namespace DBL
     {
         public async Task<List<Event>> GetAllEventsForSpecificStudenAndDate(int studentid,DateTime dateTime)
         {
-            string sql=$@""
+            string sql = $@" Select
+          
+          mylastyear.event.eventname,
+          mylastyear.event.date,
+          mylastyear.event.teacherid,
+          mylastyear.event.kindofevent,
+          mylastyear.event.randomuniqcode
+          From
+          mylastyear.studentinevent Inner Join
+          mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
+          mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
+          Where
+          mylastyear.studentinevent.studentid = @s and event.date rlike @datetme;";
+            Dictionary <string,object> data = new Dictionary <string,object> ();
+            DateTime time=new DateTime (dateTime.Year,dateTime.Month,dateTime.Day);
         }
         public async Task<List<Event>> GetAllEventsForSpecificStudent(int studentid)
         {
