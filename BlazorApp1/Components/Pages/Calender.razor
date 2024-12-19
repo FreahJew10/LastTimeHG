@@ -34,9 +34,9 @@
             <div class="time-column">@hour:00</div>
             @foreach (var day in Enumerable.Range(0, 7))
             {
-                var currentDateTime = weekStartDate.AddDays(day).AddHours(hour);
+                DateTime currentDateTime = weekStartDate.AddDays(day).AddHours(hour);
                 <div class="scheduler-cell">
-                    @foreach (var ev in GetEventsForTimeSlot(currentDateTime))
+                    @foreach (Event ev in GetEventsForTimeSlot(currentDateTime))
                     {
                         <div class="scheduler-event">
                             <span>@ev.eventname</span>

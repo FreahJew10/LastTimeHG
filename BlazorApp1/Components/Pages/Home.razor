@@ -785,6 +785,7 @@
     Person addnewdriend = null;
     private HubConnection hubConnection;
     string notification;
+    string conid = "";
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
@@ -869,13 +870,21 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-                basicuser = user1.Value;
-            if(!await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
+                if (!await StaticChatHub.IsThisSpecificEmailExistIn_multyconidFORnotifications(userS.email))
                 {
+
                     List<string> notifCon = new List<string>();
                     notifCon.Add(hubConnection.ConnectionId);
                     StaticChatHub.multyconidFORnotifications.Add(userS.email, notifCon);
                 }
+                else
+                {
+                    conid = hubConnection.ConnectionId;
+                    List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
+                    strings.Add(conid);
+                    StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+                }
+                basicuser = userS;
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<teacher>("teacher");
