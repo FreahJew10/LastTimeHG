@@ -12,35 +12,52 @@
 
 <h3>Scheduler</h3>
 
+<h3>Custom Weekly Scheduler</h3>
+
 <div class="scheduler-container">
     <div class="scheduler-header">
         <button @onclick="PreviousWeek">&lt;</button>
-        <h4>@weekStartDate.ToString("yyyy,MM dd") - @weekStartDate.AddDays(6).ToString("yyyy,MM dd")</h4>
+        <h4>@weekStartDate.ToString("yyyy, MM dd") - @weekStartDate.AddDays(6).ToString("yyyy, MM dd")</h4>
         <button @onclick="NextWeek">&gt;</button>
     </div>
 
     <div class="scheduler-grid">
+        <!-- Day headers -->
         <div class="time-column"></div>
         @foreach (var day in Enumerable.Range(0, 7))
         {
             <div class="day-header">
-                <a href="DetailsOfDay/@weekStartDate.ToString("yyyy,MM dd")">cl</a>
-
+                <a href="DetailsOfDay/@weekStartDate.AddDays(day).ToString("yyyy,MM dd")">
+                    @weekStartDate.AddDays(day).ToString("dddd, MMM dd")
+                </a>
             </div>
         }
 
+        <!-- Time slots -->
         @foreach (var hour in Enumerable.Range(0, 24))
         {
             <div class="time-column">@hour:00</div>
             @foreach (var day in Enumerable.Range(0, 7))
             {
-                DateTime currentDateTime = weekStartDate.AddDays(day).AddHours(hour);
+                var currentDateTime = weekStartDate.AddDays(day).AddHours(hour);
+                var eventsForTimeSlot = events
+                .Where(ev => ev.date != null && ev.date.Date == currentDateTime.Date && ev.date.Hour == currentDateTime.Hour)
+                .ToList();
+
                 <div class="scheduler-cell">
-                    @foreach (Event ev in GetEventsForTimeSlot(currentDateTime))
+                    @if (eventsForTimeSlot.Any())
                     {
-                        <div class="scheduler-event">
-                            <span>@ev.eventname</span>
-                        </div>
+                        @foreach (var ev in eventsForTimeSlot)
+                        {
+                            <div class="scheduler-event">
+                                <span>@ev.eventname</span> <br />
+                                <small>Kind: @ev.kinofevent</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <span>No events</span>
                     }
                 </div>
             }
@@ -102,49 +119,59 @@
 </style>
 
 @code {
-    private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+    private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Sunday);
     private List<Event> events = new List<Event>();
-    public Student userS = null;
-    private void PreviousWeek()
-    {
-        weekStartDate = weekStartDate.AddDays(-7);
-    }
+    private bool isLoading = true;
+    private Student userS;
+    EventDB eventDB1 = new EventDB();
 
-    private void NextWeek()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        weekStartDate = weekStartDate.AddDays(7);
-    }
-
-    private IEnumerable<Event> GetEventsForTimeSlot(DateTime dateTime)
-    {
-        return events.Where(e => e.date == dateTime);
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)///
-    {
-
         if (firstRender)
         {
-            Console.WriteLine("first re");
-            var user1 = await MySession.GetAsync<Student>("student");
-            if (user1.Success)
+            var userResult = await MySession.GetAsync<Student>("student");
+            if (userResult.Success)
             {
-                userS = user1.Value;
-
-
-                StateHasChanged();
+                userS = userResult.Value;
+                await LoadEventsForWeekAsync();
             }
-            // var user2 = await MySession.GetAsync<teacher>("teacher");
-            // if (user2.Success)
-            // {
-            //     userT = user2.Value;
-            //     StateHasChanged();
-            // }
-
         }
-        // else if (!string.IsNullOrEmpty(myConId))
-        // {
-        //     await setconid();
-        // }
+    }
 
+    private async Task LoadEventsForWeekAsync()
+    {
+        if (userS != null)
+        {
+            isLoading = true;
+           
+
+            var startOfWeek = weekStartDate;
+            var endOfWeek = weekStartDate.AddDays(7);
+
+            var fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
+            events = fetchedEvents?.ToList() ?? new List<Event>();
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
+    {
+        EventDB eventDB = new EventDB();
+        var result = await eventDB.GetEventsForStudentInRange(userS.Id, start, end);
+        return result ?? Enumerable.Empty<Event>();
+    }
+
+    private async Task PreviousWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(-7);
+        await LoadEventsForWeekAsync();
+    }
+
+    private async Task NextWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(7);
+        await LoadEventsForWeekAsync();
     }
 }

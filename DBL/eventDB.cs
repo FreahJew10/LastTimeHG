@@ -8,9 +8,39 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
+        public async Task<List<Event>> GetEventsForStudentInRange(int studentId,DateTime startdate, DateTime enddate)
+        {
+            string sql = $@" select
+            mylastyear.event.randomuniqcode,
+            mylastyear.event.eventname,
+            mylastyear.event.date,
+            mylastyear.event.teacherid,
+            mylastyear.event.kindofevent
+            From
+            mylastyear.studentinevent Inner Join
+            mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
+            mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
+
+            Where
+            mylastyear.studentinevent.studentid = @studentId and  mylastyear.event.date BETWEEN @startdate AND @enddate;";
+
+            Dictionary<string, object> data = new Dictionary<string, object>();
+
+            string endtime=enddate.ToString("yyyy-MM-dd");
+            string startime=startdate.ToString("yyyy-MM-dd");
+            List<Event> events = new List<Event>();
+            data.Add("studentId", studentId);
+            data.Add("startdate", startime);
+            data.Add("enddate", endtime);
+            events = await SelectAllAsync(sql, data);
+           
+          
+            if (events.Count > 0) { return events; }
+            else { return null; }
+        }
         public async Task<List<Event>> GetAllEventsForSpecificStudenAndDate(int studentid,DateTime dateTime)
         {
-            string sql = $@" Select
+            string sql = $@" 
           
          Select
           mylastyear.event.randomuniqcode,
@@ -24,9 +54,9 @@ namespace DBL
           mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
           
           Where
-          mylastyear.studentinevent.studentid = @studentid and event.date rlike @datetme;";
+          mylastyear.studentinevent.studentid = @studentid and event.date rlike @datetme";
             Dictionary <string,object> data = new Dictionary <string,object> ();
-            DateTime time=new DateTime (dateTime.Year,dateTime.Month,dateTime.Day);
+            string time=dateTime.ToString("yyyy-MM-dd");
             data.Add ("datetme", time);
             data.Add("studentid", studentid);
             List<Event> events = new List<Event>();
