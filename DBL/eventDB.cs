@@ -3,19 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
+       public static List<int> alloftheeventsid = new List<int>();
+
+        public static async Task  AddCodeTobuilalloftheeventsid(int randomcode)
+        {
+         alloftheeventsid.Add(randomcode);
+        }
+
+        public static  async Task builalloftheeventsid()
+        {
+            if (alloftheeventsid.Count == 0)
+            {
+                EventDB eventDB = new EventDB();
+                List<Event> events = new List<Event>();
+                events = await eventDB.GetAllRandomCode();
+                for (int i=0; i<events.Count;i++ )
+                {
+                    events.Add(events[i]);
+                }
+            }
+
+        }
+        public  async Task<List<Event>> GetAllRandomCode()
+        {
+            List<Event> cods = new List<Event>();
+            string q = @$"Select
+                       mylastyear.event.randomuniqcode
+                      From
+                     mylastyear.event";
+            List<Event> events = new List<Event>();
+            cods = await SelectAllAsync(q);
+
+            return cods;
+
+        }
+
+
+
         public async Task<List<Event>> GetEventsForStudentInRange(int studentId,DateTime startdate, DateTime enddate)
         {
-            string sql = $@" select
-            mylastyear.event.randomuniqcode,
-            mylastyear.event.eventname,
-            mylastyear.event.date,
-            mylastyear.event.teacherid,
-            mylastyear.event.kindofevent
+            string sql = $@" Select mylastyear.event.randomuniqcode,
+          mylastyear.event.eventname,
+          mylastyear.event.date,
+          mylastyear.event.teacherid,
+          mylastyear.event.kindofevent,
+          mylastyear.event.enddate
             From
             mylastyear.studentinevent Inner Join
             mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
@@ -47,7 +86,8 @@ namespace DBL
           mylastyear.event.eventname,
           mylastyear.event.date,
           mylastyear.event.teacherid,
-          mylastyear.event.kindofevent
+          mylastyear.event.kindofevent,
+          mylastyear.event.enddate
           From
           mylastyear.studentinevent Inner Join
           mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
@@ -71,7 +111,8 @@ namespace DBL
           mylastyear.event.eventname,
           mylastyear.event.date,
           mylastyear.event.teacherid,
-          mylastyear.event.kindofevent
+          mylastyear.event.kindofevent,
+          mylastyear.event.enddate
           From
           mylastyear.studentinevent Inner Join
           mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
@@ -93,7 +134,7 @@ namespace DBL
             data.Add("teacherid",@event.teacherid);
             data.Add("kindofevent", @event.kinofevent);
             data.Add("randomuniqcode", @event.randomuniqcode);
-
+            data.Add("enddate",@event.enddate);
             int num = await base.InsertAsync(data);
             if (num > 0)
             {
@@ -118,10 +159,14 @@ namespace DBL
         {
             Event even_t = new Event();
             even_t.randomuniqcode = int.Parse(row[0].ToString());
-            even_t.eventname = row[1].ToString();
-            even_t.date = DateTime.Parse(row[2].ToString());
-            even_t.teacherid = int.Parse(row[3].ToString());
-            even_t.kinofevent= row[4].ToString();
+            if (row[1] != null)
+            {
+                even_t.eventname = row[1].ToString();
+                even_t.date = DateTime.Parse(row[2].ToString());
+                even_t.teacherid = int.Parse(row[3].ToString());
+                even_t.kinofevent = row[4].ToString();
+                even_t.enddate = DateTime.Parse(row[5].ToString());
+            }
             return even_t;
         }
 

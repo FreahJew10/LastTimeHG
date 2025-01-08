@@ -138,7 +138,7 @@
     {
         Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
         EventDB eventDB = new EventDB();
-        List<Event> events = await eventDB.GetAllEventsForSpecificStudent(userS.Id);
+        List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id,date);
         Console.WriteLine($"Fetched {events.Count} events from database.");
             return events;
         return null;
@@ -172,6 +172,7 @@
        // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
         dayEvents.RemoveAll(e => e.randomuniqcode == uniqueCode);
         Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
+
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///
     {

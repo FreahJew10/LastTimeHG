@@ -3,17 +3,12 @@
 @inject IJSRuntime js
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage MySession
-@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 @using Microsoft.AspNetCore.SignalR.Client
 @using Models
 @using DBL
 @using Hubs
-<h3>Custom Weekly Scheduler</h3>
-
-<h3>Schedule</h3>
 
 <h3>Custom Weekly Scheduler</h3>
-
 <div class="scheduler-container">
     <div class="scheduler-header">
         <button @onclick="PreviousWeek">&lt;</button>
@@ -34,14 +29,17 @@
         }
 
         <!-- Time slots -->
-        @foreach (var hour in Enumerable.Range(0, 24))
+        @foreach (var hour in Enumerable.Range(8, 11))
         {
             <div class="time-column">@hour:00</div>
             @foreach (var day in Enumerable.Range(0, 7))
             {
                 var currentDateTime = weekStartDate.AddDays(day).AddHours(hour);
+                var nextHour = currentDateTime.AddHours(1);
+
                 var eventsForTimeSlot = events
-                .Where(ev => ev.date != null && ev.date.Date == currentDateTime.Date && ev.date.Hour == currentDateTime.Hour)
+                .Where(ev => ev.date != null && ev.enddate != null &&
+                ev.date < nextHour && ev.enddate > currentDateTime)
                 .ToList();
 
                 <div class="scheduler-cell">
@@ -51,13 +49,10 @@
                         {
                             <div class="scheduler-event">
                                 <span>@ev.eventname</span> <br />
-                                <small>Kind: @ev.kinofevent</small>
+                                <small>Kind: @ev.kinofevent</small> <br />
+                                <small>@ev.date.ToString("hh:mm tt") - @ev.enddate.ToString("hh:mm tt")</small>
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <span>No events</span>
                     }
                 </div>
             }
@@ -82,7 +77,7 @@
     .scheduler-grid {
         display: grid;
         grid-template-columns: 80px repeat(7, 1fr);
-        gap: 1px;
+        border: 1px solid #ccc;
     }
 
     .time-column {
@@ -91,6 +86,7 @@
         padding: 5px;
         background-color: #f5f5f5;
         border: 1px solid #ccc;
+        border-right: none; /* Remove space between hour rows */
     }
 
     .day-header {
@@ -103,20 +99,20 @@
 
     .scheduler-cell {
         border: 1px solid #ccc;
-        min-height: 60px;
         padding: 5px;
         background-color: white;
+        height: 60px;
     }
 
     .scheduler-event {
         background-color: #007bff;
         color: white;
         padding: 5px;
-        margin: 2px 0;
         border-radius: 4px;
         font-size: 12px;
     }
 </style>
+
 
 @code {
     private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Sunday);
@@ -143,7 +139,6 @@
         if (userS != null)
         {
             isLoading = true;
-           
 
             var startOfWeek = weekStartDate;
             var endOfWeek = weekStartDate.AddDays(7);

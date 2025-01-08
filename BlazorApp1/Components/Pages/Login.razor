@@ -399,7 +399,7 @@
         Student student = await studentDB.LoginAsync( email, password);
         if (student!=null)
         {
-
+            await EventDB.builalloftheeventsid();
             // student.userid = hubConnection.ConnectionId;
             await MySession.SetAsync("student",student);
             navigationManager.NavigateTo("/");
@@ -429,6 +429,7 @@
         teacher teacher = await teacherDB.LoginAsync(email,password) ;
         if (teacher!=null)
         {
+            await EventDB.builalloftheeventsid();// בונה את הרשימה של האינונט איי די
             await MySession.SetAsync("teacher", teacher);
             navigationManager.NavigateTo("/");
 
