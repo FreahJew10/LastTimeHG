@@ -116,20 +116,20 @@
     private List<Event> dayEvents = new List<Event>();
     private Event newEvent = new Event();
 
-  
+
     protected override async void OnParametersSet()
     {
         if (Date == null)
         {
             selectedDate = DateTime.Now;
         }
-            
+
         else
         {
 
-         selectedDate = DateTime.Parse(Date);
-         
-            
+            selectedDate = DateTime.Parse(Date);
+
+
             StateHasChanged();
         }
     }
@@ -140,28 +140,35 @@
         EventDB eventDB = new EventDB();
         List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id,date);
         Console.WriteLine($"Fetched {events.Count} events from database.");
-            return events;
+        return events;
         return null;
     }
 
     private async Task AddEvent()
     {
-        Console.WriteLine("Attempting to add a new event...");
-        var eventDB = new EventDB();
-        newEvent.date = selectedDate.Add(newEvent.date.TimeOfDay); // Keep the same day
-        newEvent.randomuniqcode = new Random().Next(1, 1000000); // Generate a unique code
+        try
+        {
+            Console.WriteLine("Attempting to add a new event...");
+            var eventDB = new EventDB();
+            newEvent.date = selectedDate.Add(newEvent.date.TimeOfDay); // Keep the same day
+            newEvent.randomuniqcode = new Random().Next(1, 1000000); // Generate a unique code
 
-        bool success = await eventDB.insertEvent(newEvent);
-        if (success)
-        {
-            Console.WriteLine("Event added successfully to the database.");
-            dayEvents.Add(newEvent);
-            Console.WriteLine($"Added event: {newEvent.eventname} at {newEvent.date:HH:mm}");
-            newEvent = new Event(); // Reset the form
+            bool success = await eventDB.insertEvent(newEvent);
+            if (success)
+            {
+                Console.WriteLine("Event added successfully to the database.");
+                dayEvents.Add(newEvent);
+                Console.WriteLine($"Added event: {newEvent.eventname} at {newEvent.date:HH:mm}");
+                newEvent = new Event(); // Reset the form
+            }
+            else
+            {
+                Console.WriteLine("Failed to add event to the database.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            Console.WriteLine("Failed to add event to the database.");
+            Console.WriteLine(e);
         }
     }
 
