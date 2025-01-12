@@ -4,67 +4,207 @@
 @using Models;
 @using DBL;
 
-<h3>Search for Teachers</h3>
-
-<form class="search-bar" onsubmit="return false;">
-    <input type="search" @bind="SearchQuery" placeholder="Search by name, subject..." pattern=".*\S.*" required>
-    <button class="search-btn" type="button" @onclick="SearchTeachers">
-        <span>Search</span>
-    </button>
-</form>
-
-<div class="filter-section">
-    <label for="subjectFilter">Filter by Subject:</label>
-    <select id="subjectFilter" @bind="SelectedSubject">
-        <option value="">All Subjects</option>
-        @foreach (var subject in Subjects)
-        {
-            <option value="@subject.subjectid">@subject.subjectName</option>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Search</title>
+    <style>
+        :root {
+            font-size: 16px;
+            --primary-color: #2762f3;
+            --secondary-color: #171717;
+            --background-color: #f1f1f1;
+            --text-color: #171717;
         }
-    </select>
 
-    <label for="hourlyRate">Max Hourly Rate:</label>
-    <input type="number" id="hourlyRate" @bind="MaxHourlyRate" min="0">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    <label>
-        <input type="checkbox" @bind="IsPrivateOnly"> Private Teachers Only
-    </label>
-</div>
+        body {
+            background: var(--background-color);
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-@if (SearchResults?.Any() ?? false)
-{
-    <div class="results">
-        <h4>Results:</h4>
-        <ul>
-            @foreach (var teacher in PaginatedResults)
-            {
-                <li>
-                    <strong>@teacher.first_name @teacher.last_name</strong><br />
-                    Subjects: @string.Join(", ",Subjects.Select(s => s.subjectName))<br />
-                    Hourly Rate: $@teacher.hourly_rate<br />
-                    Bio: @teacher.bio
-                </li>
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+            .search-bar input[type="search"] {
+                flex: 1;
+                padding: 10px;
+                border: 2px solid var(--primary-color);
+                border-radius: 4px;
+                outline: none;
+                font-size: 16px;
+                transition: border-color 0.3s;
             }
-        </ul>
 
-        <div class="pagination">
-            @if (CurrentPage > 1)
-            {
-                <button @onclick="() => ChangePage(CurrentPage - 1)">Previous</button>
+                .search-bar input[type="search"]:focus {
+                    border-color: var(--secondary-color);
+                }
+
+            .search-bar button {
+                background: var(--primary-color);
+                color: #fff;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background-color 0.3s;
             }
-            @if (CurrentPage < TotalPages)
-            {
-                <button @onclick="() => ChangePage(CurrentPage + 1)">Next</button>
+
+                .search-bar button:hover {
+                    background: var(--secondary-color);
+                }
+
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+            .filter-section label {
+                font-weight: bold;
             }
+
+            .filter-section input, .filter-section select {
+                padding: 8px;
+                border: 2px solid var(--primary-color);
+                border-radius: 4px;
+                outline: none;
+                font-size: 16px;
+            }
+
+        .results {
+            margin-top: 20px;
+        }
+
+            .results ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .results li {
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+
+                .results li:last-child {
+                    border-bottom: none;
+                }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+            .pagination button {
+                background: var(--primary-color);
+                color: #fff;
+                padding: 10px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+                .pagination button:hover {
+                    background: var(--secondary-color);
+                }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Search for Teachers</h3>
+        <form class="search-bar" onsubmit="return false;">
+            <input type="search" @bind="SearchQuery" placeholder="Search by name, subject..." pattern=".*\S.*" required>
+            <button type="button" @onclick="SearchTeachers">Search</button>
+        </form>
+        <div class="filter-section">
+            <label for="subjectFilter">Filter by Subject:</label>
+            <select id="subjectFilter" @bind="SelectedSubject">
+                <option value="">All Subjects</option>
+                @foreach (var subject in Subjects)
+                {
+                    <option value="@subject.subjectid">@subject.subjectName</option>
+                }
+            </select>
+            <label for="hourlyRate">Max Hourly Rate:</label>
+            <input type="number" id="hourlyRate" @bind="MaxHourlyRate" min="0">
+            <label>
+                <input type="checkbox" @bind="IsPrivateOnly"> Private Teachers Only
+            </label>
         </div>
+        @if (SearchResults?.Any() ?? false)
+        {
+            <div class="results">
+                <h4>Results:</h4>
+                <ul>
+                    @foreach (var teacher in SearchResults)
+                    {
+                        <li>
+                            <strong>@teacher.first_name @teacher.last_name</strong><br />
+                          @*   Subjects: @string.Join(", ", Subjects.Select(s => s.subjectName))<br /> *@
+                            Hourly Rate: $@teacher.hourly_rate<br />
+                           
+                        </li>
+                    }
+                </ul>
+                <div class="pagination">
+                    @if (CurrentPage > 1)
+                    {
+                        <button @onclick="() => ChangePage(CurrentPage - 1)">Previous</button>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <button @onclick="() => ChangePage(CurrentPage + 1)">Next</button>
+                    }
+                </div>
+            </div>
+        }
+        else if (SearchExecuted)
+        {
+            <p>No results found.</p>
+        }
     </div>
-}
-else if (SearchExecuted)
-{
-    <p>No results found.</p>
-}
+</body>
+</html>
 
 @code {
+    teacherDB TeacherDB=new teacherDB();
+    SubjectDB SubjectDB=new SubjectDB();
+
     private string SearchQuery { get; set; } = string.Empty;
     private string SelectedSubject { get; set; } = string.Empty;
     private int? MaxHourlyRate { get; set; } = null;
@@ -76,8 +216,8 @@ else if (SearchExecuted)
     private int PageSize { get; set; } = 15;
     private int TotalPages => (int)Math.Ceiling((double)(SearchResults?.Count ?? 0) / PageSize);
     private bool SearchExecuted { get; set; } = false;
- public  SubjectDB SubjectDB = new SubjectDB();
- public teacherDB TeacherDB = new teacherDB();
+    
+
     protected override async Task OnInitializedAsync()
     {
         Subjects = await SubjectDB.SelectAllSubjects();
@@ -85,24 +225,11 @@ else if (SearchExecuted)
 
     private async Task SearchTeachers()
     {
-        var query = await TeacherDB.GetAllPrivateTeachersForThisSubjectId(!string.IsNullOrEmpty(SelectedSubject) ? int.Parse(SelectedSubject) : 0);
+        SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(!string.IsNullOrEmpty(SelectedSubject) ? int.Parse(SelectedSubject) : 0);
 
-        if (!string.IsNullOrWhiteSpace(SearchQuery))
-        {
-            query = query.Where(t => t.first_name.Contains(SearchQuery) || t.last_name.Contains(SearchQuery)).ToList();
-        }
+        
 
-        if (MaxHourlyRate.HasValue)
-        {
-            query = query.Where(t => t.hourly_rate <= MaxHourlyRate).ToList();
-        }
-
-        if (IsPrivateOnly)
-        {
-            query = query.Where(t => t.isprivate == 1).ToList();
-        }
-
-        SearchResults = query;
+    
         CurrentPage = 1;
         SearchExecuted = true;
     }

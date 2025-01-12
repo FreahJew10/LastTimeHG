@@ -11,6 +11,7 @@ namespace DBL
         public async Task<List<teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
         {
             string q = $@"Select
+teachers1.teacherid,
     teachers1.first_name,
     teachers1.last_name,
     teachers1.email,
@@ -18,9 +19,9 @@ namespace DBL
     teachers1.hourly_rate,
     teachers1.isprivate
 From
-    mylastyear.sub_to_teechers Inner Join
-    mylastyear.teachers teachers1 On mylastyear.sub_to_teechers.teacherid = teachers1.teacherid Inner Join
-    mylastyear.subject On mylastyear.sub_to_teechers.subjectId = mylastyear.subject.subjectId
+    mylastyear.sub_to_teachers Inner Join
+    mylastyear.teachers teachers1 On mylastyear.sub_to_teachers.teacherid = teachers1.teacherid Inner Join
+    mylastyear.subject On mylastyear.sub_to_teachers.subjectId = mylastyear.subject.subjectId
 Where
     teachers1.isprivate = 1 and mylastyear.subject.subjectId=@id";
             Dictionary<string, object> properties = new Dictionary<string, object>();
@@ -94,23 +95,46 @@ Where
 
         protected override async Task<teacher> CreateModelAsync(object[] row)
         {
-            teacher teacher = new teacher();
-            teacher.Id = int.Parse(row[0].ToString());
-            teacher.first_name = row[1].ToString();
-            teacher.last_name = row[2].ToString();
-            teacher.email = row[3].ToString();
-            teacher.password = row[4].ToString();
-            teacher.bio= row[5].ToString();
-            teacher.hourly_rate= int.Parse(row[6].ToString());
-            if (row[7] == null)
+            if (row.Length == 8)//בגלל הסיסמה שאני לא מכניס
             {
-                teacher.isprivate = 1;
+                teacher teacher = new teacher();
+                teacher.Id = int.Parse(row[0].ToString());
+                teacher.first_name = row[1].ToString();
+                teacher.last_name = row[2].ToString();
+                teacher.email = row[3].ToString();
+                teacher.password = row[4].ToString();
+                teacher.bio = row[5].ToString();
+                teacher.hourly_rate = int.Parse(row[6].ToString());
+                if (row[7] == null)
+                {
+                    teacher.isprivate = 1;
+                }
+                else
+                {
+                    teacher.isprivate = int.Parse(row[7].ToString());
+                }
+                return teacher;
             }
             else
             {
-                teacher.isprivate = int.Parse(row[7].ToString());
+                teacher teacher = new teacher();
+                teacher.Id = int.Parse(row[0].ToString());
+                teacher.first_name = row[1].ToString();
+                teacher.last_name = row[2].ToString();
+                teacher.email = row[3].ToString();
+                
+                teacher.bio = row[4].ToString();
+                teacher.hourly_rate = int.Parse(row[5].ToString());
+                if (row[6] == null)
+                {
+                    teacher.isprivate = 1;
+                }
+                else
+                {
+                    teacher.isprivate = int.Parse(row[6].ToString());
+                }
+                return teacher;
             }
-            return teacher;
         }
 
         protected override List<string> GetPrimaryKeyName()
