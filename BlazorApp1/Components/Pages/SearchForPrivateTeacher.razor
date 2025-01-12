@@ -1,5 +1,114 @@
-﻿<h3>SearchForPrivateTeacher</h3>
+﻿@page "/teacher-search"
+
+@using System.Linq;
+@using Models;
+@using DBL;
+
+<h3>Search for Teachers</h3>
+
+<form class="search-bar" onsubmit="return false;">
+    <input type="search" @bind="SearchQuery" placeholder="Search by name, subject..." pattern=".*\S.*" required>
+    <button class="search-btn" type="button" @onclick="SearchTeachers">
+        <span>Search</span>
+    </button>
+</form>
+
+<div class="filter-section">
+    <label for="subjectFilter">Filter by Subject:</label>
+    <select id="subjectFilter" @bind="SelectedSubject">
+        <option value="">All Subjects</option>
+        @foreach (var subject in Subjects)
+        {
+            <option value="@subject.subjectid">@subject.subjectName</option>
+        }
+    </select>
+
+    <label for="hourlyRate">Max Hourly Rate:</label>
+    <input type="number" id="hourlyRate" @bind="MaxHourlyRate" min="0">
+
+    <label>
+        <input type="checkbox" @bind="IsPrivateOnly"> Private Teachers Only
+    </label>
+</div>
+
+@if (SearchResults?.Any() ?? false)
+{
+    <div class="results">
+        <h4>Results:</h4>
+        <ul>
+            @foreach (var teacher in PaginatedResults)
+            {
+                <li>
+                    <strong>@teacher.first_name @teacher.last_name</strong><br />
+                    Subjects: @string.Join(", ",Subjects.Select(s => s.subjectName))<br />
+                    Hourly Rate: $@teacher.hourly_rate<br />
+                    Bio: @teacher.bio
+                </li>
+            }
+        </ul>
+
+        <div class="pagination">
+            @if (CurrentPage > 1)
+            {
+                <button @onclick="() => ChangePage(CurrentPage - 1)">Previous</button>
+            }
+            @if (CurrentPage < TotalPages)
+            {
+                <button @onclick="() => ChangePage(CurrentPage + 1)">Next</button>
+            }
+        </div>
+    </div>
+}
+else if (SearchExecuted)
+{
+    <p>No results found.</p>
+}
 
 @code {
+    private string SearchQuery { get; set; } = string.Empty;
+    private string SelectedSubject { get; set; } = string.Empty;
+    private int? MaxHourlyRate { get; set; } = null;
+    private bool IsPrivateOnly { get; set; } = false;
+    private List<Subject> Subjects { get; set; } = new List<Subject>();
+    private List<teacher> SearchResults { get; set; } = new List<teacher>();
+    private List<teacher> PaginatedResults => SearchResults.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 15;
+    private int TotalPages => (int)Math.Ceiling((double)(SearchResults?.Count ?? 0) / PageSize);
+    private bool SearchExecuted { get; set; } = false;
+ public  SubjectDB SubjectDB = new SubjectDB();
+ public teacherDB TeacherDB = new teacherDB();
+    protected override async Task OnInitializedAsync()
+    {
+        Subjects = await SubjectDB.SelectAllSubjects();
+    }
 
+    private async Task SearchTeachers()
+    {
+        var query = await TeacherDB.GetAllPrivateTeachersForThisSubjectId(!string.IsNullOrEmpty(SelectedSubject) ? int.Parse(SelectedSubject) : 0);
+
+        if (!string.IsNullOrWhiteSpace(SearchQuery))
+        {
+            query = query.Where(t => t.first_name.Contains(SearchQuery) || t.last_name.Contains(SearchQuery)).ToList();
+        }
+
+        if (MaxHourlyRate.HasValue)
+        {
+            query = query.Where(t => t.hourly_rate <= MaxHourlyRate).ToList();
+        }
+
+        if (IsPrivateOnly)
+        {
+            query = query.Where(t => t.isprivate == 1).ToList();
+        }
+
+        SearchResults = query;
+        CurrentPage = 1;
+        SearchExecuted = true;
+    }
+
+    private void ChangePage(int newPage)
+    {
+        CurrentPage = newPage;
+    }
 }

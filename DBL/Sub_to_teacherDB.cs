@@ -9,6 +9,7 @@ namespace DBL
 {
     public class Sub_to_teacherDB : BaseDB<Sub_to_teacher>
     {
+     
         protected override async Task<List<Sub_to_teacher>> CreateListModelAsync(List<object[]> rows)
         {
            List<Sub_to_teacher>list=new List<Sub_to_teacher>();
@@ -31,7 +32,7 @@ namespace DBL
 
         protected override List<string> GetPrimaryKeyName()
         {
-            List<string> list = new List<string>() { "teacherid", "subjactid" };
+            List<string> list = new List<string>() { "teacherid", "subjectid" };
             return list;
         }
 

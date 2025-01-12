@@ -8,7 +8,31 @@ namespace DBL
 {
     public class teacherDB : BaseDB<teacher>
     {
+        public async Task<List<teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
+        {
+            string q = $@"Select
+    teachers1.first_name,
+    teachers1.last_name,
+    teachers1.email,
+    teachers1.bio,
+    teachers1.hourly_rate,
+    teachers1.isprivate
+From
+    mylastyear.sub_to_teechers Inner Join
+    mylastyear.teachers teachers1 On mylastyear.sub_to_teechers.teacherid = teachers1.teacherid Inner Join
+    mylastyear.subject On mylastyear.sub_to_teechers.subjectId = mylastyear.subject.subjectId
+Where
+    teachers1.isprivate = 1 and mylastyear.subject.subjectId=@id";
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            properties.Add("id", subjectId);
+            List<teacher> lst = await SelectAllAsync(q, properties);
 
+            if (lst.Count > 0 )
+                return lst;
+
+            return null;
+            
+        }
         public async Task<bool> updateAsync(teacher teacher)
         {
             Dictionary<string, object> fillValues = new Dictionary<string, object>();
