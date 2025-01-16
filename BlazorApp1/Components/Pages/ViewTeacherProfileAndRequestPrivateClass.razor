@@ -1,6 +1,146 @@
-﻿@page "/ViewTeacherProfileAndRequest"
+﻿@page "/ViewTeacherProfileAndRequest/{Id:int}"
 <h3>ViewTeacherProfileAndRequestPrivateClass</h3>
+@using System
+@inject NavigationManager Navigation
+@using System
+@inject NavigationManager Navigation
+
+<div class="teacher-appointment-container">
+    <!-- Teacher Profile Section -->
+    <div class="teacher-profile">
+        <img src="teacher-photo.jpg" alt="Teacher Photo" class="teacher-photo" />
+        <h2>@TeacherName</h2>
+        <p>@TeacherBio</p>
+        <p><strong>Expertise:</strong> @TeacherExpertise</p>
+        <p><strong>Rating:</strong> ⭐⭐⭐⭐⭐ (4.8)</p>
+    </div>
+
+    <!-- Appointment Scheduler -->
+    <div class="appointment-scheduler">
+        <h3>Schedule a Private Lesson</h3>
+        <div class="calendar">
+            <label for="appointment-date">Select Date:</label>
+            <input type="date" id="appointment-date" @bind="SelectedDate" />
+
+            <label for="appointment-time">Select Time:</label>
+          @*   <input type="time" id="appointment-time" @bind="SelectedTime" /> *@
+        </div>
+        <div class="appointment-form">
+            <input type="text" placeholder="Your Name" @bind="StudentName" />
+            <input type="text" placeholder="Subject" @bind="Subject" />
+            <textarea placeholder="Additional Notes" @bind="Notes"></textarea>
+            <button class="btn-confirm" @onclick="ConfirmAppointment">Confirm Appointment</button>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    @if (ShowSummary)
+    {
+        <div class="appointment-summary">
+            <h4>Appointment Summary</h4>
+            <p><strong>Date:</strong> @SelectedDate.ToString()</p>
+            <p><strong>Time:</strong> @SelectedTime</p>
+            <p><strong>Student:</strong> @StudentName</p>
+            <p><strong>Subject:</strong> @Subject</p>
+            <button class="btn-finalize" @onclick="FinalizeAppointment">Finalize</button>
+        </div>
+    }
+</div>
 
 @code {
+    // Data Binding
+    private string TeacherName = "John Doe";
+    private string TeacherBio = "Experienced Math Teacher with 10 years of expertise.";
+    private string TeacherExpertise = "Mathematics, Physics";
 
+    private DateTime? SelectedDate;
+    private string SelectedTime;
+    private string StudentName;
+    private string Subject;
+    private string Notes;
+
+    private bool ShowSummary = false;
+
+    private void ConfirmAppointment()
+    {
+        if (SelectedDate != null && !string.IsNullOrEmpty(SelectedTime) && !string.IsNullOrEmpty(StudentName))
+        {
+            ShowSummary = true;
+        }
+        else
+        {
+            // Handle error - Display a message to fill all fields
+        }
+    }
+
+    private void FinalizeAppointment()
+    {
+        // Example: Save appointment to database or navigate to confirmation page
+        Navigation.NavigateTo("/confirmation");
+    }
 }
+<style>
+    .teacher-appointment-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .teacher-profile {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .teacher-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    .appointment-scheduler {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+    }
+
+    .calendar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .appointment-form {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .appointment-form input, .appointment-form textarea, .appointment-form select {
+            margin-bottom: 10px;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+    .btn-confirm, .btn-finalize {
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .btn-confirm:hover, .btn-finalize:hover {
+            background-color: #45a049;
+        }
+</style>

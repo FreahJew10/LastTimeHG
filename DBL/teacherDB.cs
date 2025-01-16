@@ -8,6 +8,10 @@ namespace DBL
 {
     public class teacherDB : BaseDB<teacher>
     {
+        public async Task<List<teacher>> GetTeacherByPrimeryKey(int  primeryKey)
+        {
+            string q = $@"";
+        }
         public async Task<List<teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
         {
             string q = $@"Select

@@ -177,7 +177,7 @@
                             <strong>@teacher.first_name @teacher.last_name</strong><br />
                           @*   Subjects: @string.Join(", ", Subjects.Select(s => s.subjectName))<br /> *@
                             Hourly Rate: $@teacher.hourly_rate<br />
-                           
+                           <a href="ViewTeacherProfileAndRequest/@teacher.Id">set a meting </a>
                         </li>
                     }
                 </ul>
