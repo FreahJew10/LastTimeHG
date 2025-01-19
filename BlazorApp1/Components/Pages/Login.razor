@@ -399,7 +399,7 @@
         Student student = await studentDB.LoginAsync( email, password);
         if (student!=null)
         {
-            await EventDB.builalloftheeventsid();
+          //  await EventDB.builalloftheeventsid();
             // student.userid = hubConnection.ConnectionId;
             await MySession.SetAsync("student",student);
             navigationManager.NavigateTo("/");

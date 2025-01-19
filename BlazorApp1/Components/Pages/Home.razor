@@ -48,7 +48,8 @@
                     @if (userS != null)
                     {
                         <li><a href="#section1">hello! @userS.first_name</a></li>
-                        <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">SearchForFriends</a></li>
+                        <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">show my clander</a></li>
+                        <li><a href="/teacher-search" @onclick="movetoSearchForteachers"> search for private teacher</a></li>
                     }
                     else if (userT != null)
                     {
@@ -805,10 +806,7 @@
 
 
     }
-    public async Task AddAsMyFriend(Person person)
-    {
-
-    }
+   
     public async Task search()
     {
         if (userS != null)
@@ -860,6 +858,10 @@
     public async Task movetoSearchForFriends()
     {
         navigationManager.NavigateTo("/calender");
+    }
+    public async Task movetoSearchForteachers()
+    {
+        navigationManager.NavigateTo("/teacher-search");
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {

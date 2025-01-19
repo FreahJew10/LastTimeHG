@@ -8,9 +8,28 @@ namespace DBL
 {
     public class teacherDB : BaseDB<teacher>
     {
-        public async Task<List<teacher>> GetTeacherByPrimeryKey(int  primeryKey)
+        public async Task<teacher> GetTeacherByPrimeryKey(int  primeryKey)
         {
-            string q = $@"";
+            string q = $@"Select
+    mylastyear.teachers.teacherid,
+    mylastyear.teachers.first_name,
+    mylastyear.teachers.last_name,
+    mylastyear.teachers.email,
+    mylastyear.teachers.bio,
+    mylastyear.teachers.hourly_rate,
+    mylastyear.teachers.isprivate
+From
+    mylastyear.teachers
+Where
+    mylastyear.teachers.teacherid = @teacherid";
+
+            Dictionary<string, object> p = new Dictionary<string, object>();
+            p.Add("teacherid", primeryKey);
+            List<teacher> list = await SelectAllAsync(q, p);
+            if (list.Count == 1)
+                return list[0];
+            else
+                return null;
         }
         public async Task<List<teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
         {
