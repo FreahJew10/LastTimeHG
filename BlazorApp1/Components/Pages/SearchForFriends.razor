@@ -127,7 +127,7 @@
    .WithAutomaticReconnect()
    .Build();
         await hubConnection.StartAsync();
-
+       
         /*   await hubConnection.StartAsync();
         if (await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(friend.email, hubConnection.ConnectionId))
             {
@@ -144,28 +144,30 @@
         }*/
         List<string> friendconIDs =await StaticChatHub.GiveMyFriendConFORnotifications(friend.email);
         Random random = new Random();
+        string zeevhashcode = "daliner is the next one";
         int randomeventcod = random.Next(-999999999,999999999);
-        Event vent =new Event();
-        if (!EventDB.alloftheeventsid.Contains(randomeventcod))
-        {
-             vent = new Event("added you as friend", DateTime.Now, 0, "notification", randomeventcod, DateTime.Now);
-        }
-        else 
-        {
-            bool t = EventDB.alloftheeventsid.Contains(randomeventcod);
-            while (t)
-            {
+         Event vent =new Event();
+        // if (!EventDB.alloftheeventsid.Contains(randomeventcod))
+        // {
+            randomeventcod = zeevhashcode.GetHashCode();
+        vent = new Event("added you as friend", DateTime.Now, 0, "notification-add friend", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
+        // }
+        // else 
+        // {
+        //     //bool t = EventDB.alloftheeventsid.Contains(randomeventcod);
+        //     while (t)
+        //     {
 
-                randomeventcod = random.Next(-999999999, 999999999);
-                t = EventDB.alloftheeventsid.Contains(randomeventcod);
-                if (!t)
-                {
-                    vent = new Event("added you as friend", DateTime.Now, 0, "notification", randomeventcod, DateTime.Now);
-                    break;
-                }
                 
-            }
-        }
+        //         t = EventDB.alloftheeventsid.Contains(randomeventcod);
+        //         if (!t)
+        //         {
+        //             vent = new Event("added you as friend", DateTime.Now, 0, "notification", randomeventcod, DateTime.Now);
+        //             break;
+        //         }
+                
+        //     }
+        // }
         friends friends = new friends(userS.Id, id);
         StudentInEvent studentInEvent1 = new StudentInEvent(userS.Id, randomeventcod);//לעכשיו אני מכניס את הרנדום אינוונט קוד ואז אני אעשה אינסרט לפיו
         StudentInEvent studentInEvent2 = new StudentInEvent(id, randomeventcod);
