@@ -6,13 +6,26 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public class Event
+    public class Event//
+        
     {
         public Event()
         { }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="eventname"></param>חשוב לציין התכונה שם האיוונט נוצרה מתוך מחשבה לא נכונה,יותר נכון לקרוא לה תוכן האיוונט במקרים מסויימים 
+        /// במקרים כמו למשל (ובעיקר) בהתראות זהו אינו השם (אלא התוכן שם גם מועבר למשל בקביעת שיעור פרטי זמן השיעור בנוסף גם הערות מוספות לתוך השם)כמובן ניתן להעביר גם את השם רך במקרה כזה ישנו סדר שבו הדבר יופיע
+        /// בנוסף במקרים בהם השם הוא התראות ככל הנראה ברוב המקרים השם שיוצג למשתמש בפועל הוא הערך סוג האיוונט של העצם ולא השם בפועל 
+        /// {Name//notes//{date of the wanted lesson}-בקביעת שיעור פרטי כאשר השם יכול לא להיות קיים
+        /// <param name="date"></param>
+        /// <param name="teacherid"></param>
+        /// <param name="kindofevent"></param>
+        /// <param name="randomuniqcode"></param>
+        /// <param name="enddate"></param>
         public Event(string eventname, DateTime date, int teacherid,string kindofevent,int randomuniqcode, DateTime enddate)
         {
-            
+            this.eventname = eventname;
             this.date = date;
             this.teacherid = teacherid;
             this.kinofevent = kindofevent;
@@ -27,6 +40,7 @@ namespace Models
             this.teacherid = 0;
             this.kinofevent = kindofevent;
             this.enddate = enddate;
+            this.randomuniqcode= "honor is dead".GetHashCode();
         }
         public Event(string eventname, string kindofevent)
         {

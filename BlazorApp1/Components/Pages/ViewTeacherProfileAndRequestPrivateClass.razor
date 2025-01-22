@@ -30,10 +30,10 @@
                 <label for="appointment-time">Select Time:</label>
                 <input type="time" id="appointment-time" @bind="SelectedTime" />
             </div>
-            @* <div class="appointment-form">
+            <div class="appointment-form">
                 <textarea placeholder="Additional Notes" @bind="Notes"></textarea>
                 <button class="btn-confirm" @onclick="ConfirmAppointment">Confirm Appointment</button>
-            </div> *@
+            </div> 
         </div>
 
         <!-- Rating Section -->
@@ -103,19 +103,30 @@
     {
         if (SelectedDate != null && !string.IsNullOrEmpty(SelectedTime.ToString()) && !string.IsNullOrEmpty(userS.email))
         {
-            string zeevhashcode = "daliner is the next one";
-            int randomeventcod = zeevhashcode.GetHashCode();
+            try
+            {
+                string zeevhashcode = "daliner is the next one";
+                int randomeventcod = zeevhashcode.GetHashCode();
 
-            DateTime dateTime = new DateTime();
-            
-            dateTime= new DateTime(SelectedDate.Value.Year,SelectedDate.Value.Month,SelectedDate.Value.Day,SelectedTime.Value.Hour,SelectedTime.Value.Minute,0);
+                DateTime dateTime = new DateTime();
 
-            Event @event = new Event($@"{dateTime.ToString("yyyy-MM-dd")}", DateTime.Now, privateteacher.Id, "notification-private lesson", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
-            await eventDB.insertEvent(@event);
-            StudentInEvent studentInEvent = new StudentInEvent(userS.Id, randomeventcod);
+                dateTime = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day, SelectedTime.Value.Hour, SelectedTime.Value.Minute, 0);
 
-            await studentInEventDB.insertStedentInEvent(studentInEvent);
-            ShowSummary = true;
+                Event @event = new Event($@"//{Notes}//{dateTime.ToString("yyyy-MM-dd HH:mm")}", DateTime.Now, privateteacher.Id, "notification-private lesson", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
+               if( await eventDB.insertEvent(@event))
+               {
+                StudentInEvent studentInEvent = new StudentInEvent(userS.Id, randomeventcod);
+
+                await studentInEventDB.insertStedentInEvent(studentInEvent);
+                    ShowSummary = true;
+                    await js.InvokeVoidAsync("alert", $"the request for private lesson was sent");
+               }
+                
+            }
+            catch(Exception e){
+                Console.WriteLine("the error "+e);
+            }
+        
         }
         else
         {
