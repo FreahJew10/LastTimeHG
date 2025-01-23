@@ -15,8 +15,8 @@
 {
 
     <h1>@friend.first_name</h1>
-    <h3>@friendconnected</h3>
-    <div class="chat-container">
+    <h3>is connected: @friendconnected</h3>
+    <div class="chat-container" style="height:850px;max-height:850px">
         @foreach (SignalrPersonMessage message in usermessages)
         {
             if (message.person == userS)
@@ -42,7 +42,7 @@
             }
         }
         <!-- Input Area -->
-        <div class="input-container">
+        <div class="input-container"  style="position:fixed; bottom:20px">
             <input @bind="massageinput" class="message-input" placeholder="Type a message..." />
             <button @onclick="SendToFriend" class="send-button" >Send</button>
         </div>

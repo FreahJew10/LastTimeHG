@@ -10,7 +10,8 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
-       public static List<int> alloftheeventsid = new List<int>();
+        
+      /* public static List<int> alloftheeventsid = new List<int>();
 
         public static async Task  AddCodeTobuilalloftheeventsid(int randomcode)
         {
@@ -43,9 +44,30 @@ namespace DBL
 
             return cods;
 
+        }*/
+
+        public async Task<List<Event>>GetAllNotificationsForStudent(int studentid)
+        {
+          List<Event>events = new List<Event>();
+            string sql = $@"Select
+                           event.randomuniqcode,
+                           event.eventname,
+                           event.date,
+                           event.teacherid,
+                           event.kindofevent,
+                           event.enddate
+                           From
+                           student Inner Join
+                           studentinevent On studentinevent.studentid = student.studentid Inner Join
+                           event On studentinevent.randomuniqcode = event.randomuniqcode
+                                where student.studentid=@srudentid AND event.kindofevent rlike ""notification""";
+            Dictionary <string,object> data = new Dictionary <string,object> ();
+            data.Add("studentid", studentid);
+            events = await SelectAllAsync(sql, data);
+
+            if (events.Count > 0) { return events; }
+            else { return null; }
         }
-
-
 
         public async Task<List<Event>> GetEventsForStudentInRange(int studentId,DateTime startdate, DateTime enddate)
         {
