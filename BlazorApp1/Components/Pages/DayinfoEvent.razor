@@ -9,9 +9,10 @@
 @using Hubs
 @page "/DetailsOfDay/{Date}"
 <h3>Details of Day</h3>
-
+@if (events!=null)
+{
 <div class="details-container">
-   @*  <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4> *@
+    @*  <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4> *@
 
     <table class="events-table">
         <thead>
@@ -24,7 +25,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (Event ev in dayEvents)
+            @foreach (Event ev in events)
             {
                 <tr>
                     <td>@ev.eventname</td>
@@ -67,7 +68,7 @@
         <button type="submit" class="btn btn-primary">Add Event</button>
     </EditForm>
 </div>
-
+}
 <style>
     .details-container {
     max-width: 800px;
@@ -113,9 +114,9 @@
     public string Date { get; set; }
     public DateTime selectedDate = new DateTime();
     public Student userS = null;
-    private List<Event> dayEvents = new List<Event>();
+ //   private List<Event> dayEvents = new List<Event>();
     private Event newEvent = new Event();
-
+    private List<Event> events = new List<Event>();
 
     protected override async void OnParametersSet()
     {
@@ -136,12 +137,21 @@
 
     private async Task<List<Event>> LoadEventsForDay(DateTime date)
     {
-        Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
-        EventDB eventDB = new EventDB();
-        List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id,date);
-        Console.WriteLine($"Fetched {events.Count} events from database.");
-        return events;
-        return null;
+        try
+        {
+            Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
+            EventDB eventDB = new EventDB();
+            List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id, date);
+            //      Console.WriteLine($"Fetched {events.Count} events from database.");
+            return events;
+            
+        }
+        catch(Exception e)
+        {
+        Console.WriteLine(e);
+        
+        }
+    return null;
     }
 
     private async Task AddEvent()
@@ -157,7 +167,7 @@
             if (success)
             {
                 Console.WriteLine("Event added successfully to the database.");
-                dayEvents.Add(newEvent);
+                events.Add(newEvent);
                 Console.WriteLine($"Added event: {newEvent.eventname} at {newEvent.date:HH:mm}");
                 newEvent = new Event(); // Reset the form
             }
@@ -177,7 +187,7 @@
         Console.WriteLine($"Attempting to delete event with unique code: {uniqueCode}");
         var eventDB = new EventDB();
        // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
-        dayEvents.RemoveAll(e => e.randomuniqcode == uniqueCode);
+        events.RemoveAll(e => e.randomuniqcode == uniqueCode);
         Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
 
     }
@@ -191,7 +201,7 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-                dayEvents = await LoadEventsForDay(selectedDate);
+                events = await LoadEventsForDay(selectedDate);
 
                 StateHasChanged();
             }
