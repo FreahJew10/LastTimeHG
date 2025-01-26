@@ -54,6 +54,7 @@
                     else if (userT != null)
                     {
                         <li><a href="#section1">hello! @userT.first_name</a></li>
+                        <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
                     }
                     else
                     {
@@ -862,6 +863,10 @@
     public async Task movetoSearchForteachers()
     {
         navigationManager.NavigateTo("/teacher-search");
+    }
+    public async Task movetoNotification()
+    {
+        navigationManager.NavigateTo("/Notifications");
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {

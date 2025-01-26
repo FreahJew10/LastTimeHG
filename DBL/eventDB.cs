@@ -10,42 +10,62 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
-        
-      /* public static List<int> alloftheeventsid = new List<int>();
 
-        public static async Task  AddCodeTobuilalloftheeventsid(int randomcode)
-        {
-         alloftheeventsid.Add(randomcode);
-        }
+        /* public static List<int> alloftheeventsid = new List<int>();
 
-        public static  async Task builalloftheeventsid()
-        {
-            if (alloftheeventsid.Count == 0)
-            {
-                EventDB eventDB = new EventDB();
-                List<Event> events = new List<Event>();
-                events = await eventDB.GetAllRandomCode();
-                for (int i=0; i<events.Count;i++ )
-                {
-                    events.Add(events[i]);
-                }
-            }
+          public static async Task  AddCodeTobuilalloftheeventsid(int randomcode)
+          {
+           alloftheeventsid.Add(randomcode);
+          }
 
-        }
-        public  async Task<List<Event>> GetAllRandomCode()
+          public static  async Task builalloftheeventsid()
+          {
+              if (alloftheeventsid.Count == 0)
+              {
+                  EventDB eventDB = new EventDB();
+                  List<Event> events = new List<Event>();
+                  events = await eventDB.GetAllRandomCode();
+                  for (int i=0; i<events.Count;i++ )
+                  {
+                      events.Add(events[i]);
+                  }
+              }
+
+          }
+          public  async Task<List<Event>> GetAllRandomCode()
+          {
+              List<Event> cods = new List<Event>();
+              string q = @$"Select
+                         mylastyear.event.randomuniqcode
+                        From
+                       mylastyear.event";
+              List<Event> events = new List<Event>();
+              cods = await SelectAllAsync(q);
+
+              return cods;
+
+          }*/
+
+        public async Task<List<Event>> GetAllNotificationsForTeacher(int teacherid)
         {
-            List<Event> cods = new List<Event>();
-            string q = @$"Select
-                       mylastyear.event.randomuniqcode
-                      From
-                     mylastyear.event";
             List<Event> events = new List<Event>();
-            cods = await SelectAllAsync(q);
+            string sql = $@"Select
+    event.randomuniqcode,
+    event.eventname,
+    event.date,
+    event.teacherid,
+    event.kindofevent,
+    event.enddate
+From
+    event
+    where event.teacherid=@teacherid;";
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("teacherid", teacherid);
+            events = await SelectAllAsync(sql, data);
 
-            return cods;
-
-        }*/
-
+            if (events.Count > 0) { return events; }
+            else { return null; }
+        }
         public async Task<List<Event>>GetAllNotificationsForStudent(int studentid)
         {
           List<Event>events = new List<Event>();
@@ -64,7 +84,7 @@ namespace DBL
             Dictionary <string,object> data = new Dictionary <string,object> ();
             data.Add("studentid", studentid);
             events = await SelectAllAsync(sql, data);
-
+            
             if (events.Count > 0) { return events; }
             else { return null; }
         }
