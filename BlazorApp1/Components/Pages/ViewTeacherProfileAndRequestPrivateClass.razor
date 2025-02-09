@@ -73,7 +73,7 @@
     private DateTime? SelectedTime { get; set; } = new DateTime();
     private string StudentName;
     private string Notes;
-    public teacher privateteacher = null;
+    public Teacher privateteacher = null;
     private bool ShowSummary = false;
     private List<Subject> subjects = new List<Subject>();
     public Student userS = null;
@@ -112,7 +112,7 @@
 
                 dateTime = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day, SelectedTime.Value.Hour, SelectedTime.Value.Minute, 0);
 
-                Event @event = new Event($@"//{Notes}// {dateTime.ToString("yyyy-MM-dd HH:mm")}", DateTime.Now, privateteacher.Id, "notification-private lesson", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
+                Event @event = new Event($@"/{Notes}/{dateTime.ToString("yyyy-MM-dd HH:mm")}", DateTime.Now, privateteacher.Id, "notification-private lesson", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
                if( await eventDB.insertEvent(@event))
                {
                 StudentInEvent studentInEvent = new StudentInEvent(userS.Id, randomeventcod);

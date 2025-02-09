@@ -8,18 +8,21 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 @using Microsoft.AspNetCore.SignalR.Client
 @using Hubs
+
 @if (userT != null)
 {
     <section class="section-50">
-
         <div class="container">
+            <h3 class="m-b-50 heading-line">
+                Notifications <i class="fa fa-bell text-muted"></i>
+            </h3>
 
-            <h3 class="m-b-50 heading-line">Notifications <i class="fa fa-bell text-muted"></i></h3>
             @if (notifications != null)
             {
+
                 @foreach (Event notification in notifications)
                 {
-                    @if (notification.enddate > DateTime.Now)
+                    if (notification.enddate > DateTime.Now)
                     {
                         <div class="notification-ui_dd-content">
                             <div class="notification-list notification-list--unread">
@@ -28,159 +31,307 @@
                                         <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user">
                                     </div>
                                     <div class="notification-list_detail">
-                                        <p><b>@userT.first_name</b> @notification.kinofevent</p>
-                                        <p class="text-muted">at the @notification.eventname</p>
-                                        <p class="text-muted"><small>10 mins ago</small></p>
+                                        <p><b>@userT.first_name</b> you got @notification.kinofevent</p>
+
+                                        <p class="text-muted"><small>@notification.randomuniqcode @notification.enddate.ToString()</small></p>
                                     </div>
                                 </div>
                                 <div class="notification-list_feature-img">
                                     <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image">
                                 </div>
+
+                                <button class="btn btn-primary view-details" @onclick="() => OpenSidebarAsync(notification)">
+                                    View Details
+                                </button>
                             </div>
                         </div>
                     }
-                    else
-                    {
+                    else{
                         <div class="notification-list">
                             <div class="notification-list_content">
                                 <div class="notification-list_img">
                                     <img src="https://i.imgur.com/ltXdE4K.jpg" alt="user">
                                 </div>
                                 <div class="notification-list_detail">
-                                    <p><b>@userT.first_name</b> @notification.kinofevent</p>
-                                    <p class="text-muted">at the @notification.eventname</p>
-                                    <p class="text-muted"><small>10 mins ago</small></p>
+                                    <p><b>@userT.first_name</b> yo got @notification.kinofevent</p>
+
+                                    <p class="text-muted"><small>@notification.randomuniqcode @notification.enddate.ToString()</small></p>
                                 </div>
                             </div>
                             <div class="notification-list_feature-img">
                                 <img src="https://i.imgur.com/bpBpAlH.jpg" alt="Feature image">
                             </div>
+                            <button class="btn btn-primary view-details" @onclick="() => OpenSidebarAsync(notification)">
+                                View Details
+                            </button>
                         </div>
-
                     }
                 }
             }
+
             <div class="text-center">
                 <a href="/home" class="dark-link">Load more activity</a>
             </div>
         </div>
-
     </section>
 }
+
+<!-- Sidebar -->
+<div class="sidebar-overlay @(IsSidebarOpen ? "active" : "")" @onclick="CloseSidebarAsync"></div>
+
+<div class="sidebar @(IsSidebarOpen ? "open" : "")">
+    <a href="javascript:void(0)" class="closebtn" @onclick="CloseSidebarAsync">×</a>
+    <h3 class="sidebar-title">Private Lesson Request</h3>
+    <div class="sidebar-content">
+        <p><strong>Student:</strong> @SelectedStudentName</p>
+        <p><strong>Lesson Topic:</strong> @SelectedEventName</p>
+        @if (SelectedNotification!=null&&SelectedNotification.enddate > DateTime.Now)
+        {
+            <div class="sidebar-buttons">
+                <button class="btn btn-success" @onclick="ConfirmLessonAsync">Confirm</button>
+                <button class="btn btn-danger" @onclick="RejectLessonAsync">Reject</button>
+            </div>
+        }
+    </div>
+</div>
+
 @code {
+    private bool IsSidebarOpen = false;
+    private string? SelectedStudentName;
+    private string? SelectedEventName;
+    private Event? SelectedNotification;
+
     List<Event> notifications = new List<Event>();
-    public Student userS = null;
-    public teacher userT = null;
+    public Student? userS;
+    public Teacher? userT;
     public studentDB studentDB = new studentDB();
     public EventDB eventDB = new EventDB();
-    protected override async Task OnAfterRenderAsync(bool firstRender)///
+
+    private async Task OpenSidebarAsync(Event notification)
+    {
+        IsSidebarOpen = true;
+        List<Student> studentsthatsent = await studentDB.GetAllStudentForEvent(notification.randomuniqcode);
+        if (studentsthatsent != null)
+            SelectedStudentName = studentsthatsent[0].first_name + " " + studentsthatsent[0].first_name[0];
+        SelectedEventName = notification.kinofevent;
+        SelectedNotification = notification;
+        await Task.Delay(50); // Small delay for smoother UI transition
+        StateHasChanged();
+    }
+
+    private async Task CloseSidebarAsync()
+    {
+        IsSidebarOpen = false;
+        await Task.Delay(50); // Prevents UI flickering
+        StateHasChanged();
+    }
+
+    private async Task ConfirmLessonAsync()
+    {
+        int index = SelectedNotification.eventname.LastIndexOf('/');
+        DateTime neweventdate = DateTime.Parse(SelectedNotification.eventname.Substring(index + 1));
+        if (userT != null)
+        {
+            int randocode = "Szeth - son - son - Vallano, Truthless of Shinovar, wore white on the day he was to kill a king".GetHashCode();
+            DateTime enddate = neweventdate.AddHours(1);
+            Event newevent = new Event("lesson", neweventdate, userT.Id, "private lesson", randocode, enddate);
+        }
+        // await CloseSidebarAsync();
+        //notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id); // Refresh notifications
+      //  StateHasChanged();
+    }
+
+    private async Task RejectLessonAsync()
     {
 
+        //  await eventDB.RejectLesson(SelectedLessonId);
+        await CloseSidebarAsync();
+        notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id); // Refresh notifications
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
         if (firstRender)
         {
-            Console.WriteLine("first re");
-            var user1 = await MySession.GetAsync<Student>("student");
-            if (user1.Success)
+            var studentSession = await MySession.GetAsync<Student>("student");
+            if (studentSession.Success)
             {
-                userS = user1.Value;
-
+                userS = studentSession.Value;
                 notifications = await eventDB.GetAllNotificationsForStudent(userS.Id);
-
-                StateHasChanged();
+                notifications = notifications?.OrderByDescending(n => n.enddate).ToList() ?? new List<Event>();
             }
-            var user2 = await MySession.GetAsync<teacher>("teacher");
-            if (user2.Success)
+
+            var teacherSession = await MySession.GetAsync<Teacher>("teacher");
+            if (teacherSession.Success)
             {
-                userT = user2.Value;
+                userT = teacherSession.Value;
                 notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id);
-                StateHasChanged();
+                notifications = notifications?.OrderByDescending(n => n.enddate).ToList() ?? new List<Event>(); //
             }
+
+            StateHasChanged();
         }
-
-
     }
 }
+
 <style>
-    import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap);
-
-    body {
-        font-family: "Roboto", sans-serif;
-        background: #EFF1F3;
-        min-height: 100vh;
-        position: relative;
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
     }
 
-    .section-50 {
-        padding: 50px 0;
-    }
-
-    .m-b-50 {
-        margin-bottom: 50px;
-    }
-
-    .dark-link {
-        color: #333;
-    }
-
-    .heading-line {
-        position: relative;
-        padding-bottom: 5px;
-    }
-
-        .heading-line:after {
-            content: "";
-            height: 4px;
-            width: 75px;
-            background-color: #29B6F6;
-            position: absolute;
-            bottom: 0;
-            left: 0;
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
 
+    /* Sidebar */
+    .sidebar {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        top: 0;
+        right: -300px;
+        background-color: #f8f9fa;
+        padding-top: 20px;
+        box-shadow: -3px 0px 10px rgba(0, 0, 0, 0.2);
+        transition: right 0.3s ease-in-out;
+    }
+
+        .sidebar.open {
+            width: 300px;
+            right: 0;
+        }
+
+    /* Sidebar Title */
+    .sidebar-title {
+        padding: 15px;
+        text-align: center;
+        background-color: #007bff;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    /* Sidebar Content */
+    .sidebar-content {
+        padding: 15px;
+    }
+
+    /* Sidebar Buttons */
+    .sidebar-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+    }
+
+    .sidebar button {
+        width: 45%;
+        padding: 8px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .sidebar .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .sidebar .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    /* Close Button */
+    .closebtn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 28px;
+        text-decoration: none;
+        color: black;
+        cursor: pointer;
+    }
+
+    /* 🎯 FIX: Reduced the size of each notification */
     .notification-ui_dd-content {
-        margin-bottom: 30px;
+        margin-bottom: 10px;
     }
 
     .notification-list {
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
-        -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
         justify-content: space-between;
-        padding: 20px;
-        margin-bottom: 7px;
+        align-items: center;
+        padding: 12px;
+        margin-bottom: 8px;
         background: #fff;
-        -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        border-radius: 5px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+        height: 75px; /* 🎯 Compact height */
     }
 
-    .notification-list--unread {
-        border-left: 2px solid #29B6F6;
-    }
-
-    .notification-list .notification-list_content {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-    }
-
-        .notification-list .notification-list_content .notification-list_img img {
-            height: 48px;
-            width: 48px;
-            border-radius: 50px;
-            margin-right: 20px;
+        .notification-list:hover {
+            transform: scale(1.01);
         }
 
-        .notification-list .notification-list_content .notification-list_detail p {
-            margin-bottom: 5px;
-            line-height: 1.2;
+    .notification-list--unread {
+        border-left: 3px solid #29B6F6;
+    }
+
+    /* Notification Image */
+    .notification-list_img img {
+        height: 40px;
+        width: 40px;
+        border-radius: 50px;
+        margin-right: 15px;
+    }
+
+    /* Notification Content */
+    .notification-list_content {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .notification-list_detail {
+        line-height: 1.2;
+    }
+
+        .notification-list_detail p {
+            margin-bottom: 2px;
+            font-size: 14px; /* 🎯 Smaller text */
         }
 
     .notification-list .notification-list_feature-img img {
-        height: 48px;
-        width: 48px;
+        height: 40px;
+        width: 40px;
         border-radius: 5px;
-        margin-left: 20px;
-    }</style>
+        margin-left: 10px;
+    }
 
+    /* View Details Button */
+    .view-details {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        font-size: 13px;
+        border-radius: 4px;
+        transition: 0.3s;
+    }
+
+        .view-details:hover {
+            background-color: #0056b3;
+        }
+
+</style>

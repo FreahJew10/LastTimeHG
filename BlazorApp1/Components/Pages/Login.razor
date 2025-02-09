@@ -426,7 +426,7 @@
     public async Task LogInToTeacher()
     {
         teacherDB teacherDB = new teacherDB();
-        teacher teacher = await teacherDB.LoginAsync(email,password) ;
+        Teacher teacher = await teacherDB.LoginAsync(email,password) ;
         if (teacher!=null)
         {
             //await EventDB.builalloftheeventsid();// בונה את הרשימה של האינונט איי די

@@ -228,7 +228,7 @@
     [Parameter] public int id { get; set; }
     private Person friend = null;
     public Student userS = null;
-    public teacher userT = null;
+    public Teacher userT = null;
     private HubConnection hubConnection;
     private List<SignalrPersonMessage> usermessages = new();
     private string massageinput;
@@ -375,7 +375,7 @@
 
                 StateHasChanged();
             }
-            var user2 = await MySession.GetAsync<teacher>("teacher");
+            var user2 = await MySession.GetAsync<Teacher>("teacher");
             if (user2.Success)
             {
                 userT = user2.Value;

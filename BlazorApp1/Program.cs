@@ -35,7 +35,7 @@ namespace BlazorApp1
             app.UseAntiforgery();
             //app.UseResponseCompression();
             app.MapHub<ChatHub>("/chathub");
-            
+            app.MapHub<NotificationHub>("/NotificationHub");
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
            

@@ -8,7 +8,7 @@
 @using DBL
 @using Hubs
 @page "/DetailsOfDay/{Date}"
-<h3>Details of Day</h3>
+
 @if (events!=null)
 {
 <div class="details-container">
@@ -69,6 +69,11 @@
     </EditForm>
 </div>
 }
+else 
+{
+    <body style="background-image:url('https://files.oaiusercontent.com/file-PiQRyXAyVisnvB4X2AiZuJ?se=2025-01-29T00%3A01%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D6f3a34c5-c404-40dc-adf4-4525e23e3150.webp&sig=o2zceawf9Fmdr2IZ6aJsk8dQLQg9lKUp0qYokYNzpAc%3D')"></body>
+}
+
 <style>
     .details-container {
     max-width: 800px;

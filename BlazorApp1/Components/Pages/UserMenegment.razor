@@ -304,8 +304,8 @@
 
 @code {
     public Student userS = null;
-    public teacher userT = null;
-    public Student basicuser = null;
+    public Teacher userT = null;
+    public Person basicuser = null;
     public  friendsDB friendsD = new friendsDB();
     string new_password = "";
     string repeat_password = "";
@@ -350,7 +350,7 @@
     }
     public async Task UpdateT()
     {
-        teacher teacher = new teacher();
+        Teacher teacher = new Teacher();
         teacher.email = userS.email;
         teacher.Id = userS.Id;
         teacher.first_name = userS.first_name;
@@ -397,11 +397,11 @@
                 my_friends_that_im_their_friend_to =await friendsD.GiveAll_AreWeBothFriends_(userS);
                 StateHasChanged();
             }
-            var user2 = await MySession.GetAsync<teacher>("teacher");
+            var user2 = await MySession.GetAsync<Teacher>("teacher");
             if (user2.Success)
             {
                 userT = user2.Value;
-                basicuser = user1.Value;
+                basicuser = user2.Value;
                 StateHasChanged();
             }
             if(!user1.Success&&!user2.Success)

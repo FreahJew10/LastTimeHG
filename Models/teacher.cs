@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public class teacher:Person
+    public class Teacher:Person
     {
-      public teacher() { }
+      public Teacher() { }
         //עם id
-        public teacher(int id, string firstName, string lastName, string email, string password)
+        public Teacher(int id, string firstName, string lastName, string email, string password)
             : base(id, firstName, lastName, email, password)
         {
             this.hourly_rate = 20;
@@ -18,7 +18,7 @@ namespace Models
             this.isprivate = 1;
         }
         //עם id
-        public teacher( int id, string firstName, string lastName, string email, string password, string bio, int hourly_rate)
+        public Teacher( int id, string firstName, string lastName, string email, string password, string bio, int hourly_rate)
             :base(id, firstName, lastName, email, password)
         {
             this.hourly_rate = hourly_rate;
@@ -27,7 +27,7 @@ namespace Models
         }
 
         //בלי id
-        public teacher( string firstName, string lastName, string email, string password, string bio, int hourly_rate)
+        public Teacher( string firstName, string lastName, string email, string password, string bio, int hourly_rate)
             : base(firstName, lastName, email, password)
         {
             this.hourly_rate = hourly_rate;
@@ -36,7 +36,7 @@ namespace Models
         }
 
         //בלי id
-        public teacher(string firstName, string lastName, string email, string password)
+        public Teacher(string firstName, string lastName, string email, string password)
             : base(firstName, lastName, email, password)
         {
             this.hourly_rate = 20;
@@ -46,14 +46,14 @@ namespace Models
 
 
         /// האם הוא מורה פרטי
-        public teacher(string firstName, string lastName, string email, string password,int isprivate)
+        public Teacher(string firstName, string lastName, string email, string password,int isprivate)
             : base(firstName, lastName, email, password)
         {
             this.hourly_rate = 20;
             this.bio = "";
             this.isprivate = isprivate;
         }
-        public teacher(int id, string firstName, string lastName, string email, string password, string bio, int hourly_rate,int isprivate)
+        public Teacher(int id, string firstName, string lastName, string email, string password, string bio, int hourly_rate,int isprivate)
            : base(id, firstName, lastName, email, password)
         {
             this.hourly_rate = hourly_rate;

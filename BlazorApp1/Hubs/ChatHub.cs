@@ -38,11 +38,7 @@ namespace BlazorApp1.Hubs
             await Clients.Clients(friendcon[0]).SendAsync("Receivethatmyfriendisconnected",true);
         }
 
-        public async Task SendNotificationToInformIAdedYouAsFriend(List<string>tourconid,string notification,string email)// שולחת התראת "הוספתי אותך כחבר" כאשר אדם מוסיף כחבר בנוסף יכולה לשלוח את ההודעה לכמה חיבורים
-        {
-            IReadOnlyList<string> friendcon = tourconid.ToList();
-            await Clients.Clients(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
-        }
+        
 
 
 

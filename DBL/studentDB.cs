@@ -12,7 +12,26 @@ namespace DBL
 {
     public class studentDB : BaseDB<Student>
     {
+        
+        public async Task<List<Student>>GetAllStudentForEvent(int randomuniqcode)
+        {
+            List<Student> students = new List<Student>();
+            string sql = @"Select
+    mylastyear.student.studentid,
+    mylastyear.student.first_name,
+    mylastyear.student.last_name,
+    mylastyear.student.email
+From
+    mylastyear.student Inner Join
+    mylastyear.studentinevent On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
+    mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
+    where mylastyear.studentinevent.randomuniqcode=@randomuniqcode";
 
+            Dictionary< string,object >dic= new Dictionary< string,object >();
+            dic.Add("randomuniqcode", randomuniqcode);
+            students=await base.SelectAllAsync(sql,dic);
+            return  students;
+        }
         public async Task<Student> LoginAsync( string email, string password)
         {
             string sql = @"SELECT * FROM mylastyear.student where email=@email AND password=@password;";
@@ -84,14 +103,22 @@ namespace DBL
             Student student = new Student();
          
              PersonStudentDB personStudentDB = new PersonStudentDB();
-           
+            if (row.Length == 5)
+            {
                 student.Id = int.Parse(row[0].ToString());
                 student.first_name = row[1].ToString();
                 student.last_name = row[2].ToString();
                 student.email = row[3].ToString();
                 student.password = row[4].ToString();
-               student.friends =await personStudentDB.GiveAllFriends(student.Id);
-           
+                student.friends = await personStudentDB.GiveAllFriends(student.Id);
+            }
+            else {
+                student.Id = int.Parse(row[0].ToString());
+                student.first_name = row[1].ToString();
+                student.last_name = row[2].ToString();
+                student.email = row[3].ToString();
+                student.friends = await personStudentDB.GiveAllFriends(student.Id);
+            }
            /* string query = @"Select
             mylastyear.student.first_name,
             mylastyear.student.last_name,

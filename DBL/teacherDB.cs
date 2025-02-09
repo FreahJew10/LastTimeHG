@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Models;
 namespace DBL
 {
-    public class teacherDB : BaseDB<teacher>
+    public class teacherDB : BaseDB<Teacher>
     {
-        public async Task<teacher> GetTeacherByPrimeryKey(int  primeryKey)
+        public async Task<Teacher> GetTeacherByPrimeryKey(int  primeryKey)
         {
             string q = $@"Select
     mylastyear.teachers.teacherid,
@@ -25,13 +25,13 @@ Where
 
             Dictionary<string, object> p = new Dictionary<string, object>();
             p.Add("teacherid", primeryKey);
-            List<teacher> list = await SelectAllAsync(q, p);
+            List<Teacher> list = await SelectAllAsync(q, p);
             if (list.Count == 1)
                 return list[0];
             else
                 return null;
         }
-        public async Task<List<teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
+        public async Task<List<Teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
         {
             string q = $@"Select
 teachers1.teacherid,
@@ -49,7 +49,7 @@ Where
     teachers1.isprivate = 1 and mylastyear.subject.subjectId=@id";
             Dictionary<string, object> properties = new Dictionary<string, object>();
             properties.Add("id", subjectId);
-            List<teacher> lst = await SelectAllAsync(q, properties);
+            List<Teacher> lst = await SelectAllAsync(q, properties);
 
             if (lst.Count > 0 )
                 return lst;
@@ -57,7 +57,7 @@ Where
             return null;
             
         }
-        public async Task<bool> updateAsync(teacher teacher)
+        public async Task<bool> updateAsync(Teacher teacher)
         {
             Dictionary<string, object> fillValues = new Dictionary<string, object>();
             fillValues.Add("first_name", teacher.first_name);
@@ -69,14 +69,14 @@ Where
             int num = await base.UpdateAsync(fillValues, filterValues);
             return (num > 0);
         }
-        public async Task<teacher> LoginAsync( string email, string password)
+        public async Task<Teacher> LoginAsync( string email, string password)
         {
             string sql = @"SELECT * FROM mylastyear.teachers where email=@email AND password=@password;";
             Dictionary<string, object> chackit = new Dictionary<string, object>();
             
             chackit.Add("email", email);
             chackit.Add("password", password);
-            List<teacher> teachers = await SelectAllAsync(sql, chackit);
+            List<Teacher> teachers = await SelectAllAsync(sql, chackit);
             if (teachers.Count == 1)
             {
                 return teachers[0];
@@ -85,7 +85,7 @@ Where
             return null;
         }
         public teacherDB() { }
-        public async Task<bool> inserteacher(teacher teacher)
+        public async Task<bool> inserteacher(Teacher teacher)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("first_name", teacher.first_name);
@@ -104,23 +104,23 @@ Where
 
         }
 
-        protected override async Task<List<teacher>> CreateListModelAsync(List<object[]> rows)
+        protected override async Task<List<Teacher>> CreateListModelAsync(List<object[]> rows)
         {
-            List<teacher> teachers = new List<teacher>();
+            List<Teacher> teachers = new List<Teacher>();
             foreach (object[] row in rows)
             {
-                teacher teacher = await CreateModelAsync(row);
+                Teacher teacher = await CreateModelAsync(row);
                 teachers.Add(teacher);
 
             }
             return teachers;
         }
 
-        protected override async Task<teacher> CreateModelAsync(object[] row)
+        protected override async Task<Teacher> CreateModelAsync(object[] row)
         {
             if (row.Length == 8)//בגלל הסיסמה שאני לא מכניס
             {
-                teacher teacher = new teacher();
+                Teacher teacher = new Teacher();
                 teacher.Id = int.Parse(row[0].ToString());
                 teacher.first_name = row[1].ToString();
                 teacher.last_name = row[2].ToString();
@@ -140,7 +140,7 @@ Where
             }
             else
             {
-                teacher teacher = new teacher();
+                Teacher teacher = new Teacher();
                 teacher.Id = int.Parse(row[0].ToString());
                 teacher.first_name = row[1].ToString();
                 teacher.last_name = row[2].ToString();

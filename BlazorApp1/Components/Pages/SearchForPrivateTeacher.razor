@@ -4,9 +4,8 @@
 @using Models;
 @using DBL;
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
+<HeadContent>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Search</title>
@@ -143,8 +142,8 @@
                     background: var(--secondary-color);
                 }
     </style>
-</head>
-<body>
+</HeadContent>
+<div>
     <div class="container">
         <h3>Search for Teachers</h3>
         <form class="search-bar" onsubmit="return false;">
@@ -155,7 +154,7 @@
             <label for="subjectFilter">Filter by Subject:</label>
             <select id="subjectFilter" @bind="SelectedSubject">
                 <option value="">All Subjects</option>
-                @foreach (var subject in Subjects)
+                @foreach (Subject subject in Subjects)
                 {
                     <option value="@subject.subjectid">@subject.subjectName</option>
                 }
@@ -171,7 +170,7 @@
             <div class="results">
                 <h4>Results:</h4>
                 <ul>
-                    @foreach (var teacher in SearchResults)
+                    @foreach (Teacher teacher in SearchResults)
                     {
                         <li>
                             <strong>@teacher.first_name @teacher.last_name</strong><br />
@@ -198,8 +197,8 @@
             <p>No results found.</p>
         }
     </div>
-</body>
-</html>
+</div>
+
 
 @code {
     teacherDB TeacherDB=new teacherDB();
@@ -210,8 +209,8 @@
     private int? MaxHourlyRate { get; set; } = null;
     private bool IsPrivateOnly { get; set; } = false;
     private List<Subject> Subjects { get; set; } = new List<Subject>();
-    private List<teacher> SearchResults { get; set; } = new List<teacher>();
-    private List<teacher> PaginatedResults => SearchResults.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
+    private List<Teacher> SearchResults { get; set; } = new List<Teacher>();
+    private List<Teacher> PaginatedResults => SearchResults.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
     private int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 15;
     private int TotalPages => (int)Math.Ceiling((double)(SearchResults?.Count ?? 0) / PageSize);
@@ -225,6 +224,7 @@
 
     private async Task SearchTeachers()
     {
+        if (MaxHourlyRate==0)
         SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(!string.IsNullOrEmpty(SelectedSubject) ? int.Parse(SelectedSubject) : 0);
 
         

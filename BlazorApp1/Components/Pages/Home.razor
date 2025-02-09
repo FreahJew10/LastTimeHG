@@ -776,7 +776,7 @@
 
 @code {
     public Student userS = null;
-    public teacher userT = null;
+    public Teacher userT = null;
     public Person basicuser = null;
     public string searchfriend;
     List<Person> showfriends = new List<Person>();
@@ -791,18 +791,20 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-        .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+        .WithUrl(navigationManager.ToAbsoluteUri("/NotificationHub"))
         .WithAutomaticReconnect()
         .Build();
-
-        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email,notification) =>
+       
+        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
         {
             this.notification = email + " " + notification;
             await js.InvokeVoidAsync("alert", @$"{this.notification}");
+           
             await InvokeAsync(StateHasChanged);
         });
+        Console.WriteLine("RRR");
         await hubConnection.StartAsync();
-
+      
 
 
 
@@ -877,24 +879,24 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-                if (!await StaticChatHub.IsThisSpecificEmailExistIn_multyconidFORnotifications(userS.email))
+                if (!await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotifications(userS.email))
                 {
 
                     List<string> notifCon = new List<string>();
                     notifCon.Add(hubConnection.ConnectionId);
-                    StaticChatHub.multyconidFORnotifications.Add(userS.email, notifCon);
+                    StaticNotificationHub.multyconidFORnotifications.Add(userS.email, notifCon);
                 }
                 else
                 {
                     conid = hubConnection.ConnectionId;
-                    List<string> strings = StaticChatHub.multyconidFORnotifications[userS.email];
+                    List<string> strings = StaticNotificationHub.multyconidFORnotifications[userS.email];
                     strings.Add(conid);
-                    StaticChatHub.multyconidFORnotifications[userS.email] = strings;
+                    StaticNotificationHub.multyconidFORnotifications[userS.email] = strings;
                 }
                 basicuser = userS;
                 StateHasChanged();
             }
-            var user2 = await MySession.GetAsync<teacher>("teacher");
+            var user2 = await MySession.GetAsync<Teacher>("teacher");
             if (user2.Success)
             {
                 userT = user2.Value;
