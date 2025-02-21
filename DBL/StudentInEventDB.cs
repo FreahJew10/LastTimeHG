@@ -9,6 +9,13 @@ namespace DBL
 {
     public class StudentInEventDB : BaseDB<StudentInEvent>
     {
+        public async Task<List<StudentInEvent> >GetAllStudentInEvent_ForSpesificEvent(int randomcode)
+        { 
+            Dictionary<string,object> data = new Dictionary<string,object>();
+            data.Add("randomuniqcode",randomcode);
+            return await SelectAllAsync(data);
+
+        }
         public async Task insertStedentInEvent(List<StudentInEvent> studentInEvents)
         {
             foreach (StudentInEvent studentInEvent in studentInEvents)

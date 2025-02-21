@@ -3,6 +3,12 @@
 @using System.Linq;
 @using Models;
 @using DBL;
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
 
 
 <HeadContent>
@@ -11,136 +17,136 @@
     <title>Teacher Search</title>
     <style>
         :root {
-            font-size: 16px;
-            --primary-color: #2762f3;
-            --secondary-color: #171717;
-            --background-color: #f1f1f1;
-            --text-color: #171717;
+        font-size: 16px;
+        --primary-color: #2762f3;
+        --secondary-color: #171717;
+        --background-color: #f1f1f1;
+        --text-color: #171717;
         }
 
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
         }
 
         body {
-            background: var(--background-color);
-            font-family: Arial, sans-serif;
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        background: var(--background-color);
+        font-family: Arial, sans-serif;
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
         }
 
         .container {
-            width: 90%;
-            max-width: 800px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 800px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary-color);
         }
 
         .search-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
         }
 
-            .search-bar input[type="search"] {
-                flex: 1;
-                padding: 10px;
-                border: 2px solid var(--primary-color);
-                border-radius: 4px;
-                outline: none;
-                font-size: 16px;
-                transition: border-color 0.3s;
-            }
+        .search-bar input[type="search"] {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid var(--primary-color);
+        border-radius: 4px;
+        outline: none;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        }
 
-                .search-bar input[type="search"]:focus {
-                    border-color: var(--secondary-color);
-                }
+        .search-bar input[type="search"]:focus {
+        border-color: var(--secondary-color);
+        }
 
-            .search-bar button {
-                background: var(--primary-color);
-                color: #fff;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 16px;
-                transition: background-color 0.3s;
-            }
+        .search-bar button {
+        background: var(--primary-color);
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        }
 
-                .search-bar button:hover {
-                    background: var(--secondary-color);
-                }
+        .search-bar button:hover {
+        background: var(--secondary-color);
+        }
 
         .filter-section {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
         }
 
-            .filter-section label {
-                font-weight: bold;
-            }
+        .filter-section label {
+        font-weight: bold;
+        }
 
-            .filter-section input, .filter-section select {
-                padding: 8px;
-                border: 2px solid var(--primary-color);
-                border-radius: 4px;
-                outline: none;
-                font-size: 16px;
-            }
+        .filter-section input, .filter-section select {
+        padding: 8px;
+        border: 2px solid var(--primary-color);
+        border-radius: 4px;
+        outline: none;
+        font-size: 16px;
+        }
 
         .results {
-            margin-top: 20px;
+        margin-top: 20px;
         }
 
-            .results ul {
-                list-style: none;
-                padding: 0;
-            }
+        .results ul {
+        list-style: none;
+        padding: 0;
+        }
 
-            .results li {
-                padding: 10px;
-                border-bottom: 1px solid #ddd;
-            }
+        .results li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        }
 
-                .results li:last-child {
-                    border-bottom: none;
-                }
+        .results li:last-child {
+        border-bottom: none;
+        }
 
         .pagination {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
         }
 
-            .pagination button {
-                background: var(--primary-color);
-                color: #fff;
-                padding: 10px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 16px;
-            }
+        .pagination button {
+        background: var(--primary-color);
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        }
 
-                .pagination button:hover {
-                    background: var(--secondary-color);
-                }
+        .pagination button:hover {
+        background: var(--secondary-color);
+        }
     </style>
 </HeadContent>
 <div>
@@ -174,9 +180,9 @@
                     {
                         <li>
                             <strong>@teacher.first_name @teacher.last_name</strong><br />
-                          @*   Subjects: @string.Join(", ", Subjects.Select(s => s.subjectName))<br /> *@
+                            @*   Subjects: @string.Join(", ", Subjects.Select(s => s.subjectName))<br /> *@
                             Hourly Rate: $@teacher.hourly_rate<br />
-                           <a href="ViewTeacherProfileAndRequest/@teacher.Id">set a meting </a>
+                            <a href="ViewTeacherProfileAndRequest/@teacher.Id">set a meting </a>
                         </li>
                     }
                 </ul>
@@ -215,8 +221,8 @@
     private int PageSize { get; set; } = 15;
     private int TotalPages => (int)Math.Ceiling((double)(SearchResults?.Count ?? 0) / PageSize);
     private bool SearchExecuted { get; set; } = false;
-    
 
+    private Student userS = null;
     protected override async Task OnInitializedAsync()
     {
         Subjects = await SubjectDB.SelectAllSubjects();
@@ -224,7 +230,7 @@
 
     private async Task SearchTeachers()
     {
-        if (MaxHourlyRate==0)
+        // if (MaxHourlyRate==0)
         SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(!string.IsNullOrEmpty(SelectedSubject) ? int.Parse(SelectedSubject) : 0);
 
         
@@ -237,5 +243,18 @@
     private void ChangePage(int newPage)
     {
         CurrentPage = newPage;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+              
+                StateHasChanged();
+            }
+        }
     }
 }

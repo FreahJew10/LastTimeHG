@@ -45,6 +45,16 @@ namespace DBL
               return cods;
 
           }*/
+        public async Task<bool> UpdateTheKindOfEvent(Event @event)
+        {
+            Dictionary<string, object> fillValues = new Dictionary<string, object>();
+            fillValues.Add("kindofevent",@event.kinofevent);
+            Dictionary<string, object> filterValues = new Dictionary<string, object>();
+            filterValues.Add("randomuniqcode", @event.randomuniqcode);
+            int num = await base.UpdateAsync(fillValues, filterValues);
+            return (num > 0);
+        }
+
 
         public async Task<List<Event>> GetAllNotificationsForTeacher(int teacherid)
         {

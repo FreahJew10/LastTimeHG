@@ -21,6 +21,9 @@ namespace Models
         /// <param name="date"></param>
         /// <param name="teacherid"></param>
         /// <param name="kindofevent"></param>
+        /// התראה שנקראת "{notification(כלומר שם ההתראה)} - done"
+        /// הינה התראה, שאושרה והפכה לאיונט (שיעור למשל) וגם במקרה של אישור חברים
+        /// *done is a safe word*
         /// <param name="randomuniqcode"></param>
         /// <param name="enddate"></param>
         public Event(string eventname, DateTime date, int teacherid,string kindofevent,int randomuniqcode, DateTime enddate)

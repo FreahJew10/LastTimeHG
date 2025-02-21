@@ -22,7 +22,7 @@
 
                 @foreach (Event notification in notifications)
                 {
-                    if (notification.enddate > DateTime.Now)
+                    if (notification.enddate > DateTime.Now && !notification.kinofevent.Contains("done"))
                     {
                         <div class="notification-ui_dd-content">
                             <div class="notification-list notification-list--unread">
@@ -31,8 +31,14 @@
                                         <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user">
                                     </div>
                                     <div class="notification-list_detail">
-                                        <p><b>@userT.first_name</b> you got @notification.kinofevent</p>
-
+                                        @if (userT != null)
+                                        {
+                                            <p><b>@userT.first_name</b> you got @notification.kinofevent</p>
+                                        }
+                                        else if (userS != null)
+                                        {
+                                            <p><b>@userS.first_name</b> you got @notification.kinofevent</p>
+                                        }
                                         <p class="text-muted"><small>@notification.randomuniqcode @notification.enddate.ToString()</small></p>
                                     </div>
                                 </div>
@@ -46,14 +52,22 @@
                             </div>
                         </div>
                     }
-                    else{
+                    else
+                    {
                         <div class="notification-list">
                             <div class="notification-list_content">
                                 <div class="notification-list_img">
                                     <img src="https://i.imgur.com/ltXdE4K.jpg" alt="user">
                                 </div>
                                 <div class="notification-list_detail">
-                                    <p><b>@userT.first_name</b> yo got @notification.kinofevent</p>
+                                    @if (userT != null)
+                                    {
+                                        <p><b>@userT.first_name</b> you got @notification.kinofevent</p>
+                                    }
+                                    else if (userS != null)
+                                    {
+                                        <p><b>@userS.first_name</b> you got @notification.kinofevent</p>
+                                    }
 
                                     <p class="text-muted"><small>@notification.randomuniqcode @notification.enddate.ToString()</small></p>
                                 </div>
@@ -61,9 +75,9 @@
                             <div class="notification-list_feature-img">
                                 <img src="https://i.imgur.com/bpBpAlH.jpg" alt="Feature image">
                             </div>
-                            <button class="btn btn-primary view-details" @onclick="() => OpenSidebarAsync(notification)">
+                            @*  <button class="btn btn-primary view-details" @onclick="() => OpenSidebarAsync(notification)">
                                 View Details
-                            </button>
+                            </button> *@
                         </div>
                     }
                 }
@@ -76,6 +90,7 @@
     </section>
 }
 
+
 <!-- Sidebar -->
 <div class="sidebar-overlay @(IsSidebarOpen ? "active" : "")" @onclick="CloseSidebarAsync"></div>
 
@@ -85,12 +100,23 @@
     <div class="sidebar-content">
         <p><strong>Student:</strong> @SelectedStudentName</p>
         <p><strong>Lesson Topic:</strong> @SelectedEventName</p>
-        @if (SelectedNotification!=null&&SelectedNotification.enddate > DateTime.Now)
+        @if (SelectedNotification != null && SelectedNotification.enddate > DateTime.Now)
         {
-            <div class="sidebar-buttons">
-                <button class="btn btn-success" @onclick="ConfirmLessonAsync">Confirm</button>
-                <button class="btn btn-danger" @onclick="RejectLessonAsync">Reject</button>
-            </div>
+            @if (userT != null && string.Equals(SelectedNotification.kinofevent, "notification-private lesson"))
+            {
+                <div class="sidebar-buttons">
+                    <button class="btn btn-success" @onclick="ConfirmLessonAsync">Confirm</button>
+                    <button class="btn btn-danger" @onclick="RejectLessonAsync">Reject</button>
+                </div>
+            }
+            else if (userS != null && string.Equals(SelectedNotification.kinofevent, "notification-add friend"))
+            {
+                <div class="sidebar-buttons">
+                    <button class="btn btn-success" @onclick="ConfirmFriendship">Confirm</button>
+                    <button class="btn btn-danger" @onclick="RejectFriendship">Reject</button>
+                </div>
+            }
+
         }
     </div>
 </div>
@@ -106,6 +132,8 @@
     public Teacher? userT;
     public studentDB studentDB = new studentDB();
     public EventDB eventDB = new EventDB();
+    public StudentInEventDB studentInEventDB = new StudentInEventDB();
+    public friendsDB friendsDB = new friendsDB();
 
     private async Task OpenSidebarAsync(Event notification)
     {
@@ -126,21 +154,96 @@
         StateHasChanged();
     }
 
-    private async Task ConfirmLessonAsync()
+
+    private async Task RejectFriendship()
     {
-        int index = SelectedNotification.eventname.LastIndexOf('/');
-        DateTime neweventdate = DateTime.Parse(SelectedNotification.eventname.Substring(index + 1));
-        if (userT != null)
+        if (userS != null && SelectedNotification != null)
         {
-            int randocode = "Szeth - son - son - Vallano, Truthless of Shinovar, wore white on the day he was to kill a king".GetHashCode();
-            DateTime enddate = neweventdate.AddHours(1);
-            Event newevent = new Event("lesson", neweventdate, userT.Id, "private lesson", randocode, enddate);
+            SelectedNotification.kinofevent += "- done";
+            await eventDB.UpdateTheKindOfEvent(SelectedNotification);
+            StateHasChanged();
         }
-        // await CloseSidebarAsync();
-        //notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id); // Refresh notifications
-      //  StateHasChanged();
     }
 
+    private async Task ConfirmFriendship()
+    {
+        if (userS != null)
+        {
+            try
+            {
+                if (SelectedNotification != null)
+                {
+                    List<StudentInEvent> the_new_friend = await studentInEventDB.GetAllStudentInEvent_ForSpesificEvent(SelectedNotification.randomuniqcode);
+                    if (the_new_friend != null)
+                    {
+                        friends friends = new friends(userS.Id, the_new_friend[0].studentid);
+                        if (await friendsDB.insertFriends(friends))
+                        {
+                            SelectedNotification.kinofevent += "- done";
+                            await eventDB.UpdateTheKindOfEvent(SelectedNotification);
+                            await js.InvokeVoidAsync("alert", @$"you are now bote friends");
+                            StateHasChanged();
+                        }
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+    }
+
+
+    private async Task ConfirmLessonAsync()
+    {
+        if (SelectedNotification != null)
+        {
+            try
+            {
+                int index = SelectedNotification.eventname.LastIndexOf('/');
+                DateTime neweventdate = DateTime.Parse(SelectedNotification.eventname.Substring(index + 1));
+                if (userT != null)
+                {
+                    int randocode = "Szeth - son - son - Vallano, Truthless of Shinovar, wore white on the day he was to kill a king".GetHashCode();
+                    DateTime enddate = neweventdate.AddHours(1);
+                    Event newevent = new Event("lesson", neweventdate, userT.Id, "private lesson", randocode, enddate);
+
+                    List<StudentInEvent> the_list_of_the_senders = await studentInEventDB.GetAllStudentInEvent_ForSpesificEvent(SelectedNotification.randomuniqcode);
+                    List<StudentInEvent> student_in_this_lesson = await AddTheStudentToNewEvent(the_list_of_the_senders, randocode);
+
+                    if (await eventDB.insertEvent(newevent))
+                    {
+                        await studentInEventDB.insertStedentInEvent(student_in_this_lesson);
+                        SelectedNotification.kinofevent += "- done";
+                        await eventDB.UpdateTheKindOfEvent(SelectedNotification);
+                        StateHasChanged();
+                    }
+                }
+                // await CloseSidebarAsync();
+                //notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id); // Refresh notifications
+                //  StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+        }
+    }
+    private async Task<List<StudentInEvent>> AddTheStudentToNewEvent(List<StudentInEvent> lst, int newrandomcode)
+    {
+        List<StudentInEvent> for_new_event = new List<StudentInEvent>();
+        foreach (StudentInEvent studentInEvent in lst)
+        {
+            studentInEvent.randomuniqcode = newrandomcode;
+            for_new_event.Add(studentInEvent);
+
+        }
+        return for_new_event;
+    }
     private async Task RejectLessonAsync()
     {
 
