@@ -50,6 +50,7 @@
                         <li><a href="#section1">hello! @userS.first_name</a></li>
                         <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">show my clander</a></li>
                         <li><a href="/teacher-search" @onclick="movetoSearchForteachers"> search for private teacher</a></li>
+                        <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
                     }
                     else if (userT != null)
                     {
@@ -857,6 +858,10 @@
             navigationManager.NavigateTo("/login");
         }
 
+    }
+    public async Task movetoEventChat()
+    {
+        navigationManager.NavigateTo("/eventschat");
     }
     public async Task movetoSearchForFriends()
     {

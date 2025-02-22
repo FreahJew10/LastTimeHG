@@ -14,6 +14,23 @@ namespace BlazorApp1.Hubs
     public class ChatHub:Hub
     {
 
+        // Called by the client to join a specific event group
+        public async Task JoinGroup(string groupId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+        }
+
+        public async Task LeaveGroup(string groupId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+        }
+
+        public async Task SendMessage(int eventId, comment cmt)
+        {
+            // Must broadcast to the EXACT group name joined by the clients
+            await Clients.Group(eventId.ToString()).SendAsync("ReceiveMessage", cmt);
+        }
+
 
 
         //public async Task SendMessage(Person Iperson, string massage, Person Fperson)

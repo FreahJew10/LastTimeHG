@@ -204,12 +204,13 @@
             try
             {
                 int index = SelectedNotification.eventname.LastIndexOf('/');
+                string name = SelectedNotification.eventname.Substring(0,index-1);
                 DateTime neweventdate = DateTime.Parse(SelectedNotification.eventname.Substring(index + 1));
                 if (userT != null)
                 {
                     int randocode = "Szeth - son - son - Vallano, Truthless of Shinovar, wore white on the day he was to kill a king".GetHashCode();
                     DateTime enddate = neweventdate.AddHours(1);
-                    Event newevent = new Event("lesson", neweventdate, userT.Id, "private lesson", randocode, enddate);
+                    Event newevent = new Event(name, neweventdate, userT.Id, "private lesson", randocode, enddate);
 
                     List<StudentInEvent> the_list_of_the_senders = await studentInEventDB.GetAllStudentInEvent_ForSpesificEvent(SelectedNotification.randomuniqcode);
                     List<StudentInEvent> student_in_this_lesson = await AddTheStudentToNewEvent(the_list_of_the_senders, randocode);

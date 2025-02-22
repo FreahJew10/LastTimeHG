@@ -5,11 +5,6 @@ namespace BlazorApp1.Hubs
     public static class StaticChatHub
     {
         public static Dictionary<string, string> conids { get; set; } = new Dictionary<string, string>();
-        
-
-      
-
-
 
         /// <summary>
         /// עבור הספרייה הסטטית conids 

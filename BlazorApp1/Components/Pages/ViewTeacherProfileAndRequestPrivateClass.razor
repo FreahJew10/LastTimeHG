@@ -34,7 +34,7 @@
                 <input type="time" id="appointment-time" @bind="SelectedTime" />
             </div>
             <div class="appointment-form">
-                <textarea placeholder="Additional Notes" @bind="Notes"></textarea>
+                <textarea placeholder="Additional Notes" maxlength="15" @bind="name"></textarea>
                 <button class="btn-confirm" @onclick="ConfirmAppointment">Confirm Appointment</button>
                 <button class="btn-invite" @onclick="ToggleSidebar">Invite Friends</button>
             </div> 
@@ -227,7 +227,7 @@
     private DateTime? SelectedDate { get; set; }
     private DateTime? SelectedTime { get; set; } = new DateTime();
     private string StudentName;
-    private string Notes;
+    private string name;
     public Teacher privateteacher = null;
     private bool ShowSummary = false;
     private List<Subject> subjects = new List<Subject>();
@@ -281,42 +281,49 @@
 
     private async void ConfirmAppointment()
     {
-        if (SelectedDate != null && !string.IsNullOrEmpty(SelectedTime.ToString()) && !string.IsNullOrEmpty(userS.email))
+        if (!string.IsNullOrEmpty(name))
         {
-            List<StudentInEvent> studentInEvent = new List<StudentInEvent>();
-            
-            try
+            if (SelectedDate != null && !string.IsNullOrEmpty(SelectedTime.ToString()) && !string.IsNullOrEmpty(userS.email))
             {
-                string zeevhashcode = "daliner is the next one";
-                int randomeventcod = zeevhashcode.GetHashCode();
+                List<StudentInEvent> studentInEvent = new List<StudentInEvent>();
 
-                DateTime dateTime = new DateTime();
-
-                dateTime = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day, SelectedTime.Value.Hour, SelectedTime.Value.Minute, 0);
-
-                Event @event = new Event($@"/{Notes}/{dateTime.ToString("yyyy-MM-dd HH:mm")}", DateTime.Now, privateteacher.Id, "notification-private lesson", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
-                if( await eventDB.insertEvent(@event))
+                try
                 {
-                    
-                    studentInEvent.Add(new StudentInEvent(userS.Id, randomeventcod));
-                foreach(Person friend in SelectedFriends)
-                {
-                        studentInEvent.Add(new StudentInEvent(friend.Id, randomeventcod));
+                    string zeevhashcode = "daliner is the next one";
+                    int randomeventcod = zeevhashcode.GetHashCode();
+
+                    DateTime dateTime = new DateTime();
+
+                    dateTime = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day, SelectedTime.Value.Hour, SelectedTime.Value.Minute, 0);
+
+                    Event @event = new Event($@"{name}/{dateTime.ToString("yyyy-MM-dd HH:mm")}", DateTime.Now, privateteacher.Id, "notification-private lesson", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
+                    if (await eventDB.insertEvent(@event))
+                    {
+
+                        studentInEvent.Add(new StudentInEvent(userS.Id, randomeventcod));
+                        foreach (Person friend in SelectedFriends)
+                        {
+                            studentInEvent.Add(new StudentInEvent(friend.Id, randomeventcod));
+                        }
+                        await studentInEventDB.insertStedentInEvent(studentInEvent);
+                        ShowSummary = true;
+                        await js.InvokeVoidAsync("alert", $"the request for private lesson was sent");
+                    }
+
                 }
-                await studentInEventDB.insertStedentInEvent(studentInEvent);
-                    ShowSummary = true;
-                    await js.InvokeVoidAsync("alert", $"the request for private lesson was sent");
-               }
-                
+                catch (Exception e)
+                {
+                    Console.WriteLine("the error " + e);
+                }
+
             }
-            catch(Exception e){
-                Console.WriteLine("the error "+e);
+            else
+            {
+                // Handle error - Display a message to fill all fields
             }
-        
         }
-        else
-        {
-            // Handle error - Display a message to fill all fields
+        else{
+            await js.InvokeVoidAsync("alert", $"enter the name for the lesson (please try the the name will be uniqe for your one good)");
         }
     }
 

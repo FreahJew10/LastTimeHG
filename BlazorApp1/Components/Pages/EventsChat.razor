@@ -1,0 +1,465 @@
+﻿@page "/eventschat"
+@inject NavigationManager navigationManager
+@using Models
+@using DBL
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using Hubs
+
+<PageTitle>Event Chat</PageTitle>
+
+<style>
+    /* Reset */
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    body, html {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f0f0;
+    height: 100%;
+    width: 100%;
+    }
+
+    /* Container */
+    .app-container {
+    width: 90vw;
+    height: 90vh;
+    margin: auto;
+    margin-top: 2rem;
+    background: #fff;
+    display: flex;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    }
+
+    /* Sidebar */
+    .menu {
+    width: 70px;
+    background: linear-gradient(#4768b5, #35488e);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    }
+
+    .menu i, .menu button {
+    color: #ffffff;
+    font-size: 1.3rem;
+    margin: 1rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    }
+
+    /* Event List Section */
+    .event-list-section {
+    width: 300px;
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    }
+
+    /* Search Bar */
+    .search-bar {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #ddd;
+    }
+
+    .search-bar i {
+    color: #999;
+    margin-right: 0.5rem;
+    }
+
+    .search-bar input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    }
+
+    /* Event List Items */
+    .events {
+    flex: 1;
+    overflow-y: auto;
+    }
+
+    .event-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.3s;
+    cursor: pointer;
+    }
+
+    .event-item:hover {
+    background: #f9f9f9;
+    }
+
+    .event-item.active {
+    background: #4768b5;
+    color: #ffffff;
+    }
+
+    .event-name {
+    font-weight: 600;
+    margin-bottom: 2px;
+    }
+
+    .event-message {
+    font-size: 0.85rem;
+    color: #777;
+    }
+
+    /* Chat Section */
+    .chat-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    }
+
+    /* Chat Header */
+    .chat-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    background: #f5f5f5;
+    font-weight: bold;
+    font-size: 1.1rem;
+    }
+
+    /* Chat Messages */
+    .chat-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    }
+
+    .message-bubble {
+    max-width: 60%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    }
+
+    /* 'You' on the right, all others on the left */
+    .message-bubble.you {
+    align-self: flex-end;
+    background: #4768b5;
+    color: #fff;
+    }
+
+    .message-bubble.other {
+    align-self: flex-start;
+    background: #e5e5e5;
+    color: #333;
+    }
+
+    .sender {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    }
+
+    /* Chat Input */
+    .chat-input-bar {
+    display: flex;
+    border-top: 1px solid #ddd;
+    padding: 0.75rem;
+    background: #f5f5f5;
+    align-items: center;
+    }
+
+    .chat-input-bar input {
+    flex: 1;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    }
+
+    .chat-input-bar button {
+    background: #4768b5;
+    border: none;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    margin-left: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    }
+</style>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="menu">
+        <button title="Chats"><i class="fa fa-commenting"></i></button>
+        <button title="Files"><i class="fa fa-file"></i></button>
+        <button title="Settings"><i class="fa fa-cog"></i></button>
+    </div>
+
+    <!-- Event List -->
+    <div class="event-list-section">
+        <div class="search-bar">
+            <i class="fa fa-search"></i>
+            <input @bind="SearchTerm" placeholder="Search events..." />
+        </div>
+        <div class="events">
+            @if (Events != null && Events.Count > 0)
+            {
+                @foreach (Event evt in Events)
+                {
+                    <div class="event-item @(SelectedEvent == evt.randomuniqcode ? "active" : "")"
+                    @onclick="() => SelectEvent(evt.randomuniqcode)">
+                        <span class="event-name">@evt.eventname</span>
+                    </div>
+                }
+            }
+            else
+            {
+                <h2>You do not have any chats</h2>
+            }
+        </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="chat-section">
+        <!-- Header -->
+        <div class="chat-header">
+            @if (SelectedEvent.HasValue)
+            {
+                @Events.FirstOrDefault(e => e.randomuniqcode == SelectedEvent)?.eventname
+            }
+            else
+            {
+                <text>Select Event</text>
+            }
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-content">
+            @if (SelectedEvent.HasValue && Messages != null && Messages.Count > 0)
+            {
+                @foreach (comment c in Messages)
+                {
+                    <div class="message-bubble @(IsCurrentUser(c) ? "you" : "other")">
+                        <p class="sender">@GetSenderName(c)</p>
+                        <p>@c.thecomment</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-gray-500 text-center">No messages yet or no event selected.</p>
+            }
+        </div>
+
+        <!-- Input -->
+        @if (SelectedEvent.HasValue)
+        {
+            <div class="chat-input-bar">
+                <input @bind="NewMessage"
+                placeholder="Type a message..."
+                @onkeypress="HandleKeyPress" />
+                <button @onclick="SendMessage">Send</button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    // Student or Teacher from session
+    public Student? userS;
+    public Teacher? userT;
+
+    public studentDB studentDB = new studentDB();
+    public teacherDB teacherDB = new teacherDB();
+    public EventDB eventDB = new EventDB();
+    public StudentInEventDB studentInEventDB = new StudentInEventDB();
+    commentDB commentDB = new commentDB();
+    CommentInEventDB commentInEventDB = new CommentInEventDB();
+    public Dictionary<int, string> all_students_in_event = new Dictionary<int, string>();
+    public Event this_event = new Event();
+    Teacher teacher = new Teacher();
+    // ID of the selected event
+    private int? SelectedEvent { get; set; }
+    private int? previousEventId { get; set; }
+
+    // The user's typed message
+    private string NewMessage { get; set; } = string.Empty;
+
+    // The list of events
+    private List<Event> Events = new List<Event>();
+
+    // All the messages for this event
+    private List<comment> Messages = new List<comment>();
+
+    // The search term in the event list
+    private string SearchTerm { get; set; } = string.Empty;
+
+    // SignalR
+    private HubConnection? hubConnection;
+    private bool _connected = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Build the hub connection
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        // Handle incoming messages
+        // 'ReceiveMessage' broadcasts a single 'comment'
+        hubConnection.On<comment>("ReceiveMessage",async (incomingComment) =>
+        {
+            // If an event is selected, append the new comment
+            if (SelectedEvent.HasValue)
+            {
+                // Add to local Messages
+                Messages.Add(incomingComment);
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+        await hubConnection.StartAsync();
+        _connected = true;
+    }
+
+    // Called after the component is rendered for the first time
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Try to load Student from session
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+                // Load events for the student
+                Events = await eventDB.GetAllEventsForSpecificStudent(userS.Id);
+
+            }
+            else
+            {
+                // Check if teacher or do something else if userT
+                // userT = ...
+            }
+            StateHasChanged();
+        }
+    }
+
+    // Called when the user selects an event from the list
+    private async Task SelectEvent(int eventId)
+    {
+        // If the user was in another group, leave it
+        if (previousEventId.HasValue)
+        {
+            await hubConnection.InvokeAsync("LeaveGroup", previousEventId.Value.ToString());
+        }
+
+        // Join the new event group
+        SelectedEvent = eventId;
+        await hubConnection.InvokeAsync("JoinGroup", eventId.ToString());
+
+        // Load messages from DB for that event
+        Messages = await commentDB.GetAllCommentsForEvent(eventId);
+        all_students_in_event = await studentDB.GetTheNameOfEveryStudentInEvent(eventId);
+        teacher = await teacherDB.GetTeacherByEvent(eventId);
+        //  this_event =await eventDB.GetEventByPK(eventId);
+        previousEventId = eventId;
+    }
+
+    // Called when user presses Enter in the message input
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            _ = SendMessage();
+        }
+    }
+
+    // Sends the typed message to the selected event
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(NewMessage) || !SelectedEvent.HasValue)
+            return;
+
+        // Create a new comment with current time
+        comment newComment = new comment
+            {
+                thecomment = NewMessage,
+                timeopcomment = DateTime.Now
+            };
+
+        // Determine if it's from a student or teacher
+        if (userS != null)
+        {
+            newComment.student_senderID = userS.Id;
+        }
+        else if (userT != null)
+        {
+            newComment.teacher_senderID = userT.Id;
+        }
+
+        // Add it to the mysqlserver
+        newComment.id_of_comment = "My father thinks I am a better man then him, unfortunatliy for you, he is wrong".GetHashCode();
+        // await commentDB.InsertComment(newComment);
+        // CommentInEvent commentInEvent = new CommentInEvent(SelectedEvent.Value,newComment.id_of_comment);
+        // await commentInEventDB.InsertCommentInEvent(commentInEvent);
+
+        // Broadcast to server => all in group see it
+        await hubConnection.SendAsync("SendMessage", SelectedEvent.Value, newComment);
+        
+
+        NewMessage = string.Empty;
+    }
+
+    // Helper: checks if the comment is from the current user
+    private bool IsCurrentUser(comment c)
+    {
+        if (userS != null && c.student_senderID == userS.Id) return true;
+        if (userT != null && c.teacher_senderID == userT.Id) return true;
+        return false;
+    }
+
+    // Helper: returns the name or label for the comment's sender
+    private string GetSenderName(comment c)
+    {
+        if (userS != null && c.student_senderID == userS.Id)
+        {
+            return $"{userS.first_name}";
+        }
+        else if (userT != null && c.teacher_senderID == userT.Id)
+        {
+            return userT.first_name + " " + userT.last_name;
+        }
+        else if (c.student_senderID != 0)
+        {
+            string name = all_students_in_event[c.student_senderID];
+            return $"{name}";
+        }
+        else if (c.teacher_senderID != 0)
+        {
+          
+            string name = teacher.first_name + " " + teacher.last_name;
+            return name;
+        }
+        return "Unknown";
+    }
+}

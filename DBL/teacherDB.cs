@@ -3,11 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Models;
 namespace DBL
 {
     public class teacherDB : BaseDB<Teacher>
     {
+        public async Task<Teacher>GetTeacherByEvent(int randomuniqcode)
+        {
+            string q = @$"Select
+    mylastyear.teachers.teacherid,
+    mylastyear.teachers.first_name,
+    mylastyear.teachers.last_name,
+    mylastyear.teachers.email,
+    mylastyear.teachers.bio,
+    mylastyear.teachers.hourly_rate,
+    mylastyear.teachers.isprivate
+From
+    mylastyear.teachers Inner Join
+    mylastyear.event On mylastyear.event.teacherid = mylastyear.teachers.teacherid
+    where mylastyear.event.randomuniqcode=@randomuniqcode";
+
+            Dictionary<string,object> data = new Dictionary<string,object>();
+            data.Add("randomuniqcode", randomuniqcode);
+            List<Teacher>lst = await base.SelectAllAsync(data);
+            if (lst.Count > 0)
+            { return lst[0]; }
+            return null;
+
+        }
         public async Task<Teacher> GetTeacherByPrimeryKey(int  primeryKey)
         {
             string q = $@"Select

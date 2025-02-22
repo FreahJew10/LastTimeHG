@@ -12,7 +12,21 @@ namespace DBL
 {
     public class studentDB : BaseDB<Student>
     {
-        
+        public async Task<Dictionary<int,string>> GetTheNameOfEveryStudentInEvent(int randomuinqcod)
+        {
+            Dictionary<int,string>dic = new Dictionary<int,string>();
+            List<Student> students = await GetAllStudentForEvent(randomuinqcod);
+            if (students.Count > 0)
+            {
+                foreach (Student student in students)
+                {
+                    dic.Add(student.Id, student.first_name + " " + student.last_name);
+
+                }
+
+            }
+            return dic;
+        }
         public async Task<List<Student>>GetAllStudentForEvent(int randomuniqcode)
         {
             List<Student> students = new List<Student>();
