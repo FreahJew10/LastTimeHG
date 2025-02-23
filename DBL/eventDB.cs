@@ -98,7 +98,7 @@ From
                            student Inner Join
                            studentinevent On studentinevent.studentid = student.studentid Inner Join
                            event On studentinevent.randomuniqcode = event.randomuniqcode
-                                where student.studentid=@srudentid AND event.kindofevent rlike ""notification""";
+                                where student.studentid=@studentid AND event.kindofevent rlike ""notification""";
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("studentid", studentid);
             events = await SelectAllAsync(sql, data);
