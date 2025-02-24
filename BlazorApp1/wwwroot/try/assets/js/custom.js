@@ -88,18 +88,28 @@
 	    };
 	  }
 	  
-	  function initializeClock(endtime){
-	  var timeinterval = setInterval(function(){
-	    var t = getTimeRemaining(endtime);
-	    document.querySelector(".days > .value").innerText=t.days;
-	    document.querySelector(".hours > .value").innerText=t.hours;
-	    document.querySelector(".minutes > .value").innerText=t.minutes;
-	    document.querySelector(".seconds > .value").innerText=t.seconds;
-	    if(t.total<=0){
-	      clearInterval(timeinterval);
-	    }
-	  },1000);
-	}
+		function initializeClock(endtime) {
+			var timeinterval = setInterval(function () {
+				var t = getTimeRemaining(endtime);
+
+				// Get elements safely
+				var daysEl = document.querySelector(".days > .value");
+				var hoursEl = document.querySelector(".hours > .value");
+				var minutesEl = document.querySelector(".minutes > .value");
+				var secondsEl = document.querySelector(".seconds > .value");
+
+				// Update text only if elements exist
+				if (daysEl) daysEl.innerText = t.days;
+				if (hoursEl) hoursEl.innerText = t.hours;
+				if (minutesEl) minutesEl.innerText = t.minutes;
+				if (secondsEl) secondsEl.innerText = t.seconds;
+
+				if (t.total <= 0) {
+					clearInterval(timeinterval);
+				}
+			}, 1000);
+		}
+
 	initializeClock(((new Date()).getFullYear()+1) + "/1/1")
 	})()
 

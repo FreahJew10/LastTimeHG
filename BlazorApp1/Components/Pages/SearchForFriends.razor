@@ -45,8 +45,8 @@
                             }
                             else if(arewebothfriends==3)
                             {
-                                <button type="button" @onclick="AddAsFriendAndSendRequest" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
-                                    add as friend and send request
+                                <button type="button" @onclick="AddAsFriend" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
+                                    he is your friend, click to be his friend
                                 </button>
                             }
                             else if(arewebothfriends==2)
@@ -119,6 +119,16 @@
 
 
     }
+    public async Task AddAsFriend()
+    {
+        friends friends = new friends(userS.Id, id);
+
+        friendsDB friendsDB = new friendsDB();
+        if(await friendsDB.insertFriends(friends))
+        {
+            await js.InvokeVoidAsync("alert", @$"you are matual friend");
+        }
+    }
 
     public async Task AddAsFriendAndSendRequest()
     {
@@ -127,7 +137,7 @@
    .WithAutomaticReconnect()
    .Build();
         await hubConnection.StartAsync();
-       
+
         /*   await hubConnection.StartAsync();
         if (await StaticChatHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(friend.email, hubConnection.ConnectionId))
             {
@@ -146,15 +156,15 @@
         Random random = new Random();
         string zeevhashcode = "daliner is the next one";
         int randomeventcod = random.Next(-999999999,999999999);
-         Event vent =new Event();
+        Event vent =new Event();
         // if (!EventDB.alloftheeventsid.Contains(randomeventcod))
         // {
-            randomeventcod = zeevhashcode.GetHashCode();
+        randomeventcod = zeevhashcode.GetHashCode();
         vent = new Event("added you as friend", DateTime.Now, 0, "notification-add friend", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
-        
 
 
-       friends friends = new friends(userS.Id, id);
+
+        friends friends = new friends(userS.Id, id);
         StudentInEvent studentInEvent1 = new StudentInEvent(userS.Id, randomeventcod);//לעכשיו אני מכניס את הרנדום אינוונט קוד ואז אני אעשה אינסרט לפיו
         StudentInEvent studentInEvent2 = new StudentInEvent(id, randomeventcod);
 
@@ -170,7 +180,7 @@
         await studentInEventDB.insertStedentInEvent(studentInEvents);
 
         await hubConnection.SendAsync("SendNotificationToInformIAdedYouAsFriend", friendconIDs, "added you as friend", userS.email);
-
+        StateHasChanged();
 
     }
     public async ValueTask DisposeAsync()

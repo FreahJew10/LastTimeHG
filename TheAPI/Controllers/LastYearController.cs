@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Models;
 using DBL;
+using Microsoft.AspNetCore.Authorization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TheAPI.Controllers
@@ -14,9 +15,11 @@ namespace TheAPI.Controllers
         [ActionName("login")]
         public async Task<Student> Login([FromBody] Student item)
         {
+          
             Student s=new Student();
             studentDB studentDB = new studentDB();
             s =  await studentDB.LoginAsync(item.email, item.password);
+
             return s;  
         }
 

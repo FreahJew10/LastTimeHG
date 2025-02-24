@@ -1,5 +1,7 @@
 ﻿@page "/login"
 @using System.Text.Json;
+
+
 @inject NavigationManager navigateMgr
 @using Models;
 
@@ -45,9 +47,11 @@
             LoginCustomer.password = paswword;
             //CustomerList.Add(customer);
 
-
-
+           
+          
+           
             var apiResponse = await httpClient.PostAsJsonAsync<Student>("https://wzg9vdnc-7047.euw.devtunnels.ms/api/LastYear/login", LoginCustomer);
+            
             if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 userS = await apiResponse.Content.ReadFromJsonAsync<Student>();
@@ -69,15 +73,7 @@
                 await Application.Current.MainPage.DisplayAlert("Info", ResultStr, "Ok");
             }
 
-            customer = await httpClient.GetFromJsonAsync<Customer>(uri);
-            if (customer.Id > 0)
-            {
-                navigateMgr.NavigateTo("/showAll", replace: true);
-            }
-            else
-            {
-                await Application.Current.MainPage.DisplayAlert("Info", ResultStr, "Ok");
-            }
+            
         }
         catch (Exception ex)
         {
