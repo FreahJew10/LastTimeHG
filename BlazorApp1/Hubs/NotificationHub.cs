@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Google.Protobuf;
+
 namespace BlazorApp1.Hubs
 {
  
@@ -16,8 +17,23 @@ namespace BlazorApp1.Hubs
 
         public async Task SendNotificationToInformIAdedYouAsFriend(List<string> tourconid, string notification, string email)// שולחת התראת "הוספתי אותך כחבר" כאשר אדם מוסיף כחבר בנוסף יכולה לשלוח את ההודעה לכמה חיבורים
         {
+            Console.WriteLine( "dwadawd");
             IReadOnlyList<string> friendcon = tourconid.ToList();
+            foreach(string s in friendcon)
+            {
+                Console.WriteLine(s);
+            }
+
             await Clients.Clients(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+           //await Clients.All.SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+           //await Clients.AllExcept(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+           //await Clients.Caller.SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+         
+        }
+
+        public async Task SendNotification(string message)
+        {
+            await Clients.All.SendAsync("ReceiveNotification", message);
         }
     }
 }

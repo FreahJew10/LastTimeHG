@@ -1,0 +1,13 @@
+﻿<h3>Tester_will_dell</h3>
+@page "/test"
+
+@* @inject BlazorApp1.Hubs.NotificationService NotificationService
+ *@
+<button @onclick="SendNotification">Send Global Notification</button>
+
+@code {
+    private async Task SendNotification()
+    {
+      //  await NotificationService.SendNotificationAsync("Hello, global user!");
+    }
+}

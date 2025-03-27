@@ -3,6 +3,7 @@
 @using DBL;
 @inject IJSRuntime js
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Security.Claims
 
 @inject ProtectedSessionStorage MySession
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
@@ -402,6 +403,7 @@
           //  await EventDB.builalloftheeventsid();
             // student.userid = hubConnection.ConnectionId;
             await MySession.SetAsync("student",student);
+
             navigationManager.NavigateTo("/");
 
             

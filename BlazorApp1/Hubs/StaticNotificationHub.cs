@@ -11,6 +11,21 @@
             }
             return false;
         }
+        public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, List<string> conid)//עבור רשימה של חיבורים
+        {
+            if (multyconidFORnotifications.ContainsKey(email))
+            {
+                foreach (string con in conid)
+                {
+                    if (await IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(email, con))
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
+        }
 
         public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, string conid)// תחת האמייל של היוזרmultyconidFORnotifications האם נמצא כבר חיבור לדף ב
         {

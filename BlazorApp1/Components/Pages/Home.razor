@@ -7,6 +7,10 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 @using Hubs
 @using Microsoft.AspNetCore.SignalR.Client
+@using Blazored.Toast.Services
+
+@inject IToastService ToastService
+<h3> @conid</h3>
 <div lang="en">
     <HeadContent>
 
@@ -33,7 +37,7 @@
 
         -->
     </HeadContent>
-
+  
     <div class="js">
 
 
@@ -47,11 +51,13 @@
                 <ul class="main-menu">
                     @if (userS != null)
                     {
+
                         <li><a href="#section1">hello! @userS.first_name</a></li>
                         <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">show my clander</a></li>
                         <li><a href="/teacher-search" @onclick="movetoSearchForteachers"> search for private teacher</a></li>
                         <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
+                        <li><a href="/Notifications" @onclick="wiildel"> willdel</a></li>
                     }
                     else if (userT != null)
                     {
@@ -793,22 +799,25 @@
         .WithUrl(navigationManager.ToAbsoluteUri("/NotificationHub"))
         .WithAutomaticReconnect()
         .Build();
-       
+
         hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
         {
             this.notification = email + " " + notification;
             await js.InvokeVoidAsync("alert", @$"{this.notification}");
-           
+            ToastService.ShowInfo($"{email}: {notification}");
             await InvokeAsync(StateHasChanged);
         });
         Console.WriteLine("RRR");
         await hubConnection.StartAsync();
-      
+
 
 
 
     }
-   
+    public async Task wiildel()
+    {
+        Console.WriteLine(hubConnection.ConnectionId);
+    }
     public async Task search()
     {
         if (userS != null)
