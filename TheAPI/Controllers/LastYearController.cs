@@ -13,15 +13,25 @@ namespace TheAPI.Controllers
         // POST api/<ToDoListController>
         [HttpPost]
         [ActionName("login")]
-        public async Task<Student> Login([FromBody] Student item)
+        public async Task<Student> Login([FromBody] Person item)
         {
-          
-            Student s=new Student();
+            Console.WriteLine("fsfesfsefsfsef");
+            Student s = new Student();
             studentDB studentDB = new studentDB();
-            s =  await studentDB.LoginAsync(item.email, item.password);
+            s = await studentDB.LoginAsync(item.email, item.password);
 
-            return s;  
+            return s;
         }
+        //public async Task<Student> Login()
+        //{
+
+        //    Console.WriteLine("fsfesfsefsfsef");
+        //    Student s = new Student();
+        //    studentDB studentDB = new studentDB();
+        //    s = await studentDB.LoginAsync("tal", "1234");
+
+        //    return s;
+        //}
 
 
         // GET: api/<LastYearController>

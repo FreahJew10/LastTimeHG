@@ -32,25 +32,31 @@
     public string paswword { get; set; }
     public Student userS { get; set; }
     public string ResultStr { get; set; }
-    
+
     private async Task HandleLogin()
     {
         // Simulate asynchronous loading to demonstrate a loading indicator
-   
+
 
         try
         {
             HttpClient httpClient = new HttpClient();
             //CustomerList = new List<Customer>();
-            Student LoginCustomer = new Student();
+            Person LoginCustomer = new Person();
             LoginCustomer.email = name;
             LoginCustomer.password = paswword;
+            LoginCustomer.first_name="D";
+            LoginCustomer.userid = "4324";
+            LoginCustomer.last_name = "de";
+            LoginCustomer.Id = 1;
+            LoginCustomer.userid = "1";
+            // Person temp = new Person("kaladin", "stormblest", "dwada", "i claim the sky");
+            string json = JsonSerializer.Serialize(LoginCustomer);
+            Console.WriteLine(json);
             //CustomerList.Add(customer);
+         
 
-           
-          
-           
-            var apiResponse = await httpClient.PostAsJsonAsync<Student>("https://wzg9vdnc-7047.euw.devtunnels.ms/api/LastYear/login", LoginCustomer);
+            var apiResponse = await httpClient.PostAsJsonAsync<Person>("https://zlzt13pb-5066.euw.devtunnels.ms/api/LastYear/login",LoginCustomer);
             
             if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -80,4 +86,6 @@
             ResultStr = ex.Message;
         }
     }
+   
 }
+

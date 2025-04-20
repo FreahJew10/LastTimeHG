@@ -2,18 +2,28 @@
 {
     public static class StaticNotificationHub
     {
-        public static Dictionary<string, List<string>> multyconidFORnotifications { get; set; } = new Dictionary<string, List<string>>();
+        public static Dictionary<string, List<string>> multyconidFORnotificationsForstudents { get; set; } = new Dictionary<string, List<string>>();
+          public static Dictionary<string, List<string>> multyconidFORnotificationsForteacher { get; set; } = new Dictionary<string, List<string>>();
         public static async Task<bool> IsThisSpecificEmailExistIn_multyconidFORnotifications(string email)
         {
-            if (multyconidFORnotifications.ContainsKey(email))
+            if (multyconidFORnotificationsForstudents.ContainsKey(email))
             {
                 return true;
             }
             return false;
         }
-        public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, List<string> conid)//עבור רשימה של חיבורים
+
+        public static async Task<bool> IsThisSpecificEmailExistIn_multyconidFORnotificationsFORteacher(string email)
         {
-            if (multyconidFORnotifications.ContainsKey(email))
+            if (multyconidFORnotificationsForteacher.ContainsKey(email))
+            {
+                return true;
+            }
+            return false;
+        }
+        /*public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, List<string> conid)//עבור רשימה של חיבורים
+        {
+            if (multyconidFORnotificationsForstudents.ContainsKey(email))
             {
                 foreach (string con in conid)
                 {
@@ -25,14 +35,14 @@
 
             }
             return false;
-        }
+        }*/
 
         public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, string conid)// תחת האמייל של היוזרmultyconidFORnotifications האם נמצא כבר חיבור לדף ב
         {
 
-            if (multyconidFORnotifications.ContainsKey(email))
+            if (multyconidFORnotificationsForstudents.ContainsKey(email))
             {
-                foreach (string conids in multyconidFORnotifications[email])
+                foreach (string conids in multyconidFORnotificationsForstudents[email])
                 {
                     if (conids == conid)
                     {
@@ -50,7 +60,7 @@
             List<string> list = new List<string>();
             if (await IsMyFriendHereOrmeFORnotifications(email) > 0)
             {
-                foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotifications)
+                foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotificationsForstudents)
                 {
                     if (entry.Key == email)
                     {
@@ -68,7 +78,7 @@
         public static async Task<int> IsMyFriendHereOrmeFORnotifications(string email)//עבורmultyconidFORnotifications 
         {
             int count = 0;
-            foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotifications)
+            foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotificationsForstudents)
             {
                 if (entry.Key == email)
                 {

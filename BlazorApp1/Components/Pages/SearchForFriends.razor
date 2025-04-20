@@ -213,15 +213,15 @@
                     if (await StaticNotificationHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
                     {
                         conid = hubConnection.ConnectionId;
-                        List<string> strings = StaticNotificationHub.multyconidFORnotifications[userS.email];
+                        List<string> strings = StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email];
                         strings.Add(conid);
-                        StaticNotificationHub.multyconidFORnotifications[userS.email] = strings;
+                        StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email] = strings;
                     }
                     else
                     {
                         List<string> notifCon = new List<string>();
                         notifCon.Add(hubConnection.ConnectionId);
-                        StaticNotificationHub.multyconidFORnotifications.Add(userS.email, notifCon);
+                        StaticNotificationHub.multyconidFORnotificationsForstudents.Add(userS.email, notifCon);
                     }
                 }
                 catch(Exception e)
@@ -245,9 +245,9 @@
                 if (await StaticNotificationHub.IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(userS.email, hubConnection.ConnectionId))
                 {
                     conid = hubConnection.ConnectionId;
-                    List<string> strings = StaticNotificationHub.multyconidFORnotifications[userS.email];
+                    List<string> strings = StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email];
                     strings.Add(conid);
-                    StaticNotificationHub.multyconidFORnotifications[userS.email] = strings;
+                    StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email] = strings;
                 }
             }
             catch (Exception e)

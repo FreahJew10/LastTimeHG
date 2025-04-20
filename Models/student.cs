@@ -9,7 +9,7 @@ namespace Models
     public class Student:Person
     {
         public List<Person> friends { get; set; }
-        public Student() { }
+        public Student():base() { }
         public Student(int id, string firstName, string lastName, string email, string password,  string userid)
             :base(id, firstName, lastName, email, password,userid) 
         { 

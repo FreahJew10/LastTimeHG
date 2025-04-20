@@ -10,6 +10,26 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
+        public async Task<List<Event>>GetAllEventForTeacher(int teacherid)
+        {
+            List<Event> events = new List<Event>();
+            string sql = $@"Select
+    event.randomuniqcode,
+    event.eventname,
+    event.date,
+    event.teacherid,
+    event.kindofevent,
+    event.enddate
+From
+    event
+    where event.teacherid=@teacherid";
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("teacherid", teacherid);
+            events = await SelectAllAsync(sql, data);
+
+            if (events.Count > 0) { return events; }
+            else { return null; }
+        }
 
         /* public static List<int> alloftheeventsid = new List<int>();
 
@@ -76,7 +96,7 @@ namespace DBL
     event.enddate
 From
     event
-    where event.teacherid=@teacherid;";
+    where event.teacherid=@teacherid AND event.kindofevent rlike ""notification""";
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("teacherid", teacherid);
             events = await SelectAllAsync(sql, data);

@@ -9,6 +9,32 @@ namespace DBL
 {
     public class PersonStudentDB : BaseDB<Person>
     {
+
+        public async Task<List<Person>> GetAllPersonStudentThatTeacherTaught(int randomuniccod)
+        {
+            EventDB eventDB = new EventDB();
+            List<Event> eventList = await eventDB.GetAllEventForTeacher(randomuniccod);
+            StudentInEventDB studentInEventDB =new StudentInEventDB ();
+            List < StudentInEvent >thestudentsineachevent= await studentInEventDB.GetAllStudentsInEventForListOfEvents(eventList);
+            return await GetAllPersonForStudentInEvent(thestudentsineachevent);
+
+
+        }
+        private async Task<List<Person>> GetAllPersonForStudentInEvent(List <StudentInEvent> lst)
+        {
+            List<Person> list = new List<Person>();
+            //for (int i = 0; i < lst.Count-1; i++) 
+            //{
+
+
+            //}
+            foreach (StudentInEvent e in lst) {
+                list.Add(await SelectByPkAsync(e.studentid));
+            
+            }
+            return list;
+        }
+
         public async Task<List<Person>> SelectstudentByString(string pram)//מוצא אנשים לפי חיפוש 
         {
             List<Person> list = new List<Person>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,22 @@ namespace DBL
 {
     public class StudentInEventDB : BaseDB<StudentInEvent>
     {
+        public async Task<List<StudentInEvent>> GetAllStudentsInEventForListOfEvents(List<Event> lst)
+        {
+            List<StudentInEvent> lstd = new List<StudentInEvent>();
+            List<StudentInEvent> lstd2 = new List<StudentInEvent>();
+           List <StudentInEvent>finellst= new List<StudentInEvent>();
+            for (int i = 0; i < lst.Count - 1; i++)
+            {
+                lstd = await GetAllStudentInEvent_ForSpesificEvent(lst[i].randomuniqcode);
+                lstd2 = await GetAllStudentInEvent_ForSpesificEvent(lst[i+1].randomuniqcode);
+                lstd.Concat(lstd2).ToList();
+                
+                finellst.Concat(lstd).ToList();
+            }
+            return finellst;
+        }
+
         public async Task<List<StudentInEvent> >GetAllStudentInEvent_ForSpesificEvent(int randomcode)
         { 
             Dictionary<string,object> data = new Dictionary<string,object>();
