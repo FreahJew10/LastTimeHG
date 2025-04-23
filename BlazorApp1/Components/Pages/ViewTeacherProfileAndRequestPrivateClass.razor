@@ -20,7 +20,14 @@
             {
                 <p><strong>Expertise:</strong> @TeacherExpertise</p>
             }
-            <p><strong>Rating:</strong> ⭐⭐⭐⭐⭐ (4.8)</p>
+
+            <strong>Rating:</strong>
+            <p style="font-size: 1.5rem; color: gold;">
+                @GetStars(CurrentRating)
+            </p>
+
+
+
         </div>
 
         <!-- Appointment Scheduler -->
@@ -64,11 +71,11 @@
                 @for (int i = 1; i <= 5; i++)
                 {
                     <span class="star" @onclick="@(() => SubmitRating(i))" style="cursor: pointer;">
-                        @(i <= CurrentRating ? "⭐" : "☆")
+                        @(i <= 0 ? "⭐" : "☆")
                     </span>
                 }
             </div>
-            <p>Current Rating: @CurrentRating</p>
+           
         </div>
 
 
@@ -241,7 +248,7 @@
     List<Person> my_friends_that_im_their_friend_to = new List<Person>();
 
     // Rating Data
-    private int CurrentRating = 0;
+    private double CurrentRating = 0;
 
     private bool IsSidebarOpen = false;
     private List<Person> SelectedFriends = new List<Person>();
@@ -262,23 +269,25 @@
             SelectedFriends.Remove(friend);
         }
     }
-    protected override async void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        if (id == 0)
-            return;
+        if (id == null)
+            id = 0;
 
         privateteacher = await teacherDB.GetTeacherByPrimeryKey(id);
-
+        await GetRatet();
         subjects = await subjectDB.SelectAllSubjectForTeacher(id);
-        if (subjects!=null)
-            foreach (Subject subject in subjects)
-            {
+       
 
-                TeacherExpertise += $"{subject.subjectName} ";
-            }
         StateHasChanged();
     }
+    private async Task GetRatet()
+    {
 
+        doubleDBforRate rateProvider = new doubleDBforRate();
+        DoubleRate rateResult = await rateProvider.GetRate(privateteacher.Id);
+        CurrentRating = rateResult?.Rate ?? 0;
+    }
     private async void ConfirmAppointment()
     {
         if (!string.IsNullOrEmpty(name))
@@ -329,8 +338,9 @@
 
     private async void SubmitRating(int rating)
     {
-        CurrentRating = rating;
-        // await teacherDB.UpdateTeacherRating(privateteacher.Id, CurrentRating); // Save rating to DB
+        Rate rate = new Rate(rating, userS.Id, privateteacher.Id);
+        RateDB rateDB = new RateDB();
+        await rateDB.SubmitRate(rate);
         StateHasChanged();
     }
 
@@ -338,21 +348,48 @@
     {
         // Example: Save appointment to database or navigate to confirmation page
     }
-
+    private bool _loadedExtras;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !_loadedExtras)
         {
             var user1 = await MySession.GetAsync<Student>("student");
             if (user1.Success)
             {
                 userS = user1.Value;
-                my_friends_that_im_their_friend_to = await friendsDB.GiveAll_AreWeBothFriends_(userS);
-                StateHasChanged();
+               
             }
+            my_friends_that_im_their_friend_to = await friendsDB.GiveAll_AreWeBothFriends_(userS);
+            StateHasChanged();
+            _loadedExtras = true;
+
+
+            // now load rating and subjects
+            doubleDBforRate doubleDBforRate = new doubleDBforRate();
+
+
+            DoubleRate rateResult = await doubleDBforRate.GetRate(privateteacher.Id);
+            CurrentRating = rateResult?.Rate ?? 0;
+
+            subjects = await subjectDB.SelectAllSubjectForTeacher(privateteacher.Id);
+            if (subjects != null)
+                foreach (Subject subject in subjects)
+                {
+
+                    TeacherExpertise += $"{subject.subjectName} ";
+                }
+            // trigger a second render so your data-bound UI updates
+            StateHasChanged();
         }
     }
+    private string GetStars(double rating)
+    {
+        int full = (int)Math.Floor(rating);
+        bool half = rating - full >= 0.5;
+        int empty = 5 - full - (half ? 1 : 0);
 
+        return new string('★', full) + (half ? "⯪" : "") + new string('☆', empty);
+    }
      
 }
 

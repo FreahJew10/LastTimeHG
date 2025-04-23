@@ -88,7 +88,7 @@ Where
             fillValues.Add("password", teacher.password);
 
             Dictionary<string, object> filterValues = new Dictionary<string, object>();
-            filterValues.Add("studentid", teacher.Id);
+            filterValues.Add("teacherid", teacher.Id);
 
             int num = await base.UpdateAsync(fillValues, filterValues);
             return (num > 0);

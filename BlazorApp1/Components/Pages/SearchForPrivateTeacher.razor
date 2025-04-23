@@ -230,12 +230,23 @@
 
     private async Task SearchTeachers()
     {
+        if(!string.IsNullOrEmpty(SelectedSubject))
+        {
+        int mysub=0;
         // if (MaxHourlyRate==0)
-        SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(!string.IsNullOrEmpty(SelectedSubject) ? int.Parse(SelectedSubject) : 0);
+        foreach (Subject s in Subjects)
+        {
+
+            if(s.subjectName==SelectedSubject)
+            {
+                mysub = s.subjectid;
+            }
+      }
+        SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(int.Parse(SelectedSubject));
 
         
 
-    
+        }
         CurrentPage = 1;
         SearchExecuted = true;
     }
