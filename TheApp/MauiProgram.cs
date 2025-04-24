@@ -13,11 +13,13 @@ namespace TheApp
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
+           
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton(_ => new HttpClient());
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 

@@ -21,7 +21,7 @@
                 <p><strong>Expertise:</strong> @TeacherExpertise</p>
             }
 
-            <strong>Rating:</strong>
+            <strong>Rating:@CurrentRating</strong>
             <p style="font-size: 1.5rem; color: gold;">
                 @GetStars(CurrentRating)
             </p>
@@ -70,18 +70,42 @@
             <div class="rating-stars">
                 @for (int i = 1; i <= 5; i++)
                 {
-                    <span class="star" @onclick="@(() => SubmitRating(i))" style="cursor: pointer;">
-                        @(i <= 0 ? "⭐" : "☆")
+                    // capture a fresh variable
+                    int starValue = i;
+
+                    <span class="star"
+                          style="cursor: pointer;"
+                          @onclick="() => SubmitRating(starValue)"
+                          @onmouseover="() => hoveredRating = starValue"
+                          @onmouseout="() => hoveredRating = null">
+                        @(
+                            (hoveredRating.HasValue
+                            ? starValue <= hoveredRating.Value
+                            : starValue <= CurrentRating)
+                            ? "⭐"
+                            : "☆"
+                            )
                     </span>
                 }
             </div>
-           
         </div>
 
 
 
     </div>
     <style>
+
+        .rating-stars .star {
+            font-size: 1.5rem;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+            .rating-stars .star:hover {
+                transform: scale(1.5);
+            }
+
+
         .teacher-appointment-container {
         display: flex;
         flex-direction: column;
@@ -228,6 +252,7 @@
 }
 
 @code {
+    private int? hoveredRating = null;  // tracks which star you’re over
     // Data Binding
     private string TeacherExpertise = "";
     [Parameter] public int id { get; set; }
@@ -246,6 +271,7 @@
     StudentInEventDB studentInEventDB = new StudentInEventDB();
 
     List<Person> my_friends_that_im_their_friend_to = new List<Person>();
+    private HubConnection hubConnection;
 
     // Rating Data
     private double CurrentRating = 0;
@@ -253,8 +279,9 @@
     private bool IsSidebarOpen = false;
     private List<Person> SelectedFriends = new List<Person>();
 
-    private void ToggleSidebar()
+    private async void ToggleSidebar()
     {
+        my_friends_that_im_their_friend_to =await friendsDB.GiveAll_AreWeBothFriends_(userS);
         IsSidebarOpen = !IsSidebarOpen;
         StateHasChanged();
     }
@@ -269,6 +296,8 @@
             SelectedFriends.Remove(friend);
         }
     }
+
+  
     protected override async Task OnParametersSetAsync()
     {
         if (id == null)
@@ -276,8 +305,8 @@
 
         privateteacher = await teacherDB.GetTeacherByPrimeryKey(id);
         await GetRatet();
-        subjects = await subjectDB.SelectAllSubjectForTeacher(id);
-       
+       // subjects = await subjectDB.SelectAllSubjectForTeacher(id);
+
 
         StateHasChanged();
     }
@@ -290,6 +319,11 @@
     }
     private async void ConfirmAppointment()
     {
+        hubConnection = new HubConnectionBuilder()
+     .WithUrl(navigationManager.ToAbsoluteUri("/NotificationHub"))
+     .WithAutomaticReconnect()
+     .Build();
+        await hubConnection.StartAsync();
         if (!string.IsNullOrEmpty(name))
         {
             if (SelectedDate != null && !string.IsNullOrEmpty(SelectedTime.ToString()) && !string.IsNullOrEmpty(userS.email))
@@ -316,6 +350,8 @@
                         }
                         await studentInEventDB.insertStedentInEvent(studentInEvent);
                         ShowSummary = true;
+                     await hubConnection.SendAsync("SendNotificationToInformTeacherThatIwantPrivateClass", "notification -private lesson", userS.email, privateteacher.email);
+
                         await js.InvokeVoidAsync("alert", $"the request for private lesson was sent");
                     }
 
@@ -338,7 +374,7 @@
 
     private async void SubmitRating(int rating)
     {
-        Rate rate = new Rate(rating, userS.Id, privateteacher.Id);
+        Rate rate = new Rate(rating, privateteacher.Id,userS.Id);
         RateDB rateDB = new RateDB();
         await rateDB.SubmitRate(rate);
         StateHasChanged();
@@ -357,27 +393,27 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-               
+                doubleDBforRate doubleDBforRate = new doubleDBforRate();
+
+
+                // DoubleRate rateResult = await doubleDBforRate.GetRate(privateteacher.Id);
+                // CurrentRating = rateResult?.Rate ?? 0;
             }
-            my_friends_that_im_their_friend_to = await friendsDB.GiveAll_AreWeBothFriends_(userS);
+            
+
             StateHasChanged();
             _loadedExtras = true;
 
 
             // now load rating and subjects
-            doubleDBforRate doubleDBforRate = new doubleDBforRate();
+           
+        //    subjects = await subjectDB.SelectAllSubjectForTeacher(privateteacher.Id);
+            // if (subjects != null)
+            //     foreach (Subject subject in subjects)
+            //     {
 
-
-            DoubleRate rateResult = await doubleDBforRate.GetRate(privateteacher.Id);
-            CurrentRating = rateResult?.Rate ?? 0;
-
-            subjects = await subjectDB.SelectAllSubjectForTeacher(privateteacher.Id);
-            if (subjects != null)
-                foreach (Subject subject in subjects)
-                {
-
-                    TeacherExpertise += $"{subject.subjectName} ";
-                }
+            //         TeacherExpertise += $"{subject.subjectName} ";
+            //     }
             // trigger a second render so your data-bound UI updates
             StateHasChanged();
         }

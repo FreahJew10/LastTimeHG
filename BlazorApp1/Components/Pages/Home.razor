@@ -807,6 +807,13 @@
             ToastService.ShowInfo($"{email}: {notification}");
             await InvokeAsync(StateHasChanged);
         });
+        hubConnection.On<string, string>("GetToInformTeacherThatIwantPrivateClass", async (email, notification) =>
+        {
+            this.notification = email + " " + notification;
+            await js.InvokeVoidAsync("alert", @$"{this.notification}");
+            ToastService.ShowInfo($"{email}: {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
         Console.WriteLine("RRR");
         await hubConnection.StartAsync();
 
@@ -917,14 +924,14 @@
 
                     List<string> notifCon = new List<string>();
                     notifCon.Add(hubConnection.ConnectionId);
-                    StaticNotificationHub.multyconidFORnotificationsForstudents.Add(userT.email, notifCon);
+                    StaticNotificationHub.multyconidFORnotificationsForteacher.Add(userT.email, notifCon);
                 }
                 else
                 {
                     conid = hubConnection.ConnectionId;
                     List<string> strings = StaticNotificationHub.multyconidFORnotificationsForteacher[userT.email];
                     strings.Add(conid);
-                    StaticNotificationHub.multyconidFORnotificationsForteacher[userS.email] = strings;
+                    StaticNotificationHub.multyconidFORnotificationsForteacher[userT.email] = strings;
                 }
                 basicuser = user2.Value;
                 StateHasChanged();

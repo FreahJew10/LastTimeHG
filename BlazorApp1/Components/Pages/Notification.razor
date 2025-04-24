@@ -169,6 +169,7 @@
     {
         if (userS != null)
         {
+            PersonStudentDB personStudentDB = new PersonStudentDB();
             try
             {
                 if (SelectedNotification != null)
@@ -180,6 +181,7 @@
                         if (await friendsDB.insertFriends(friends))
                         {
                             SelectedNotification.kinofevent += "- done";
+                            userS.friends.Add(await personStudentDB.SelectByPkAsync(the_new_friend[0].studentid));
                             await eventDB.UpdateTheKindOfEvent(SelectedNotification);
                             await js.InvokeVoidAsync("alert", @$"you are now bote friends");
                             StateHasChanged();

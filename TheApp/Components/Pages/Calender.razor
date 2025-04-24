@@ -1,0 +1,89 @@
+﻿@page "/calender"
+@using System.Text.Json;
+@inject HttpClient httpClient
+@inject NavigationManager navigateMgr
+@using Models;
+
+
+    <h1>calender</h1>
+   
+    @if (userS != null)
+    {
+        <h1>hello @userS.first_name</h1>
+        <p role="status">Current count: @currentCount</p>
+
+        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    }
+
+
+@code {
+    private int currentCount = 0;
+    public Student userS { get; set; }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     try
+    //     {
+    //         // load your JSON
+    //         string jsonString = await SecureStorage.Default.GetAsync("customerDATA");
+
+    //         if (string.IsNullOrEmpty(jsonString))
+    //             userS = new Student();
+    //         else
+    //             userS = JsonSerializer.Deserialize<Student>(jsonString);
+
+    //         if (userS.Id <= 0)
+    //             navigateMgr.NavigateTo("/login", replace: true);
+
+    //         // if you get here, artifically clear the “Loading…” text
+    //         ResultStr = "";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // now the UI will show the real exception message
+    //         ResultStr = $"❌ {ex.GetType().Name}: {ex.Message}";
+    //     }
+    // }
+
+   
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+    string ResultStr = " Loading... ";
+    protected override async Task OnInitializedAsync()
+    {
+        // UID = await SecureStorage.Default.GetAsync("ID");
+        // if (UID == null)
+        // {
+        //     UID = "-1";
+        // }
+
+        string jsonString = await SecureStorage.Default.GetAsync("customerDATA");
+        if (jsonString == null)
+        {
+            userS = new Student();
+        }
+        else
+        {
+            userS = JsonSerializer.Deserialize<Student>(jsonString);
+        }
+
+        if (userS.Id <= 0)
+        {
+            navigateMgr.NavigateTo("/login", replace: true);
+        }
+        // else
+        // {
+        //     try
+        //     {
+        //         // CustomerList = await httpClient.GetFromJsonAsync<List<Student>>(Data.APIs.GetAllCustomerURL);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         ResultStr = ex.Message;
+        //     }
+        // }
+
+
+    }
+}
