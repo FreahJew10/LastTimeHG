@@ -1,4 +1,4 @@
-﻿@page "/calender"
+﻿@page "/calenderteacher"
 @inject NavigationManager navigationManager
 @inject IJSRuntime js
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -158,17 +158,17 @@
     private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Sunday);
     private List<Event> events = new List<Event>();
     private bool isLoading = true;
-    private Student userS;
+    private Teacher userT;
     EventDB eventDB1 = new EventDB();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var userResult = await MySession.GetAsync<Student>("student");
+            var userResult = await MySession.GetAsync<Teacher>("teacher");
             if (userResult.Success)
             {
-                userS = userResult.Value;
+                userT = userResult.Value;
                 await LoadEventsForWeekAsync();
             }
         }
@@ -176,7 +176,7 @@
 
     private async Task LoadEventsForWeekAsync()
     {
-        if (userS != null)
+        if (userT != null)
         {
             isLoading = true;
 
@@ -194,7 +194,7 @@
     private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
     {
         EventDB eventDB = new EventDB();
-        List<Event> result = await eventDB.GetEventsForStudentInRangeForStudent(userS.Id, start, end);
+        List<Event> result = await eventDB.GetEventsForStudentInRangeForTeacher(userT.Id, start, end);
         return result ?? Enumerable.Empty<Event>();
     }
 

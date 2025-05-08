@@ -134,7 +134,35 @@
     public EventDB eventDB = new EventDB();
     public StudentInEventDB studentInEventDB = new StudentInEventDB();
     public friendsDB friendsDB = new friendsDB();
+    private HubConnection hubConnection;
+    string notification;
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(navigationManager.ToAbsoluteUri("/NotificationHub"))
+        .WithAutomaticReconnect()
+        .Build();
 
+        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
+        {
+            this.notification = email + " " + notification;
+           
+           
+            await InvokeAsync(StateHasChanged);
+        });
+        hubConnection.On<string, string,int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification, eventrandomcod) =>
+        {
+            
+            notifications.Add(await eventDB.GetEventByPK(eventrandomcod));
+            await InvokeAsync(StateHasChanged);
+        });
+        Console.WriteLine("RRR");
+        await hubConnection.StartAsync();
+
+
+
+
+    }
     private async Task OpenSidebarAsync(Event notification)
     {
         IsSidebarOpen = true;
@@ -251,8 +279,8 @@
     {
 
         //  await eventDB.RejectLesson(SelectedLessonId);
-        await CloseSidebarAsync();
-        notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id); // Refresh notifications
+        SelectedNotification.kinofevent += "- done";
+        await eventDB.UpdateTheKindOfEvent(SelectedNotification);
         StateHasChanged();
     }
 

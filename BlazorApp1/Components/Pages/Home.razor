@@ -63,6 +63,8 @@
                     {
                         <li><a href="#section1">hello! @userT.first_name</a></li>
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
+                        <li><a @onclick="calender" href="SearchForFriends">show my clander</a></li>
+                        <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
                     }
                     else
                     {
@@ -807,7 +809,7 @@
             ToastService.ShowInfo($"{email}: {notification}");
             await InvokeAsync(StateHasChanged);
         });
-        hubConnection.On<string, string>("GetToInformTeacherThatIwantPrivateClass", async (email, notification) =>
+        hubConnection.On<string, string,int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification,eventrandomcod) =>
         {
             this.notification = email + " " + notification;
             await js.InvokeVoidAsync("alert", @$"{this.notification}");
@@ -888,6 +890,10 @@
     public async Task movetoNotification()
     {
         navigationManager.NavigateTo("/Notifications");
+    }
+    public async Task calender()
+    {
+        navigationManager.NavigateTo("/calenderteacher");
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {

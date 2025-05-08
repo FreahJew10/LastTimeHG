@@ -26,7 +26,7 @@ From
 
             Dictionary<string,object> data = new Dictionary<string,object>();
             data.Add("randomuniqcode", randomuniqcode);
-            List<Teacher>lst = await base.SelectAllAsync(data);
+            List<Teacher>lst = await base.SelectAllAsync(q,data);
             if (lst.Count > 0)
             { return lst[0]; }
             return null;
@@ -55,6 +55,33 @@ Where
             else
                 return null;
         }
+        public async Task<List<Teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId,int hourly_rate)
+        {
+            string q = $@"Select
+teachers1.teacherid,
+    teachers1.first_name,
+    teachers1.last_name,
+    teachers1.email,
+    teachers1.bio,
+    teachers1.hourly_rate,
+    teachers1.isprivate
+From
+    mylastyear.sub_to_teachers Inner Join
+    mylastyear.teachers teachers1 On mylastyear.sub_to_teachers.teacherid = teachers1.teacherid Inner Join
+    mylastyear.subject On mylastyear.sub_to_teachers.subjectId = mylastyear.subject.subjectId
+Where
+    teachers1.isprivate = 1 and mylastyear.subject.subjectId=@id and teachers1.hourly_rate<= @hourly_rate";
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            properties.Add("id", subjectId);
+            properties.Add("hourly_rate", hourly_rate);
+            List<Teacher> lst = await SelectAllAsync(q, properties);
+
+            if (lst.Count > 0)
+                return lst;
+
+            return null;
+
+        }
         public async Task<List<Teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
         {
             string q = $@"Select
@@ -80,6 +107,18 @@ Where
 
             return null;
             
+        }
+        public async Task<bool> updateAsyncbio(Teacher teacher)
+        {
+            Dictionary<string, object> fillValues = new Dictionary<string, object>();
+            fillValues.Add("bio", teacher.bio);
+           
+
+            Dictionary<string, object> filterValues = new Dictionary<string, object>();
+            filterValues.Add("teacherid", teacher.Id);
+
+            int num = await base.UpdateAsync(fillValues, filterValues);
+            return (num > 0);
         }
         public async Task<bool> updateAsync(Teacher teacher)
         {

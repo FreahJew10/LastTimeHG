@@ -15,13 +15,16 @@ namespace DBL
             List<StudentInEvent> lstd = new List<StudentInEvent>();
             List<StudentInEvent> lstd2 = new List<StudentInEvent>();
            List <StudentInEvent>finellst= new List<StudentInEvent>();
-            for (int i = 0; i < lst.Count - 1; i++)
+            if (lst != null)
             {
-                lstd = await GetAllStudentInEvent_ForSpesificEvent(lst[i].randomuniqcode);
-                lstd2 = await GetAllStudentInEvent_ForSpesificEvent(lst[i+1].randomuniqcode);
-                lstd.Concat(lstd2).ToList();
-                
-                finellst.Concat(lstd).ToList();
+                for (int i = 0; i < lst.Count - 1; i++)
+                {
+                    lstd = await GetAllStudentInEvent_ForSpesificEvent(lst[i].randomuniqcode);
+                    lstd2 = await GetAllStudentInEvent_ForSpesificEvent(lst[i + 1].randomuniqcode);
+                    lstd.Concat(lstd2).ToList();
+
+                    finellst.Concat(lstd).ToList();
+                }
             }
             return finellst;
         }

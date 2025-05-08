@@ -108,7 +108,22 @@ From
             }
             return friends;
         }
+        public async Task<bool> insertstudent(Person student)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("first_name", student.first_name);
+            data.Add("last_name", student.last_name);
+            data.Add("email", student.email);
+            data.Add("password", student.password);
 
+            int num = await base.InsertAsync(data);
+            if (num > 0)
+            {
+                return true;
+            }
+            else { return false; }
+
+        }
         protected override async Task<Person> CreateModelAsync(object[] row)
         {
             Person student_friends=new Person();

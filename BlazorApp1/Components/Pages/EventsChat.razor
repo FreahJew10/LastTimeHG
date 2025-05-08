@@ -357,8 +357,14 @@
             }
             else
             {
-                // Check if teacher or do something else if userT
-                // userT = ...
+                var user2 = await MySession.GetAsync<Teacher>("teacher");
+                if (user2.Success)
+                {
+                    userT = user2.Value;
+                    Events = await eventDB.GetAllEventForTeacher(userT.Id);
+                    StateHasChanged();
+                }
+               
             }
             StateHasChanged();
         }

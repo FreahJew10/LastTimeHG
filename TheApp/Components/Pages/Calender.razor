@@ -5,20 +5,140 @@
 @using Models;
 
 
-    <h1>calender</h1>
-   
-    @if (userS != null)
-    {
-        <h1>hello @userS.first_name</h1>
-        <p role="status">Current count: @currentCount</p>
+<h3>Custom Weekly Scheduler</h3>
+<div class="scheduler-header">
+    <button @onclick="PreviousDay">⬅️</button>
+    <h4>@weekStartDate.AddDays(currentDayIndex).ToString("dddd, MMM dd")</h4>
+    <button @onclick="NextDay">➡️</button>
+</div>
 
-        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div class="scheduler-grid">
+    @foreach (Event evt in events.Where(e => e.date  == weekStartDate.AddDays(currentDayIndex).Date))
+    {
+        <div class="time-slot">
+            <strong>@evt.date.ToString(@"hh\:mm")</strong> - @evt.kinofevent
+        </div>
     }
+</div>
+
+<style>
+    .scheduler-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        font-family: Arial, sans-serif;
+        padding: 0 10px;
+    }
+
+    .scheduler-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .scheduler-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        border: 1px solid #ccc;
+        overflow-x: auto;
+    }
+
+    .time-column {
+        font-weight: bold;
+        text-align: center;
+        padding: 5px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-right: none; /* Remove space between hour rows */
+        min-width: 80px;
+    }
+
+    .day-header {
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        background-color: #e0f7fa;
+        border: 1px solid #ccc;
+        min-width: 150px;
+    }
+
+    .scheduler-cell {
+        border: 1px solid #ccc;
+        padding: 5px;
+        background-color: white;
+        height: 60px;
+        min-width: 150px;
+    }
+
+    .scheduler-event {
+        background-color: #007bff;
+        color: white;
+        padding: 5px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    /* Mobile adjustments */
+    media (max-width: 768px) {
+        .scheduler-header
+
+    {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .scheduler-header h4 {
+        font-size: 16px;
+    }
+
+    .scheduler-grid {
+        grid-template-columns: 60px repeat(7, 200px); /* Slightly wider days on scroll */
+        overflow-x: scroll;
+    }
+
+    .time-column,
+    .day-header,
+    .scheduler-cell {
+        min-width: 120px;
+    }
+
+    .scheduler-event {
+        font-size: 10px;
+        padding: 3px;
+    }
+
+    }
+
+
+    .scheduler-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px;
+    }
+
+    .scheduler-grid {
+        margin-top: 20px;
+    }
+
+    .time-slot {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+</style>
 
 
 @code {
     private int currentCount = 0;
     public Student userS { get; set; }
+    private DateTime weekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Sunday);
+    private List<Event> events = new List<Event>();
+    private bool isLoading = true;
+    private int currentDayIndex = 0; // 0 = Sunday, 1 = Monday, etc.
+
     // protected override async Task OnInitializedAsync()
     // {
     //     try
@@ -44,7 +164,7 @@
     //     }
     // }
 
-   
+
     private void IncrementCount()
     {
         currentCount++;
@@ -85,5 +205,86 @@
         // }
 
 
+    }
+    private async Task LoadEventsForWeekAsync()
+    {
+        if (userS != null)
+        {
+            isLoading = true;
+
+            var startOfWeek = weekStartDate;
+            var endOfWeek = weekStartDate.AddDays(7);
+
+            var fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
+            events = fetchedEvents?.ToList() ?? new List<Event>();
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
+    {
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            Models.ModelForAPIIDEndStartDate modelForAPIIDEndStartDate = new ModelForAPIIDEndStartDate(userS.Id, start, end);
+            var adiresponse = await httpClient.PostAsJsonAsync(DataConstLink.APIs.calenderurl, modelForAPIIDEndStartDate);
+            if (adiresponse.IsSuccessStatusCode)
+            {
+                events = await adiresponse.Content.ReadFromJsonAsync<List<Event>>();
+                return events;
+            }
+            else
+            {
+                return new List<Event>();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e); 
+        }
+
+        return null;
+
+    }
+
+    private async Task PreviousWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(-7);
+        await LoadEventsForWeekAsync();
+    }
+
+    private async Task NextWeek()
+    {
+        weekStartDate = weekStartDate.AddDays(7);
+        await LoadEventsForWeekAsync();
+    }
+    private void PreviousDay()
+    {
+        if (currentDayIndex > 0)
+        {
+            currentDayIndex--;
+        }
+        else
+        {
+            currentDayIndex = 6; // Go back to Saturday if needed
+            weekStartDate = weekStartDate.AddDays(-7);
+            _ = LoadEventsForWeekAsync();
+        }
+    }
+
+    private void NextDay()
+    {
+        if (currentDayIndex < 6)
+        {
+            currentDayIndex++;
+        }
+        else
+        {
+            currentDayIndex = 0; // Back to Sunday if needed
+            weekStartDate = weekStartDate.AddDays(7);
+            _ = LoadEventsForWeekAsync();
+        }
     }
 }

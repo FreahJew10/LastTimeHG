@@ -30,7 +30,7 @@ namespace BlazorApp1.Hubs
            //await Clients.Caller.SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
          
         }
-        public async Task SendNotificationToInformTeacherThatIwantPrivateClass(string notification, string myemail,string email)// שולחת למורה הודעה שאני רוצה שיעור פרטי,הפעולה מקבלת אמייל שלי אמייל של מורה ואת ההתראה
+        public async Task SendNotificationToInformTeacherThatIwantPrivateClass(string notification, string myemail,string email,int eventrandomcod)//    שולחת למורה הודעה שאני רוצה שיעור פרטי,הפעולה מקבלת אמייל שלי אמייל של מורה ואת ההתראה וכמובן את מספר האיוונט על מנת להציג את זה ישר בדף ההתראות
         {
             if (await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotificationsFORteacher(email))
             {
@@ -42,7 +42,7 @@ namespace BlazorApp1.Hubs
                     Console.WriteLine(s);
                 }
 
-                await Clients.Clients(friendcon).SendAsync("GetToInformTeacherThatIwantPrivateClass", myemail, notification);
+                await Clients.Clients(friendcon).SendAsync("GetToInformTeacherThatIwantPrivateClass", myemail, notification,eventrandomcod);
 
             }
         }

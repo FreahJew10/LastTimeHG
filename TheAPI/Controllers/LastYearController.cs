@@ -2,6 +2,7 @@
 using Models;
 using DBL;
 using Microsoft.AspNetCore.Authorization;
+using System.Globalization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TheAPI.Controllers
@@ -21,6 +22,25 @@ namespace TheAPI.Controllers
             s = await studentDB.LoginAsync(item.email, item.password);
 
             return s;
+        }
+
+        [HttpPost]
+        [ActionName("register")]
+        public async Task<bool> insertStudent([FromBody]Person person)
+        {
+          
+           PersonStudentDB studentDB =new PersonStudentDB();
+            return await studentDB.insertstudent(person);
+
+        }
+
+        [HttpPost]
+        [ActionName("eventforcalender")]
+        public async Task<List<Event>> GetEventsforcalender([FromBody]ModelForAPIIDEndStartDate modelForAPIIDEndStartDate)
+        {
+            EventDB eventDB = new EventDB();
+            return await eventDB.GetEventsForStudentInRangeForStudent(modelForAPIIDEndStartDate.studentid, modelForAPIIDEndStartDate.startdate, modelForAPIIDEndStartDate.enddate);
+
         }
         //public async Task<Student> Login()
         //{

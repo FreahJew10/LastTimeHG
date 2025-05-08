@@ -11,35 +11,62 @@
 
 @if (events!=null)
 {
-<div class="details-container">
-    @*  <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4> *@
+    <div class="details-container">
+        @*  <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4> *@
 
-    <table class="events-table">
-        <thead>
-            <tr>
-                <th>Event Name</th>
-                <th>Time</th>
-                <th>Kind of Event</th>
-                <th>Teacher ID</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Event ev in events)
-            {
+        <table class="events-table">
+            <thead>
                 <tr>
-                    <td>@ev.eventname</td>
-                    <td>@ev.date.ToString("HH:mm")</td>
-                    <td>@ev.kinofevent</td>
-                    <td>@ev.teacherid</td>
-                    <td>
-                        <button class="btn btn-danger" @onclick="() => DeleteEvent(ev.randomuniqcode)">Delete</button>
-                    </td>
+                    <th>Event Name</th>
+                    <th>Time</th>
+                    <th>Kind of Event</th>
+                    <th>Teacher ID</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (Event ev in events)
+                {
+                    <tr>
+                        <td>@ev.eventname</td>
+                        <td>@ev.date.ToString("HH:mm")</td>
+                        <td>@ev.kinofevent</td>
+                        <td>@ev.teacherid</td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="() => DeleteEvent(ev.randomuniqcode)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
+        <h5>Add New Event</h5>
+        <EditForm Model="newEvent" OnValidSubmit="AddEvent">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="eventname">Event Name</label>
+                <InputText id="eventname" class="form-control" @bind-Value="newEvent.eventname" />
+                <label for="appointment-time">Select Time:</label>
+                <input type="time" id="appointment-time" @bind="SelectedTime" />
+            </div>
+
+
+
+
+
+
+
+            <button type="submit" class="btn btn-primary">Add Event</button>
+        </EditForm>
+    </div>
+
+}
+else 
+{
+
+    <body style="background-image:url('https://files.oaiusercontent.com/file-PiQRyXAyVisnvB4X2AiZuJ?se=2025-01-29T00%3A01%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D6f3a34c5-c404-40dc-adf4-4525e23e3150.webp&sig=o2zceawf9Fmdr2IZ6aJsk8dQLQg9lKUp0qYokYNzpAc%3D')"></body>
     <h5>Add New Event</h5>
     <EditForm Model="newEvent" OnValidSubmit="AddEvent">
         <DataAnnotationsValidator />
@@ -48,81 +75,150 @@
         <div class="form-group">
             <label for="eventname">Event Name</label>
             <InputText id="eventname" class="form-control" @bind-Value="newEvent.eventname" />
+            <label for="appointment-time">Select Time:</label>
+            <input type="time" id="appointment-time" @bind="SelectedTime" />
         </div>
 
-        <div class="form-group">
-            <label for="time">Time</label>
-            <InputDate id="time" class="form-control" @bind-Value="newEvent.date" />
-        </div>
 
-        <div class="form-group">
-            <label for="kinofevent">Kind of Event</label>
-            <InputText id="kinofevent" class="form-control" @bind-Value="newEvent.kinofevent" />
-        </div>
 
-        <div class="form-group">
-            <label for="teacherid">Teacher ID</label>
-            <InputNumber id="teacherid" class="form-control" @bind-Value="newEvent.teacherid" />
-        </div>
+
+
+
 
         <button type="submit" class="btn btn-primary">Add Event</button>
     </EditForm>
-</div>
-}
-else 
-{
-    <body style="background-image:url('https://files.oaiusercontent.com/file-PiQRyXAyVisnvB4X2AiZuJ?se=2025-01-29T00%3A01%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D6f3a34c5-c404-40dc-adf4-4525e23e3150.webp&sig=o2zceawf9Fmdr2IZ6aJsk8dQLQg9lKUp0qYokYNzpAc%3D')"></body>
 }
 
 <style>
-    .details-container {
-    max-width: 800px;
-    margin: 20px auto;
+    body {
+    background-color: #111827;
+    color: #f9fafb;
     font-family: Arial, sans-serif;
+    }
+
+    .details-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #1e293b;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h5 {
+    color: #60a5fa;
+    text-align: center;
+    margin: 24px 0 16px 0;
+    font-size: 1.4rem;
     }
 
     .events-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    overflow: hidden;
     }
 
-    .events-table th, .events-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    .events-table th,
+    .events-table td {
+    padding: 12px;
     text-align: left;
+    border-bottom: 1px solid #374151;
     }
 
     .events-table th {
-    background-color: #f4f4f4;
+    background-color: #374151;
+    color: #f9fafb;
+    font-weight: 600;
+    font-size: 0.95rem;
+    }
+
+    .events-table td {
+    font-size: 0.95rem;
+    color: #d1d5db;
+    }
+
+    .events-table tr:hover {
+    background: #2c3e50;
     }
 
     .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
+    }
+
+    .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    }
+
+    .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: #1f2937;
+    color: #f9fafb;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+    border-color: #3b82f6;
+    outline: none;
+    }
+
+    .btn-primary {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    }
+
+    .btn-primary:hover {
+    background-color: #60a5fa;
     }
 
     .btn-danger {
-    background-color: red;
+    background-color: #ef4444;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
     }
 
     .btn-danger:hover {
-    background-color: darkred;
+    background-color: #dc2626;
+    }
+
+    table .btn-danger {
+    width: 100%;
+    text-align: center;
     }
 </style>
+
 
 @code {
     [Parameter]
     public string Date { get; set; }
     public DateTime selectedDate = new DateTime();
     public Student userS = null;
- //   private List<Event> dayEvents = new List<Event>();
+    //   private List<Event> dayEvents = new List<Event>();
     private Event newEvent = new Event();
     private List<Event> events = new List<Event>();
-
+    public DateTime SelectedTime;
     protected override async void OnParametersSet()
     {
         if (Date == null)
@@ -149,14 +245,14 @@ else
             List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id, date);
             //      Console.WriteLine($"Fetched {events.Count} events from database.");
             return events;
-            
+
         }
         catch(Exception e)
         {
-        Console.WriteLine(e);
-        
+            Console.WriteLine(e);
+
         }
-    return null;
+        return null;
     }
 
     private async Task AddEvent()
@@ -164,14 +260,27 @@ else
         try
         {
             Console.WriteLine("Attempting to add a new event...");
-            var eventDB = new EventDB();
-            newEvent.date = selectedDate.Add(newEvent.date.TimeOfDay); // Keep the same day
-            newEvent.randomuniqcode = new Random().Next(1, 1000000); // Generate a unique code
-
+            EventDB eventDB = new EventDB();
+            DateTime dateTime = selectedDate;
+            TimeSpan timeSpan = new TimeSpan(int.Parse(SelectedTime.ToString("HH")), int.Parse(SelectedTime.ToString("mm")), 0);
+            dateTime = dateTime + timeSpan;
+            Console.WriteLine(dateTime.Hour);
+            newEvent.date = dateTime; // Keep the same day
+            newEvent.randomuniqcode = "The sum total of stupid people is somewhere around the population of the planet. Plus one.".GetHashCode(); // Generate a unique code
+            newEvent.kinofevent = "private event";
+            newEvent.enddate = dateTime.AddHours(1);
             bool success = await eventDB.insertEvent(newEvent);
-            if (success)
+            StudentInEventDB studentInEventDB = new StudentInEventDB();
+            StudentInEvent studentInEvent = new StudentInEvent(userS.Id, newEvent.randomuniqcode);
+            bool s = await studentInEventDB.insertStedentInEvent(studentInEvent);
+            if (success&&s)
             {
                 Console.WriteLine("Event added successfully to the database.");
+                // if (events==null)
+                // {
+                   
+                // }
+                // else
                 events.Add(newEvent);
                 Console.WriteLine($"Added event: {newEvent.eventname} at {newEvent.date:HH:mm}");
                 newEvent = new Event(); // Reset the form
@@ -185,6 +294,7 @@ else
         {
             Console.WriteLine(e);
         }
+        StateHasChanged();
     }
 
     private async Task DeleteEvent(int uniqueCode)

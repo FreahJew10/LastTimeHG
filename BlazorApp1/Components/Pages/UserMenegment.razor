@@ -127,18 +127,24 @@
                             <hr>
 
                         </div>
-                        <div class="w3-container">
-                            <h5 class="w3-opacity"><b>Web Developer / something.com</b></h5>
-                            <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Mar 2012 - Dec 2014</h6>
-                            <p>Consectetur adipisicing elit. Praesentium magnam consectetur vel in deserunt aspernatur est reprehenderit sunt hic. Nulla tempora soluta ea et odio, unde doloremque repellendus iure, iste.</p>
-                            <hr>
-                        </div>
+
                         @if (userT != null &&!string.IsNullOrEmpty(userT.bio))
                         {
                             <div class="w3-container">
                                 <h5 class="w3-opacity"><b>bio</b></h5>
-                                <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Jun 2010 - Mar 2012</h6>
+                               
                                 <p>@userT.bio </p><br>
+                            </div>
+                            <div class="form__group field">
+                                <input @bind-value="newbio"  type="input" class="form__field" placeholder="Name" name="name" id='name' required />
+                                <label for="name"  class="form__label">change your bio</label>
+                            </div>
+                        }
+                        else if (userT != null && string.IsNullOrEmpty(userT.bio))
+                        {
+                            <div class="form__group field">
+                                <input @bind-value="newbio" type="input" class="form__field" placeholder="Name" name="name" id='name' required />
+                                <label for="name" class="form__label">change your bio</label>
                             </div>
                         }
                     </div>
@@ -252,6 +258,85 @@
         </div>
 
         <style>
+
+          
+            .form__group {
+            position: relative;
+            padding: 15px 0 0;
+            margin-top: 10px;
+            width: 50%;
+            }
+
+            .form__field {
+            font-family: inherit;
+            width: 20%;
+            border: 0;
+            border-bottom: 2px solid $gray;
+            outline: 0;
+            font-size: 1.3rem;
+            color: $white;
+            padding: 7px 0;
+            background: transparent;
+            transition: border-color 0.2s;
+            ::placeholder
+
+            {
+            color: transparent;
+            }
+
+            :placeholder-shown ~ .form__label {
+            font-size: 1.3rem;
+            cursor: text;
+            top: 20px;
+            }
+
+            }
+
+            .form__label {
+            position: absolute;
+            top: 0;
+            display: block;
+            transition: 0.2s;
+            font-size: 1rem;
+            color: $gray;
+            }
+
+            .form__field:focus {
+            ~ .form__label
+
+            {
+            position: absolute;
+            top: 0;
+            display: block;
+            transition: 0.2s;
+            font-size: 1rem;
+            color: $primary;
+            font-weight: 700;
+            }
+
+         
+            /* reset input */
+            .form__field {
+            :required,&:invalid
+
+            {
+            box-shadow: none;
+            }
+
+            }
+            /* demo */
+            body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-size: 1.5rem;
+            background-color: #222222;
+            }
+
+
             /* the css of the input new password */ 
             .input {
             border: 2px solid #e8e8e8;
@@ -342,6 +427,7 @@
     Person person = new Person();
     List<Person> my_friends_that_im_their_friend_to = new List<Person>();
     List<Person> student_that_i_teach = new List<Person>();
+    string newbio = "";
     public async Task UpdateS()
     {
         Student student = new Student();
@@ -414,6 +500,18 @@
 
 
 
+    }
+    public async Task UpdateBio()
+    {
+        teacherDB teacherDb = new teacherDB();
+        Teacher teacher = new Teacher();
+        teacher.email = userS.email;
+        teacher.Id = userS.Id;
+        teacher.first_name = userS.first_name;
+        teacher.last_name = userS.last_name;
+        teacher.bio = newbio;
+       await teacherDb.updateAsyncbio(teacher);
+        StateHasChanged();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {
