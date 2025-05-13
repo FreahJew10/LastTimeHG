@@ -364,7 +364,7 @@
                     Events = await eventDB.GetAllEventForTeacher(userT.Id);
                     StateHasChanged();
                 }
-               
+
             }
             StateHasChanged();
         }
@@ -424,10 +424,14 @@
         }
 
         // Add it to the mysqlserver
-        newComment.id_of_comment = "My father thinks I am a better man then him, unfortunatliy for you, he is wrong".GetHashCode();
-        // await commentDB.InsertComment(newComment);
-        // CommentInEvent commentInEvent = new CommentInEvent(SelectedEvent.Value,newComment.id_of_comment);
-        // await commentInEventDB.InsertCommentInEvent(commentInEvent);
+        Random random = new Random();
+        //"My father thinks I am a better man then him, unfortunatliy for you, he is wrong".GetHashCode()
+        newComment.id_of_comment =random.Next( int.MinValue,int.MaxValue);
+
+        newComment.timeopcomment = DateTime.Now;
+        await commentDB.InsertComment(newComment);
+        CommentInEvent commentInEvent = new CommentInEvent(SelectedEvent.Value,newComment.id_of_comment);
+        await commentInEventDB.InsertCommentInEvent(commentInEvent);
 
         // Broadcast to server => all in group see it
         await hubConnection.SendAsync("SendMessage", SelectedEvent.Value, newComment);

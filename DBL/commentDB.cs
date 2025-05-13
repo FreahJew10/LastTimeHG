@@ -34,6 +34,7 @@ From
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("id_of_comment", comment.id_of_comment);
             data.Add("thecomment", comment.thecomment);
+            data.Add("timeofcomment", comment.timeopcomment);
             if (comment.student_senderID != 0)
             {
                 data.Add("student_senderID", comment.student_senderID);
