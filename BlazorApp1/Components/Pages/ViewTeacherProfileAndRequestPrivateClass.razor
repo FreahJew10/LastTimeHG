@@ -79,12 +79,12 @@
                     @onmouseover="() => hoveredRating = starValue"
                     @onmouseout="() => hoveredRating = null">
                         @(
-                                (hoveredRating.HasValue
-                                ? starValue <= hoveredRating.Value
-                                : starValue <= CurrentRating)
-                                ? "⭐"
-                                : "☆"
-                                )
+                                            (hoveredRating.HasValue
+                                            ? starValue <= hoveredRating.Value
+                                            : starValue <= CurrentRating)
+                                            ? "⭐"
+                                            : "☆"
+                                            )
                     </span>
                 }
             </div>
@@ -303,7 +303,7 @@
 
 @code {
     private int? hoveredRating = null;  // tracks which star you’re over
-                                        // Data Binding
+                                    // Data Binding
     private string TeacherExpertise = "";
     [Parameter] public int id { get; set; }
     private DateTime? SelectedDate { get; set; }
@@ -355,10 +355,20 @@
 
         privateteacher = await teacherDB.GetTeacherByPrimeryKey(id);
         await GetRatet();
+        await Getexp();
         // subjects = await subjectDB.SelectAllSubjectForTeacher(id);
 
 
         StateHasChanged();
+    }
+    private async Task Getexp()
+    {
+        List<Subject> subjects =await subjectDB.SelectAllSubjectForTeacher(id);
+        foreach (Subject subject in subjects)
+        {
+            TeacherExpertise += $" {subject.subjectName}";
+        }
+
     }
     private async Task GetRatet()
     {

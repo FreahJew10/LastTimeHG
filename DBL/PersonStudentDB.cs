@@ -10,10 +10,10 @@ namespace DBL
     public class PersonStudentDB : BaseDB<Person>
     {
 
-        public async Task<List<Person>> GetAllPersonStudentThatTeacherTaught(int randomuniccod)
+        public async Task<List<Person>> GetAllPersonStudentThatTeacherTaught(int teacherid)
         {
             EventDB eventDB = new EventDB();
-            List<Event> eventList = await eventDB.GetAllEventForTeacher(randomuniccod);
+            List<Event> eventList = await eventDB.GetAllEventForTeacher(teacherid);
             StudentInEventDB studentInEventDB =new StudentInEventDB ();
             List < StudentInEvent >thestudentsineachevent= await studentInEventDB.GetAllStudentsInEventForListOfEvents(eventList);
             return await GetAllPersonForStudentInEvent(thestudentsineachevent);
@@ -108,22 +108,22 @@ From
             }
             return friends;
         }
-        public async Task<bool> insertstudent(Person student)
-        {
-            Dictionary<string, object> data = new Dictionary<string, object>();
-            data.Add("first_name", student.first_name);
-            data.Add("last_name", student.last_name);
-            data.Add("email", student.email);
-            data.Add("password", student.password);
+        //public async Task<bool> insertstudent(Person student)
+        //{
+        //    Dictionary<string, object> data = new Dictionary<string, object>();
+        //    data.Add("first_name", student.first_name);
+        //    data.Add("last_name", student.last_name);
+        //    data.Add("email", student.email);
+        //    data.Add("password", student.password);
 
-            int num = await base.InsertAsync(data);
-            if (num > 0)
-            {
-                return true;
-            }
-            else { return false; }
+        //    int num = await base.InsertAsync(data);
+        //    if (num > 0)
+        //    {
+        //        return true;
+        //    }
+        //    else { return false; }
 
-        }
+        //}
         protected override async Task<Person> CreateModelAsync(object[] row)
         {
             Person student_friends=new Person();

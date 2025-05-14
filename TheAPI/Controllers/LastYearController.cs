@@ -29,7 +29,7 @@ namespace TheAPI.Controllers
         public async Task<bool> insertStudent([FromBody]Person person)
         {
           
-           PersonStudentDB studentDB =new PersonStudentDB();
+          studentDB studentDB =new studentDB();
             return await studentDB.insertstudent(person);
 
         }

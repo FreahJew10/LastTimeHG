@@ -132,7 +132,7 @@
                         {
                             <div class="w3-container">
                                 <h5 class="w3-opacity"><b>bio</b></h5>
-                               
+
                                 <p>@userT.bio </p><br>
                             </div>
                             <div class="form__group field">
@@ -239,6 +239,17 @@
                                 </table>
 
                             </div>
+                            <div>
+                                <select id="subjectFilter" @bind="SelectedSubject">
+                                    <option value="">All Subjects</option>
+                                    @foreach (Subject subject in Subjects)
+                                    {
+                                        <option value="@subject.subjectid">@subject.subjectName</option>
+                                    }
+                                </select>
+                                <button type="button" @onclick="choosesub" class="btn btn-dark">Dark</button>
+                            </div>
+
 
                         }
                         <div class="w3-container">
@@ -259,7 +270,7 @@
 
         <style>
 
-          
+
             .form__group {
             position: relative;
             padding: 15px 0 0;
@@ -314,7 +325,7 @@
             font-weight: 700;
             }
 
-         
+
             /* reset input */
             .form__field {
             :required,&:invalid
@@ -420,6 +431,7 @@
     public Student userS = null;
     public Teacher userT = null;
     public Person basicuser = null;
+    SubjectDB SubjectDB = new SubjectDB();
     public  friendsDB friendsD = new friendsDB();
     public PersonStudentDB personStudentDB = new PersonStudentDB();
     string new_password = "";
@@ -428,6 +440,13 @@
     List<Person> my_friends_that_im_their_friend_to = new List<Person>();
     List<Person> student_that_i_teach = new List<Person>();
     string newbio = "";
+    studentDB studentDB = new studentDB();
+    private List<Subject> Subjects { get; set; } = new List<Subject>();
+    private string SelectedSubject { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        Subjects = await SubjectDB.SelectAllSubjects();
+    }
     public async Task UpdateS()
     {
         Student student = new Student();
@@ -501,6 +520,15 @@
 
 
     }
+    public async Task choosesub()
+    {
+        if(!string.IsNullOrEmpty(SelectedSubject))
+        {
+            Sub_to_teacher sub_To_Teacher = new Sub_to_teacher(userT.Id, int.Parse(SelectedSubject));
+            Sub_to_teacherDB sub_To_TeacherDB = new Sub_to_teacherDB();
+            await sub_To_TeacherDB.Insertsubtoteacher(sub_To_Teacher);
+        }
+    }
     public async Task UpdateBio()
     {
         teacherDB teacherDb = new teacherDB();
@@ -510,9 +538,10 @@
         teacher.first_name = userS.first_name;
         teacher.last_name = userS.last_name;
         teacher.bio = newbio;
-       await teacherDb.updateAsyncbio(teacher);
+        await teacherDb.updateAsyncbio(teacher);
         StateHasChanged();
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {
 
@@ -522,7 +551,10 @@
             if (user1.Success)
             {
                 userS = user1.Value;
+
                 basicuser = user1.Value;
+                Student S = await studentDB.LoginAsync(basicuser.email, basicuser.password);
+                userS = S;
                 my_friends_that_im_their_friend_to =await friendsD.GiveAll_AreWeBothFriends_(userS);
                 StateHasChanged();
             }

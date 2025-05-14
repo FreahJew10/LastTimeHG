@@ -84,7 +84,7 @@ From
 
         }
 
-        public async Task<bool> insertstudent(Student student)
+        public async Task<bool> insertstudent(Person student)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("first_name", student.first_name);
