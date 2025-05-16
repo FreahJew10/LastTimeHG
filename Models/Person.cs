@@ -4,19 +4,19 @@
     public class Person
     {
         
-        public Person(int id, string firstName, string lastName, string  email,string password /*, byte[] picture*/,string  userid)
-        {
-            this.Id = id;
-            this.first_name = firstName;
-            this.email = email;
-            this.password = password;
-            this.last_name = lastName;   
-            this.userid = userid;   
-            //this.picture = picture;
-        }
+        //public Person(int id, string firstName, string lastName, string  email,string password /*, byte[] picture*/,string  userid)
+        //{
+        //    this.Id = id;
+        //    this.first_name = firstName;
+        //    this.email = email;
+        //    this.password = password;
+        //    this.last_name = lastName;   
+        //    this.userid = userid;   
+        //    //this.picture = picture;
+        //}
         public Person(int id, string firstName, string lastName, string email, string password /* byte[] picture*/)
         {
-
+            this.Id = id;
             this.first_name = firstName;
             this.email = email;
             this.password = password;

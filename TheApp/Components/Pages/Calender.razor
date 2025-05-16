@@ -3,130 +3,131 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigateMgr
 @using Models;
+@if (userS!=null)
+{
 
+    <h3>Custom Weekly Scheduler for @userS.first_name</h3>
+    <div class="scheduler-header">
+        <button @onclick="PreviousDay">⬅️</button>
+        <h4>@weekStartDate.AddDays(currentDayIndex).ToString("dddd, MMM dd")</h4>
+        <button @onclick="NextDay">➡️</button>
+    </div>
 
-<h3>Custom Weekly Scheduler</h3>
-<div class="scheduler-header">
-    <button @onclick="PreviousDay">⬅️</button>
-    <h4>@weekStartDate.AddDays(currentDayIndex).ToString("dddd, MMM dd")</h4>
-    <button @onclick="NextDay">➡️</button>
-</div>
-
-<div class="scheduler-grid">
-    @foreach (Event evt in events.Where(e => e.date  == weekStartDate.AddDays(currentDayIndex).Date))
-    {
-        <div class="time-slot">
-            <strong>@evt.date.ToString(@"hh\:mm")</strong> - @evt.kinofevent
-        </div>
-    }
-</div>
-
+    <div class="scheduler-grid">
+        @foreach (Event evt in events.Where(e => e.date  == weekStartDate.AddDays(currentDayIndex).Date))
+        {
+            <div class="time-slot">
+                <strong>@evt.date.ToString(@"hh\:mm")</strong> - @evt.kinofevent
+            </div>
+        }
+    </div>
+}
 <style>
     .scheduler-container {
-        max-width: 1200px;
-        margin: 20px auto;
-        font-family: Arial, sans-serif;
-        padding: 0 10px;
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    padding: 0 10px;
     }
 
     .scheduler-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
     }
 
     .scheduler-grid {
-        display: grid;
-        grid-template-columns: 80px repeat(7, 1fr);
-        border: 1px solid #ccc;
-        overflow-x: auto;
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    border: 1px solid #ccc;
+    overflow-x: auto;
     }
 
     .time-column {
-        font-weight: bold;
-        text-align: center;
-        padding: 5px;
-        background-color: #f5f5f5;
-        border: 1px solid #ccc;
-        border-right: none; /* Remove space between hour rows */
-        min-width: 80px;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-right: none; /* Remove space between hour rows */
+    min-width: 80px;
     }
 
     .day-header {
-        font-weight: bold;
-        text-align: center;
-        padding: 10px;
-        background-color: #e0f7fa;
-        border: 1px solid #ccc;
-        min-width: 150px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    background-color: #e0f7fa;
+    border: 1px solid #ccc;
+    min-width: 150px;
     }
 
     .scheduler-cell {
-        border: 1px solid #ccc;
-        padding: 5px;
-        background-color: white;
-        height: 60px;
-        min-width: 150px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: white;
+    height: 60px;
+    min-width: 150px;
     }
 
     .scheduler-event {
-        background-color: #007bff;
-        color: white;
-        padding: 5px;
-        border-radius: 4px;
-        font-size: 12px;
+    background-color: #007bff;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
     }
 
     /* Mobile adjustments */
     media (max-width: 768px) {
-        .scheduler-header
+    .scheduler-header
 
     {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     }
 
     .scheduler-header h4 {
-        font-size: 16px;
+    font-size: 16px;
     }
 
     .scheduler-grid {
-        grid-template-columns: 60px repeat(7, 200px); /* Slightly wider days on scroll */
-        overflow-x: scroll;
+    grid-template-columns: 60px repeat(7, 200px); /* Slightly wider days on scroll */
+    overflow-x: scroll;
     }
 
     .time-column,
     .day-header,
     .scheduler-cell {
-        min-width: 120px;
+    min-width: 120px;
     }
 
     .scheduler-event {
-        font-size: 10px;
-        padding: 3px;
+    font-size: 10px;
+    padding: 3px;
     }
 
     }
 
 
     .scheduler-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
     }
 
     .scheduler-grid {
-        margin-top: 20px;
+    margin-top: 20px;
     }
 
     .time-slot {
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
     }
 </style>
 
@@ -221,6 +222,10 @@
             isLoading = false;
             StateHasChanged();
         }
+        else
+        {
+            navigateMgr.NavigateTo("/login", replace: true);
+        }
     }
 
     private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
@@ -260,7 +265,7 @@
         weekStartDate = weekStartDate.AddDays(7);
         await LoadEventsForWeekAsync();
     }
-    private void PreviousDay()
+    private async void PreviousDay()
     {
         if (currentDayIndex > 0)
         {
@@ -270,11 +275,11 @@
         {
             currentDayIndex = 6; // Go back to Saturday if needed
             weekStartDate = weekStartDate.AddDays(-7);
-            _ = LoadEventsForWeekAsync();
+            await LoadEventsForWeekAsync();
         }
     }
 
-    private void NextDay()
+    private async void NextDay()
     {
         if (currentDayIndex < 6)
         {
@@ -284,7 +289,7 @@
         {
             currentDayIndex = 0; // Back to Sunday if needed
             weekStartDate = weekStartDate.AddDays(7);
-            _ = LoadEventsForWeekAsync();
+            await LoadEventsForWeekAsync();
         }
     }
 }

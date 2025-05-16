@@ -12,11 +12,11 @@ namespace Models
         {
         }
 
-        public CommentInEvent(int randomuniqcode)
-        {
-            this.randomuniqcode = randomuniqcode;
+        //public CommentInEvent(int randomuniqcode)
+        //{
+        //    this.randomuniqcode = randomuniqcode;
             
-        }
+        //}
 
         public CommentInEvent(int randomuniqcode, int id_of_comment)
         {

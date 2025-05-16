@@ -1,0 +1,212 @@
+﻿@page "/myarea"
+
+@using Models
+@using System.Text.Json;
+@inject IJSRuntime js
+
+@inject NavigationManager navManager
+
+@if (userS != null)
+{
+    <head>
+        <title>User Profile</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            html, body, h1, h2, h3, h4, h5, h6 {
+            font-family: "Roboto", sans-serif
+            }
+
+            body {
+            background-color: #1e1e1e;
+            color: #fff;
+            }
+        </style>
+    </head>
+    <body class="w3-light-grey">
+
+        <div class="w3-content w3-margin-top" style="max-width:1200px;">
+            <div class="w3-row-padding">
+
+                <!-- Left Column -->
+                <div class="w3-third">
+                    <div class="w3-white w3-text-grey w3-card-4">
+                        <div class="w3-display-container">
+                            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" style="width:100%" alt="Avatar">
+                            <div class="w3-display-bottomleft w3-container w3-text-black">
+                                <h2>@userS.first_name @userS.last_name</h2>
+                            </div>
+                        </div>
+                        <div class="w3-container">
+                            <p><i class="fa fa-briefcase fa-fw w3-margin-right w3-large w3-text-teal"></i>Student</p>
+                            <p><i class="fa fa-envelope fa-fw w3-margin-right w3-large w3-text-teal"></i>@userS.email</p>
+                            <hr />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="w3-twothird">
+
+                    <!-- Password Section -->
+                    <div class="w3-container w3-card w3-white w3-margin-bottom">
+                        <h2 class="w3-text-grey w3-padding-16">
+                            <i class="fa fa-lock fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Change Password
+                        </h2>
+                        <div class="w3-container">
+                            <label>New Password</label>
+                            <input type="password" class="w3-input w3-border w3-margin-bottom" @bind="newPassword" />
+
+                            <label>Repeat Password</label>
+                            <input type="password" class="w3-input w3-border w3-margin-bottom" @bind="repeatPassword" />
+
+                            <button class="w3-button w3-teal w3-round-large" @onclick="UpdatePassword">Update Password</button>
+                        </div>
+                    </div>
+
+                    <!-- Friends Table -->
+                    <div class="w3-container w3-card w3-white">
+                        <h2 class="w3-text-grey w3-padding-16">
+                            <i class="fa fa-users fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>people thet follow 
+                        </h2>
+
+                        @if (friendlist!=null)
+                        {
+                            <table class="w3-table w3-striped w3-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var friend in friendlist)
+                                    {
+                                        <tr>
+                                            <td>@friend.first_name @friend.last_name</td>
+                                            <td>@friend.email</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>No friends to show.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+}
+
+
+@code {
+    private string repeatPassword;
+    private string newPassword;
+    private string ResultMessage;    // Placeholder values
+    public Student userS { get; set; }
+    public List<Person> ?friendlist { get; set; }
+    HttpClient httpClient = new HttpClient();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // UID = await SecureStorage.Default.GetAsync("ID");
+        // if (UID == null)
+        // {
+        //     UID = "-1";
+        // }
+
+        string jsonString = await SecureStorage.Default.GetAsync("customerDATA");
+        if (jsonString == null)
+        {
+            userS = new Student();
+        }
+        else
+        {
+            userS = JsonSerializer.Deserialize<Student>(jsonString);
+            
+            friendlist = await httpClient.GetFromJsonAsync<List<Person>>($"{DataConstLink.APIs.GetFriendList}/{userS.Id}");
+            
+        }
+
+        if (userS.Id <= 0)
+        {
+            navManager.NavigateTo("/login", replace: true);
+        }
+        // else
+        // {
+        //     try
+        //     {
+        //         // CustomerList = await httpClient.GetFromJsonAsync<List<Student>>(Data.APIs.GetAllCustomerURL);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         ResultStr = ex.Message;
+        //     }
+        // }
+
+
+    }
+
+    public async Task UpdatePassword()
+    {
+        if (!string.IsNullOrEmpty(repeatPassword) ||!string.IsNullOrEmpty(newPassword))
+        {
+            if (repeatPassword == newPassword)
+            {
+                Person person = new Person(userS.Id, userS.last_name, userS.last_name, userS.email, newPassword);
+                person.userid = "wda";
+                var apiResponse = await httpClient.PutAsJsonAsync<Person>(DataConstLink.APIs.Updateurl, person);
+                if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Info", "password changed", "Ok");
+                }
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Info", "new password and repeat password are not the same", "Ok");
+            }
+        }
+        else
+        {
+            await Application.Current.MainPage.DisplayAlert("Info", "fill all areas", "Ok");
+        }
+    }
+
+
+}
+
+
+
+
+@* <style>
+    <!-- In _Host.cshtml or your layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" / >
+
+    body {
+        background-color: #121212;
+        color: white;
+    }
+
+    .form-control, .btn {
+        background-color: #1e1e1e;
+        color: white;
+        border-color: #444;
+    }
+
+        .form-control:focus, .btn:hover {
+            background-color: #333;
+        }
+
+    .card {
+        background-color: #1c1c1c;
+        border: 1px solid #444;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #00000055;
+    }
+
+</style> *@
+

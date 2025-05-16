@@ -62,7 +62,7 @@ From
             return null;
         }
 
-        public async Task<bool> updateAsync(Student student)
+        public async Task<bool> updateAsync(Person student)
         {
             Dictionary<string, object> fillValues = new Dictionary<string, object>();
             fillValues.Add("first_name", student.first_name);

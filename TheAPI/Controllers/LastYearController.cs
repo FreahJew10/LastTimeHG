@@ -24,6 +24,38 @@ namespace TheAPI.Controllers
             return s;
         }
 
+
+        [HttpGet("{id:int}")]
+        [ActionName("GETfriendlist")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<Person>>>Get(int id)
+        {
+            PersonStudentDB studentDB = new PersonStudentDB();
+            List<Person>friends=await studentDB.GiveAllFriends(id);
+            if (friends != null)
+            {
+                return Ok(friends);
+            }
+            else return BadRequest();
+        }
+
+
+        [HttpPut]
+        [ActionName("updatepass")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> Put([FromBody] Person person)
+        {
+            studentDB studentDB = new studentDB();
+            if (await studentDB.updateAsync(person))
+                return Ok();
+
+            return BadRequest();
+        }
+
         [HttpPost]
         [ActionName("register")]
         public async Task<bool> insertStudent([FromBody]Person person)
@@ -62,11 +94,8 @@ namespace TheAPI.Controllers
         }
 
         // GET api/<LastYearController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        
+      
 
         // POST api/<LastYearController>
         [HttpPost]

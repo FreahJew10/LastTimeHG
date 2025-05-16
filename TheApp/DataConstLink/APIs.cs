@@ -6,5 +6,7 @@
         public const string LoginURL = url + "login";
         public const string RegisterURL = url+ "register";
         public const string calenderurl = url + "eventforcalender";
+        public const string Updateurl = url + "updatepass";
+        public const string GetFriendList = url + "GETfriendlist";
     }
 }

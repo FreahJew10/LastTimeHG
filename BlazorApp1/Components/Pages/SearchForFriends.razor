@@ -207,7 +207,7 @@
 
             friend = await personStudentDB.SelectByPkAsync(id);
             // pLst = await productDB.GetBestProductAsync(4);
-            if (userS != null && await StaticChatHub.IsMyFriendHereOrme(userS.email) == 0)
+            if (userS != null && await StaticChatHub.IsEmailHere(userS.email) == 0)
             { 
                 conid = hubConnection.ConnectionId;
                 try

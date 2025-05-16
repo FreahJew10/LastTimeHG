@@ -16,7 +16,7 @@ namespace BlazorApp1.Hubs
 
         
 
-        public static async Task<int> IsMyFriendHereOrme(string email)
+        public static async Task<int> IsEmailHere(string email)
         {
             int count = 0;
             foreach (KeyValuePair<string, string> entry  in conids)
@@ -33,7 +33,7 @@ namespace BlazorApp1.Hubs
         public static async Task<List<string>> GiveMyFriendCon(string email)
         {
            List<string> list = new List<string>();
-            if ( await IsMyFriendHereOrme(email)>0)
+            if ( await IsEmailHere(email)>0)
             {
                 foreach (KeyValuePair<string, string> entry in conids)
                 {

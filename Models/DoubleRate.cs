@@ -10,6 +10,6 @@ namespace Models
     {
         public double Rate { get; set; }
         public DoubleRate() { }
-        public DoubleRate(double rate) { Rate = rate; }
+        //public DoubleRate(double rate) { Rate = rate; }
     }
 }

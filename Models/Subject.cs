@@ -8,15 +8,15 @@ namespace Models
 {
     public class Subject
     {
-        public Subject(string name,int sunjectid)
-        {
-            subjectName = name;
-            this.subjectid=sunjectid;
-        }
-        public Subject (string name)
-        {
-            subjectName = name;
-        }
+        //public Subject(string name,int sunjectid)
+        //{
+        //    subjectName = name;
+        //    this.subjectid=sunjectid;
+        //}
+        //public Subject(string name)
+        //{
+        //    subjectName = name;
+        //}
         public string subjectName {  get; set; }
         public int subjectid { get; set; }
         public Subject() { }

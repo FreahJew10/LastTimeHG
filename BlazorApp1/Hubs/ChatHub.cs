@@ -58,21 +58,22 @@ namespace BlazorApp1.Hubs
         
 
 
-
-        public string GetConnectionId()
-        {
-            return Context.ConnectionId;
-        }
-        public async Task getCon()//send to yourself
-        {
-            string me = Context.ConnectionId;
-            await Clients.Caller.SendAsync("ReceiveMessage",me);
-        }
-        public async Task RequestUserId()
-        {
-            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Context.ConnectionId;
-            await Clients.Caller.SendAsync("ReceiveUserId", userId);
-        }
+        //
+        //public string GetConnectionId()
+        //{
+        //    return Context.ConnectionId;
+        //}
+        //public async Task getCon()//send to yourself
+        //{
+        //    string me = Context.ConnectionId;
+        //    await Clients.Caller.SendAsync("ReceiveMessage",me);
+        //}
+        //public async Task RequestUserId()
+        //{
+        //    var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Context.ConnectionId;
+        //    await Clients.Caller.SendAsync("ReceiveUserId", userId);
+        //}
+        //
 
         //public string GetUserId()
         //{

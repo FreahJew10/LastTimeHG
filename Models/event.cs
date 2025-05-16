@@ -36,32 +36,32 @@ namespace Models
             this.enddate = enddate;
         }
       
-        public Event(string eventname, DateTime date, string kindofevent, DateTime enddate)
-        {
-            this.eventname = eventname;
-            this.date = date;
-            this.teacherid = 0;
-            this.kinofevent = kindofevent;
-            this.enddate = enddate;
-            this.randomuniqcode= "honor is dead".GetHashCode();
-        }
-        public Event(string eventname, string kindofevent)
-        {
-            DateTime date = DateTime.Now;
-            this.eventname = eventname;
-            this.date = date;
-            this.teacherid = 0;
-            this.kinofevent= kindofevent;
-            DateTime enddate = DateTime.Now;
-        }
-        public Event(string eventname, int teacherid)
-        {
-            DateTime date = DateTime.Now;
-            this.eventname = eventname;
-            this.date = date;
-            this.teacherid = teacherid;
-            DateTime enddate=DateTime.Now;
-        }
+        //public Event(string eventname, DateTime date, string kindofevent, DateTime enddate)
+        //{
+        //    this.eventname = eventname;
+        //    this.date = date;
+        //    this.teacherid = 0;
+        //    this.kinofevent = kindofevent;
+        //    this.enddate = enddate;
+        //    this.randomuniqcode= "honor is dead".GetHashCode();
+        //}
+        //public Event(string eventname, string kindofevent)
+        //{
+        //    DateTime date = DateTime.Now;
+        //    this.eventname = eventname;
+        //    this.date = date;
+        //    this.teacherid = 0;
+        //    this.kinofevent= kindofevent;
+        //    DateTime enddate = DateTime.Now;
+        //}
+        //public Event(string eventname, int teacherid)
+        //{
+        //    DateTime date = DateTime.Now;
+        //    this.eventname = eventname;
+        //    this.date = date;
+        //    this.teacherid = teacherid;
+        //    DateTime enddate=DateTime.Now;
+        //}
        
 
         public string eventname { get; set; }
