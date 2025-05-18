@@ -258,14 +258,7 @@
         await hubConnection.StartAsync();
 
 
-        myConId = hubConnection.ConnectionId;
-        if(friend!=null&&await StaticChatHub.IsEmailHere(friend.email)!=0)
-        {
-            friendconnected = true;
-            List<string> myfreindconidS = await StaticChatHub.GiveMyFriendCon(friend.email);
-            await hubConnection.SendAsync("SendMessageToFriendisFriendconnected", myfreindconidS);
-        }
-       
+
 
     }
 
@@ -314,16 +307,16 @@
             PersonStudentDB personStudentDB = new PersonStudentDB();
             friend = await personStudentDB.SelectByPkAsync(id);
             // pLst = await productDB.GetBestProductAsync(4);
-            if(userS!=null&&await StaticChatHub.IsEmailHere(userS.email) ==0)
-            {
+            // if(userS!=null&&await StaticChatHub.IsEmailHere(userS.email) ==0)
+            // {
 
-                StaticChatHub.conids.Add(userS.email, myConId);//למשתמש השני בגלל הבאג
+            //     StaticChatHub.conids.Add(userS.email, myConId);//למשתמש השני בגלל הבאג
 
-            }
-            else if (userS != null &&StaticChatHub.conids.ContainsKey(userS.email))
-            {
-                StaticChatHub.conids[userS.email] = myConId;
-            }
+            // }
+            // else if (userS != null &&StaticChatHub.conids.ContainsKey(userS.email))
+            // {
+            //     StaticChatHub.conids[userS.email] = myConId;
+            // }
             if (friend != null && await StaticChatHub.IsEmailHere(friend.email) > 0)
             {
                 friendconnected = true;
@@ -352,15 +345,24 @@
             Console.WriteLine(myConId);
             if(await StaticChatHub.IfKeyHasVal(userS.email))
             {
-                StaticChatHub.conids[userS.email]=myConId;
-
-
+                myConId = hubConnection.ConnectionId;
+                List<string> strings = StaticChatHub.conids[userS.email];
+                strings.Add(myConId);
+                StaticChatHub.conids[userS.email] = strings;
             }
-            StaticChatHub.conids.Add(userS.email, myConId);
-            flag = false;
 
         }
+        if (!await StaticChatHub.IfKeyHasVal(userS.email))
+        {
+            List<string> chatCons = new List<string>();
+            chatCons.Add(hubConnection.ConnectionId);
+            StaticChatHub.conids.Add(userS.email, chatCons);
+            flag = false;
+        }
+
     }
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)///
     {
 
@@ -371,12 +373,16 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-                
-                
 
-                if (!string.IsNullOrEmpty(myConId))
+
+
+               if (!string.IsNullOrEmpty(myConId))
                     await setconid();//לפעם הראשונה
-
+                else
+                {
+                    await OnInitializedAsync();
+                    await setconid();
+                }
                 if (friend != null && await StaticChatHub.IsEmailHere(friend.email) > 0)
                 {
                     friendconnected = true;

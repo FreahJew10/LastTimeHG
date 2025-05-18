@@ -4,7 +4,7 @@ namespace BlazorApp1.Hubs
 {
     public static class StaticChatHub
     {
-        public static Dictionary<string, string> conids { get; set; } = new Dictionary<string, string>();
+        public static Dictionary<string,List< string>> conids { get; set; } = new Dictionary<string, List<string>>();
 
         /// <summary>
         /// עבור הספרייה הסטטית conids 
@@ -18,16 +18,11 @@ namespace BlazorApp1.Hubs
 
         public static async Task<int> IsEmailHere(string email)
         {
-            int count = 0;
-            foreach (KeyValuePair<string, string> entry  in conids)
-            {
-               if (entry.Key== email)
-               {
-                    count++;
-               }
-            
-            }
-            return await Task.FromResult(count);
+
+            if(conids.ContainsKey(email))
+                return 1;
+
+        return 0;
 
         }
         public static async Task<List<string>> GiveMyFriendCon(string email)
@@ -35,11 +30,11 @@ namespace BlazorApp1.Hubs
            List<string> list = new List<string>();
             if ( await IsEmailHere(email)>0)
             {
-                foreach (KeyValuePair<string, string> entry in conids)
+                foreach (KeyValuePair<string,List< string>> entry in conids)
                 {
                     if (entry.Key == email)
                     {
-                       list.Add(entry.Value);
+                       list=conids[entry.Key];
                     }
 
                 }
@@ -52,11 +47,11 @@ namespace BlazorApp1.Hubs
                                            // onafterrender&&OnInitializedAsync
         {
 
-            foreach (KeyValuePair<string, string> entry in conids)
+            foreach (KeyValuePair<string,List< string>> entry in conids)
             {
                 if (entry.Key == key)
                 {
-                    if( string.IsNullOrEmpty(entry.Value))
+                    
                         return await Task.FromResult(true);
                 }
 
