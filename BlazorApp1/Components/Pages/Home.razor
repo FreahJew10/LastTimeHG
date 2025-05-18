@@ -57,7 +57,7 @@
                         <li><a href="/teacher-search" @onclick="movetoSearchForteachers"> search for private teacher</a></li>
                         <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
-                        <li><a href="/Notifications" @onclick="wiildel"> willdel</a></li>
+                        <li><a href="/Notifications" @onclick="wiildel"> friends</a></li>
                     }
                     else if (userT != null)
                     {
@@ -825,7 +825,7 @@
     }
     public async Task wiildel()
     {
-        Console.WriteLine(hubConnection.ConnectionId);
+        navigationManager.NavigateTo("/friends");
     }
     public async Task search()
     {

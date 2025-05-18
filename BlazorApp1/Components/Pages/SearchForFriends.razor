@@ -52,11 +52,11 @@
                             }
                             else if(arewebothfriends==2)
                             {
-
+                                <h1>you added him as  friend</h1>
                             }
                             else
                             {
-
+                                <h1>you are his friend</h1>
                             }
                             <div class="d-flex justify-content-between text-center mt-5 mb-2">
                                 <div>
@@ -155,20 +155,19 @@
             StaticChatHub.multyconidFORnotifications.Add(friend.email, notifCon);
         }*/
 
-        List<string> friendconIDs =await StaticNotificationHub.GiveMyFriendConFORnotifications(friend.email);
+        //List<string> friendconIDs =await StaticNotificationHub.GiveMyFriendConFORnotifications(friend.email);
 
         Random random = new Random();
         string zeevhashcode = "daliner is the next one";
         int randomeventcod = random.Next(-999999999,999999999);
         Event vent =new Event();
-        // if (!EventDB.alloftheeventsid.Contains(randomeventcod))
-        // {
+       
         randomeventcod = zeevhashcode.GetHashCode();
         vent = new Event("added you as friend", DateTime.Now, 0, "notification-add friend", randomeventcod, DateTime.Today.AddHours(DateTime.Now.Hour + 1));
 
 
 
-        friends friends = new friends(userS.Id, id);
+       friends friends = new friends(userS.Id, id);
         StudentInEvent studentInEvent1 = new StudentInEvent(userS.Id, randomeventcod);//לעכשיו אני מכניס את הרנדום אינוונט קוד ואז אני אעשה אינסרט לפיו
         StudentInEvent studentInEvent2 = new StudentInEvent(id, randomeventcod);
 
@@ -183,8 +182,8 @@
         await eventDB.insertEvent(vent);
         await studentInEventDB.insertStedentInEvent(studentInEvents);
 
-        userS.friends.Add(await personStudentDB.SelectByPkAsync(id));
-        await hubConnection.SendAsync("SendNotificationToInformIAdedYouAsFriend", friendconIDs,"sent you friend request" , userS.email);
+       // userS.friends.Add(await personStudentDB.SelectByPkAsync(id));
+        await hubConnection.SendAsync("SendNotificationToInformIAdedYouAsFriend", friend.email,"sent you friend request" , userS.email);
         StateHasChanged();
 
     }

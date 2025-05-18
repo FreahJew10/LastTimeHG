@@ -15,16 +15,22 @@ namespace BlazorApp1.Hubs
     public class NotificationHub:Hub
     {
 
-        public async Task SendNotificationToInformIAdedYouAsFriend(List<string> tourconid, string notification, string email)// שולחת התראת "הוספתי אותך כחבר" כאשר אדם מוסיף כחבר בנוסף יכולה לשלוח את ההודעה לכמה חיבורים
+        public async Task SendNotificationToInformIAdedYouAsFriend(string friendemail, string notification, string email)// שולחת התראת "הוספתי אותך כחבר" כאשר אדם מוסיף כחבר בנוסף יכולה לשלוח את ההודעה לכמה חיבורים
         {
             Console.WriteLine( "dwadawd");
-            IReadOnlyList<string> friendcon = tourconid.ToList();
-            foreach(string s in friendcon)
+            if (await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotifications(friendemail))
             {
-                Console.WriteLine(s);
-            }
+                Console.WriteLine(  "gethere");
+                List<string> tourconid = StaticNotificationHub.multyconidFORnotificationsForstudents[friendemail];
+                IReadOnlyList<string> friendcon = tourconid.ToList();
+                foreach (string s in friendcon)
+                {
+                    Console.WriteLine(s);
+                }
 
-            await Clients.Clients(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+
+                await Clients.Clients(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
+            }
            //await Clients.All.SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
            //await Clients.AllExcept(friendcon).SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
            //await Clients.Caller.SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);

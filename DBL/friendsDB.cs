@@ -10,6 +10,14 @@ namespace DBL
     public class friendsDB : BaseDB<friends>
     {
 
+        public async Task<bool>DeleteFriendship(int id, int friendid)
+        {
+            Dictionary <string,object> data = new Dictionary <string,object> ();
+            data.Add("studentid",id);
+            data.Add("studentfriendId", friendid);
+            int B= await base.DeleteAsync(data);
+            return B>0;
+        }
 
         public async Task<bool> insertFriends(friends friends)
         {

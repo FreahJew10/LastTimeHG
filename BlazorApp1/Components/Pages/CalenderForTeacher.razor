@@ -160,7 +160,29 @@
     private bool isLoading = true;
     private Teacher userT;
     EventDB eventDB1 = new EventDB();
+    public HubConnection hubConnection; string notification;
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(navigationManager.ToAbsoluteUri("/NotificationHub"))
+        .WithAutomaticReconnect()
+        .Build();
 
+       
+        hubConnection.On<string, string, int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification, eventrandomcod) =>
+        {
+            this.notification = email + " " + notification;
+            ToastService toastService = new ToastService();
+            toastService.ShowInfo($"{email}: {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
+        Console.WriteLine("RRR");
+        await hubConnection.StartAsync();
+
+
+
+
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

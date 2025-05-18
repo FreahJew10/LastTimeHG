@@ -1,0 +1,241 @@
+﻿@page "/friends"
+@inject NavigationManager navigationManager
+@using Models
+@using DBL
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using Hubs
+<!-- Make sure you have W3.CSS loaded globally, e.g. in _Host.cshtml:
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+
+<div class="friends-page">
+    <h2>Your Friends</h2>
+
+    @if (friends.Count == 0)
+    {
+        <p class="no-friends">You have no friends yet.</p>
+    }
+    else
+    {
+        <div class="friends-grid">
+            @foreach (Person f in friends)
+            {
+                <div class="friend-card">
+
+                    <div class="friend-name">@f.first_name</div>
+                    <button class="delete-btn" @onclick="() => ConfirmDeleteAsync(f.Id)">Remove</button>
+                </div>
+            }
+        </div>
+    }
+
+    @if (totalPages > 1)
+    {
+        <div class="pagination">
+            <button @onclick="PrevPage" disabled="@(_currentPage == 1)">« Prev</button>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <button class="@(i == _currentPage ? "active" : "")" @onclick="() => GoToPageAsync(i)">@i</button>
+            }
+
+            <button @onclick="NextPage" disabled="@(_currentPage == totalPages)">Next »</button>
+        </div>
+    }
+</div>
+<style>
+    .friends-page {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    min-height: 100vh;
+    padding: 2rem;
+    font-family: sans-serif;
+    }
+
+    .friends-page h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #ffffff;
+    }
+
+    .no-friends {
+    text-align: center;
+    color: #aaa;
+    }
+
+    .friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    }
+
+    .friend-card {
+    background-color: #2c2c2c;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+    }
+
+    .friend-card:hover {
+    transform: scale(1.02);
+    }
+
+    .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    }
+
+    .friend-name {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    }
+
+    .delete-btn {
+    background-color: #ff4c4c;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    }
+
+    .delete-btn:hover {
+    background-color: #e63939;
+    }
+
+    .pagination {
+    margin-top: 2rem;
+    text-align: center;
+    }
+
+    .pagination button {
+    margin: 0 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    }
+
+    .pagination button:hover:not(:disabled) {
+    background-color: #555;
+    }
+
+    .pagination button:disabled {
+    opacity: 0.4;
+    cursor: default;
+    }
+
+    .pagination .active {
+    background-color: #007bff;
+    }
+</style>
+
+@code {
+    private List<Person> friends = new();
+    public Student ?userS{ get; set; }
+    private int _currentPage = 1;
+    private const int _pageSize = 12;
+    private int totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task LoadFriendsAsync()
+    {
+        PersonStudentDB personStudentDB = new PersonStudentDB();
+        // Assumes your API returns { Items: List<User>, TotalCount: int }
+
+        friends = await personStudentDB.GiveAllFriends(userS.Id);
+
+        if (friends != null)
+        {
+
+            totalPages = (int)Math.Ceiling(friends.Count / (double)_pageSize);
+        }
+    }
+
+    private async Task GoToPageAsync(int page)
+    {
+        _currentPage = page;
+        await LoadFriendsAsync();
+    }
+
+    private async Task PrevPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            await LoadFriendsAsync();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (_currentPage < totalPages)
+        {
+            _currentPage++;
+            await LoadFriendsAsync();
+        }
+    }
+
+    private async Task ConfirmDeleteAsync(int friendId)
+    {
+        friendsDB friendsDB = new friendsDB();
+        bool B = await friendsDB.DeleteFriendship(userS.Id, friendId);
+        if(B)
+        {
+            await LoadFriendsAsync();
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender )
+        {
+            var user1 = await MySession.GetAsync<Student>("student");
+            if (user1.Success)
+            {
+                userS = user1.Value;
+                doubleDBforRate doubleDBforRate = new doubleDBforRate();
+                await LoadFriendsAsync();
+
+                // DoubleRate rateResult = await doubleDBforRate.GetRate(privateteacher.Id);
+                // CurrentRating = rateResult?.Rate ?? 0;
+            }
+
+
+            StateHasChanged();
+            
+
+
+            // now load rating and subjects
+
+            //    subjects = await subjectDB.SelectAllSubjectForTeacher(privateteacher.Id);
+            // if (subjects != null)
+            //     foreach (Subject subject in subjects)
+            //     {
+
+            //         TeacherExpertise += $"{subject.subjectName} ";
+            //     }
+            // trigger a second render so your data-bound UI updates
+            StateHasChanged();
+        }
+    }
+    // Simple helper types
+    public class PaginatedResponse<T>
+    {
+        public List<T> Items { get; set; } = new();
+        public int TotalCount { get; set; }
+    }
+}

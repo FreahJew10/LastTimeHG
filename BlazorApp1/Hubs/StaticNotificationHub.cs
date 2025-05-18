@@ -55,7 +55,7 @@
 
         }
 
-        public static async Task<List<string>> GiveMyFriendConFORnotifications(string email)// multyconidFORnotifications עבור 
+       /* public static async Task<List<string>> GiveMyFriendConFORnotifications(string email)// multyconidFORnotifications עבור 
         {
             List<string> list = new List<string>();
             if (await IsMyFriendHereOrmeFORnotifications(email) > 0)
@@ -74,8 +74,8 @@
             }
             return list;
 
-        }
-        public static async Task<int> IsMyFriendHereOrmeFORnotifications(string email)//עבורmultyconidFORnotifications 
+        }*/
+       /* public static async Task<int> IsMyFriendHereOrmeFORnotifications(string email)//עבורmultyconidFORnotifications 
         {
             int count = 0;
             foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotificationsForstudents)
@@ -88,7 +88,7 @@
             }
             return await Task.FromResult(count);
 
-        }
+        }*/
 
     }
 }
