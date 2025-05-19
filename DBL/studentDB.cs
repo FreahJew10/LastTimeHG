@@ -12,6 +12,14 @@ namespace DBL
 {
     public class studentDB : BaseDB<Student>
     {
+        public async Task<Student>GetSudentByEmail(string email)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("email", email);
+            List<Student>d = await base.SelectAllAsync( dic);
+            return d[0];
+
+        }
         public async Task<Dictionary<int,string>> GetTheNameOfEveryStudentInEvent(int randomuinqcod)
         {
             Dictionary<int,string>dic = new Dictionary<int,string>();

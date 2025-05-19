@@ -10,7 +10,36 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
-        public async Task<List<Event>>GetAllEventForTeacher(int teacherid)
+        public async Task<Event> GetTodayEvent(int studentid)
+        {
+            string q = $@"Select
+    mylastyear.event.randomuniqcode,
+    mylastyear.event.eventname,
+    mylastyear.event.date,
+    mylastyear.event.teacherid,
+    mylastyear.event.kindofevent,
+    mylastyear.event.enddate
+From
+    mylastyear.student Inner Join
+    mylastyear.studentinevent On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
+    mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
+Where
+    mylastyear.studentinevent.studentid = @studentid And
+    mylastyear.event.kindofevent Not RLike ""notification"" And
+    mylastyear.event.date >= @today
+Order By
+    mylastyear.event.date ";
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("studentid", studentid);
+            data.Add("today",DateTime.Today.AddDays(-1));
+            List<Event> events = new List<Event>();
+            events = await SelectAllAsync(q, data);
+            if (events.Count > 0)
+            return events[0];
+
+            return null;
+        }
+        public async Task<List<Event>> GetAllEventForTeacher(int teacherid)
         {
             List<Event> events = new List<Event>();
             string sql = $@"Select
@@ -81,7 +110,7 @@ From
             data.Add("randomuniqcode", randomuniqcod);
             List<Event> events = await base.SelectAllAsync(data);
             if (events.Count > 0)
-            { return events[0]; } 
+            { return events[0]; }
             return null;
         }
         public async Task<List<Event>> GetAllNotificationsForTeacher(int teacherid)

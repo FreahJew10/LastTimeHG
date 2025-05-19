@@ -10,7 +10,7 @@
 @using Blazored.Toast.Services
 
 @inject IToastService ToastService
-<h3> @conid</h3>
+
 <div lang="en">
     <HeadContent>
 
@@ -37,7 +37,7 @@
 
         -->
     </HeadContent>
-  
+
     <div class="js">
 
 
@@ -65,6 +65,10 @@
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
                         <li><a @onclick="calender" href="SearchForFriends">show my clander</a></li>
                         <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
+                        if(userT.isprivate==3)
+                        {
+
+                        }
                     }
                     else
                     {
@@ -794,6 +798,7 @@
     Person addnewdriend = null;
     private HubConnection hubConnection;
     string notification;
+    EventDB eventDB = new EventDB();
     string conid = "";
     protected override async Task OnInitializedAsync()
     {
@@ -918,7 +923,13 @@
                     strings.Add(conid);
                     StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email] = strings;
                 }
+
                 basicuser = userS;
+                Event nearest=  await  eventDB.GetTodayEvent(userS.Id);
+                if (nearest != null)
+                    ToastService.ShowInfo(@$"you gor an event for today -{nearest.eventname}, {nearest.kinofevent}");
+                else
+                    ToastService.ShowInfo("you do not have any events for today");
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<Teacher>("teacher");

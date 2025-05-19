@@ -7,7 +7,7 @@ namespace BlazorApp1.Service
     {
         private readonly string smtpServer = "smtp.gmail.com"; // Change if using another provider
         private readonly int smtpPort = 587;
-        private readonly string smtpUsername = "forthe776@gmail.com"; // Your email
+        private readonly string smtpUsername = "lirant108@gmail.com"; // Your email
         private readonly string smtpPassword = Environment.GetEnvironmentVariable("EMAIL_APP_PASSWORD"); // Use App Password (see below)
 
 
