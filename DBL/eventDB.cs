@@ -10,6 +10,36 @@ namespace DBL
 {
     public class EventDB : BaseDB<Event>
     {
+        public async Task<List<Event>> GetAllClassesForTeacer(int teacherid)
+        {
+            string q = @$"Select
+    mylastyear.event.randomuniqcode,
+    mylastyear.event.eventname,
+    mylastyear.event.date,
+    mylastyear.event.teacherid,
+    mylastyear.event.kindofevent,
+    mylastyear.event.enddate
+From
+    mylastyear.event
+Where
+    mylastyear.event.teacherid = @teacherid And
+    mylastyear.event.kindofevent = ""class"" And
+    mylastyear.event.enddate > @date";
+            Dictionary<string,object> data = new Dictionary<string, object>();
+            data.Add("date", DateTime.Today);
+            data.Add("teacherid", teacherid);
+            List<Event> events = new List<Event>();
+            events = await SelectAllAsync(q, data);
+            if (events.Count > 0)
+                return events;
+
+
+            return null;
+
+
+        }
+
+
         public async Task<Event> GetTodayEvent(int studentid)
         {
             string q = $@"Select
@@ -170,7 +200,7 @@ From
             mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
 
             Where
-            mylastyear.studentinevent.studentid = @studentId and  mylastyear.event.date BETWEEN @startdate AND @enddate AND event.kindofevent not rlike ""notification"";";
+            mylastyear.studentinevent.studentid = @studentId and  mylastyear.event.date BETWEEN @startdate AND @enddate AND event.kindofevent not rlike ""notification""AND event.kindofevent not rlike ""class"";";
 
             Dictionary<string, object> data = new Dictionary<string, object>();
 
@@ -187,7 +217,7 @@ From
             else { return null; }
         }
 
-        public async Task<List<Event>> GetEventsForStudentInRangeForTeacher(int teacherid, DateTime startdate, DateTime enddate)
+        public async Task<List<Event>> GetEventsForInRangeForTeacher(int teacherid, DateTime startdate, DateTime enddate)
         {
             string sql = $@" Select mylastyear.event.randomuniqcode,
           mylastyear.event.eventname,
@@ -199,7 +229,7 @@ From
             mylastyear.event
 
             Where
-            teacherid = @studentId and  mylastyear.event.date BETWEEN @startdate AND @enddate AND event.kindofevent not rlike ""notification"";";
+            teacherid = @studentId and  mylastyear.event.date BETWEEN @startdate AND @enddate AND event.kindofevent not rlike ""notification""AND event.kindofevent not rlike ""class"";";
 
             Dictionary<string, object> data = new Dictionary<string, object>();
 
@@ -215,6 +245,8 @@ From
             if (events.Count > 0) { return events; }
             else { return null; }
         }
+        
+
         public async Task<List<Event>> GetAllEventsForSpecificStudenAndDate(int studentid, DateTime dateTime)
         {
             string sql = $@" 
@@ -242,6 +274,30 @@ From
             if (events.Count > 0) { return events; }
             else { return null; }
         }
+        public async Task<List<Event>> GetAllEventsForSpecificTeacherAndDate(int studentid, DateTime dateTime)
+        {
+            string sql = $@"Select
+    mylastyear.event.randomuniqcode,
+    mylastyear.event.eventname,
+    mylastyear.event.date,
+    mylastyear.event.teacherid,
+    mylastyear.event.kindofevent,
+    mylastyear.event.enddate
+From
+    mylastyear.event
+Where
+    mylastyear.event.teacherid = @teacherid and event.date rlike @datetme and kindofevent not rlike ""notification""";
+
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            string time = dateTime.ToString("yyyy-MM-dd");
+            data.Add("datetme", time);
+            data.Add("teacherid", studentid);
+            List<Event> events = new List<Event>();
+            events = await SelectAllAsync(sql, data);
+            if (events.Count > 0) { return events; }
+            else { return null; }
+
+        }
         public async Task<List<Event>> GetAllEventsForSpecificStudent(int studentid)//בלי התראות
         {
             string sql = @$"Select
@@ -256,7 +312,7 @@ From
           mylastyear.student On mylastyear.studentinevent.studentid = mylastyear.student.studentid Inner Join
           mylastyear.event On mylastyear.studentinevent.randomuniqcode = mylastyear.event.randomuniqcode
           Where
-          mylastyear.studentinevent.studentid = @studentid and kindofevent not rlike 'Notification' and kindofevent not rlike 'done'";
+          mylastyear.studentinevent.studentid = @studentid and kindofevent not rlike 'Notification' and kindofevent not rlike 'done' ";
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("studentid", studentid);
             List<Event> events = new List<Event>();

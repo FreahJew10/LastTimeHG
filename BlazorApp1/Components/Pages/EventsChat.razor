@@ -223,10 +223,13 @@
             {
                 @foreach (Event evt in Events)
                 {
-                    <div class="event-item @(SelectedEvent == evt.randomuniqcode ? "active" : "")"
-                    @onclick="() => SelectEvent(evt.randomuniqcode)">
+                    if (evt.enddate > DateTime.Now && evt.kinofevent != "homework" && evt.kinofevent != "test" && evt.kinofevent != "private event")
+                    {
+                        <div class="event-item @(SelectedEvent == evt.randomuniqcode ? "active" : "")"
+                        @onclick="() => SelectEvent(evt.randomuniqcode)">
                         <span class="event-name">@evt.eventname</span>
                     </div>
+                    }
                 }
             }
             else
@@ -385,6 +388,7 @@
 
         // Load messages from DB for that event
         Messages = await commentDB.GetAllCommentsForEvent(eventId);
+        Messages = Messages.OrderBy(c => c.timeopcomment).ToList();
         all_students_in_event = await studentDB.GetTheNameOfEveryStudentInEvent(eventId);
         teacher = await teacherDB.GetTeacherByEvent(eventId);
         //  this_event =await eventDB.GetEventByPK(eventId);

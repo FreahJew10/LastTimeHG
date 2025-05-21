@@ -6,21 +6,24 @@
 @inject ProtectedSessionStorage MySession
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 @page "/Usermenegment"
+<head>
+    <title>wait a minute</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        html, body, h1, h2, h3, h4, h5, h6 {
+            font-family: "Roboto", sans-serif
+        }
+    </style>
+</head>
 @if (userS!=null||userT!=null)
 {
 
-    <head>
-        <title>wait a minute</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style>
-            html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif}
-        </style>
-    </head>
-    <body class="w3-light-grey">
+    
+    <div class="w3-light-grey">
 
         <!-- Page Container -->
         <div class="w3-content w3-margin-top" style="max-width:1400px;">
@@ -30,7 +33,7 @@
 
                 <!-- Left Column -->
                 <div class="w3-third">
-
+                  
                     <div class="w3-white w3-text-grey w3-card-4">
                         <div class="w3-display-container">
                             <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" style="width:100%" alt="Avatar">
@@ -55,7 +58,7 @@
                                     <p><i class="fa fa-briefcase fa-fw w3-margin-right w3-large w3-text-teal"></i>private teacher</p>
                                 }
                             }
-
+                         
                             <p><i class="fa fa-home fa-fw w3-margin-right w3-large w3-text-teal"></i>London, UK</p>
                             <p><i class="fa fa-envelope fa-fw w3-margin-right w3-large w3-text-teal"></i>@basicuser.email</p>
 
@@ -82,20 +85,9 @@
                         </div>
                         <br> *@
 
-                            <p class="w3-large w3-text-theme"><b><i class="fa fa-globe fa-fw w3-margin-right w3-text-teal"></i>Languages</b></p>
-                            <p>English</p>
-                            <div class="w3-light-grey w3-round-xlarge">
-                                <div class="w3-round-xlarge w3-teal" style="height:24px;width:100%"></div>
-                            </div>
-                            <p>Spanish</p>
-                            <div class="w3-light-grey w3-round-xlarge">
-                                <div class="w3-round-xlarge w3-teal" style="height:24px;width:55%"></div>
-                            </div>
-                            <p>German</p>
-                            <div class="w3-light-grey w3-round-xlarge">
-                                <div class="w3-round-xlarge w3-teal" style="height:24px;width:25%"></div>
-                            </div>
+
                             <br>
+                            <button type="button" class="btn btn-danger">log out</button>
                         </div>
                     </div><br>
 
@@ -115,14 +107,14 @@
                             <h5 class="w3-opacity"><b>repeat</b></h5>
 
                             <input type="password" name="text" class="input" placeholder="Enter your password!" @bind-value="repeat_password">
-
+                            <br />
                             @if (userS != null)
                             {
-                                <button class="button-28" role="button" @onclick="UpdateT"> doit</button>
+                                <button class="btn btn-secondary" role="button" @onclick="UpdateT"> update password</button>
                             }
                             else
                             {
-                                <button class="button-28" role="button" @onclick="UpdateS"> doit 28</button>
+                                <button class="btn btn-secondary" role="button" @onclick="UpdateS"> update password</button>
                             }
                             <hr>
 
@@ -136,15 +128,16 @@
                                 <p>@userT.bio </p><br>
                             </div>
                             <div class="form__group field">
-                                <input @bind-value="newbio"  type="input" class="form__field" placeholder="Name" name="name" id='name' required />
-                                <label for="name"  class="form__label">change your bio</label>
+                                <button type="button" @onclick="UpdateBio" class="btn btn-success">update bio</button>
+                                <input @bind-value="newbio" type="input" class="form__field" placeholder="new bio" name="name" id='name' required />
+                                
                             </div>
                         }
                         else if (userT != null && string.IsNullOrEmpty(userT.bio))
                         {
                             <div class="form__group field">
-                                <input @bind-value="newbio" type="input" class="form__field" placeholder="Name" name="name" id='name' required />
-                                <label for="name" class="form__label">change your bio</label>
+                                <input @bind-value="newbio" type="input" class="form__field" placeholder="new bio" name="name" id='name' required />
+                                <button type="button" @onclick="UpdateBio" class="btn btn-success">update bio</button>
                             </div>
                         }
                     </div>
@@ -157,6 +150,34 @@
                             <p>Web Development! All I need to know in one place</p>
                             <hr>
                         </div>
+                        @if (userT != null && MySubjects!=null)
+                        {
+                            <div class="w3-container w3-card w3-white w3-margin-top">
+                                <h2 class="w3-text-grey w3-padding-16">
+                                    <i class="fa fa-book fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Your Subjects
+                                </h2>
+                                <table class="w3-table-all">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (Subject subject in MySubjects)
+                                        {
+                                            <tr>
+                                                <td>@subject.subjectName</td>
+                                                <td>
+                                                    <button class="w3-button w3-red w3-small" @onclick="@(() => DeleteSubject(subject.subjectid))">Delete</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        <br />
                         @if (userS != null)
                         {
 
@@ -188,25 +209,10 @@
 
                                     </tbody>
                                 </table>
-                                @*   <QuickGrid Class="table table-striped"
-                                Items=@userS.friends.AsQueryable() >
-
-                                    <PropertyColumn Title="first_name" Property="@(x=>x.first_name)" Sortable="true" ></PropertyColumn>
-
-                                    <PropertyColumn Title="last name" Property="@(x=>x.last_name)" Sortable="true"></PropertyColumn>
-                                    <PropertyColumn Title="email" Property="@(x=>x.email)"></PropertyColumn>
-                                    @* <PropertyColumn Title="email" Property="@(x=>x.id)"<a href="ShowProduct/@x.ToString()">></PropertyColumn> *@
-                                @*  @foreach (Person person in userS.friends)
-                                    {
-                                        if (await friendsD.AreWeBothFriends(userS.Id, person.Id)==1)
-                                        {
-                                            <TemplateColumn Title="talk"><a href="ShowProduct/@person.Id.ToString()">Open</a></TemplateColumn>
-                                        }
-                                    }
-                                </QuickGrid> *@ 
+                               
                             </div>
                         }
-                        else if(userT!=null)
+                        else if(userT!=null &&userT.isprivate!=0)
                         {
 
                             <div class="w3-container">
@@ -216,7 +222,7 @@
 
                                             <th>name</th>
                                             <th>email</th>
-                                            <th>sendNotification</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -225,13 +231,13 @@
 
                                             <tr>
 
-                                                <td><a href="ShowProduct/@person.Id.ToString()"> talk</a></td>
+                                             
                                                 <td>@person.first_name</td>
 
                                                 <td>
                                                     @person.email
                                                 </td>
-                                                <td> </td>
+                                               
                                             </tr>
                                         }
 
@@ -421,7 +427,7 @@
             <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
         </footer>
 
-    </body>
+    </div>
 
 
 
@@ -443,6 +449,21 @@
     studentDB studentDB = new studentDB();
     private List<Subject> Subjects { get; set; } = new List<Subject>();
     private string SelectedSubject { get; set; } = string.Empty;
+    List<Subject> MySubjects = new List<Subject>();
+
+    public async Task LoadTeacherSubjects()
+    {
+        Sub_to_teacherDB subToTeacherDB = new Sub_to_teacherDB();
+        MySubjects = await SubjectDB.SelectAllSubjectForTeacher(userT.Id);
+        StateHasChanged();
+    }
+
+    public async Task DeleteSubject(int subjectId)
+    {
+        Sub_to_teacherDB subToTeacherDB = new Sub_to_teacherDB();
+        await subToTeacherDB.DellsubtoT(userT.Id, subjectId);
+        await LoadTeacherSubjects(); // Refresh list
+    }
     protected override async Task OnInitializedAsync()
     {
         Subjects = await SubjectDB.SelectAllSubjects();
@@ -564,6 +585,8 @@
                 userT = user2.Value;
                 basicuser = user2.Value;
                 student_that_i_teach = await personStudentDB.GetAllPersonStudentThatTeacherTaught(userT.Id);
+                await LoadTeacherSubjects();
+                StateHasChanged();
 
                 StateHasChanged();
             }

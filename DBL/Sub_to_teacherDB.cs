@@ -2,6 +2,8 @@
 using Mysqlx.Crud;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,13 +12,15 @@ namespace DBL
 {
     public class Sub_to_teacherDB : BaseDB<Sub_to_teacher>
     {
-        //public async Task<List<string>> GetTheNameOfEachSubForTeacher(int teacherid)
-        //{
-        //    Dictionary<string, object> parm = new Dictionary<string, object>();
-        //    parm.Add("teacherid", teacherid);
-        //    List<Sub_to_teacher> lst = await base.SelectAllAsync(parm);
+        public async Task<bool> DellsubtoT(int teacherid, int subjectid)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("teacherid", teacherid);
+            dict.Add("subjectId", subjectid);
 
-        //   }
+            return await base.DeleteAsync(dict) > 0; 
+            
+        }
         public async Task<bool> Insertsubtoteacher(Sub_to_teacher sub)
         {
 

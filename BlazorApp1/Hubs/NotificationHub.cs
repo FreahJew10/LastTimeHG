@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Google.Protobuf;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorApp1.Hubs
 {
@@ -36,6 +37,29 @@ namespace BlazorApp1.Hubs
            //await Clients.Caller.SendAsync("GetNotificationToInformIAdedYouAsFriend", email, notification);
          
         }
+
+        public async Task SendNotificationToInformAboutNewEvent(List<string> allstudentsmail, string notification, string email)//כאשר מורה כיתה שולח התראה לכל התלמידים שיש מבחן/שיעורי בית
+        {
+            Console.WriteLine("dwadawd");
+            if (allstudentsmail!=null)
+            {
+                List<string> tourconid=new List<string>();
+                foreach (string Semail in allstudentsmail)
+                {
+                    List<string>temp = new List<string>();
+                    if (StaticNotificationHub.multyconidFORnotificationsForstudents.ContainsKey(Semail))
+                    {
+                        temp = StaticNotificationHub.multyconidFORnotificationsForstudents[Semail];
+                        tourconid.AddRange(temp);
+                    }
+                }
+                await Clients.Clients(tourconid).SendAsync("GetNotificationToInformAboutNewEvent", email, notification);
+
+            }
+           
+
+        }
+
         public async Task SendNotificationToInformTeacherThatIwantPrivateClass(string notification, string myemail,string email,int eventrandomcod)//    שולחת למורה הודעה שאני רוצה שיעור פרטי,הפעולה מקבלת אמייל שלי אמייל של מורה ואת ההתראה וכמובן את מספר האיוונט על מנת להציג את זה ישר בדף ההתראות
         {
             if (await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotificationsFORteacher(email))

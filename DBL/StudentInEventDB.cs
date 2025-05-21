@@ -21,9 +21,9 @@ namespace DBL
                 {
                     lstd = await GetAllStudentInEvent_ForSpesificEvent(lst[i].randomuniqcode);
                     lstd2 = await GetAllStudentInEvent_ForSpesificEvent(lst[i + 1].randomuniqcode);
-                    lstd.Concat(lstd2).ToList();
+                    lstd.AddRange(lstd2);
 
-                    finellst.Concat(lstd).ToList();
+                    finellst.AddRange(lstd);
                 }
             }
             return finellst;

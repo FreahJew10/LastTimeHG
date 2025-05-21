@@ -13,6 +13,20 @@
 
 @if (friend != null)
 {
+    <button onclick="toggleMode()" style="
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    padding: 8px 14px;
+    background-color: var(--outgoing-bg);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+    ">
+        Toggle Mode
+    </button>
 
     <h1>@friend.first_name</h1>
     <h3>is connected: @friendconnected</h3>
@@ -49,140 +63,211 @@
     </div>
 
     <style>
-        .input-container {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        width: 100%;
-        }
-
-        .message-input {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 14px;
-        }
-
-        .send-button {
-        background-color: #0084ff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 14px;
-        }
-
-        .send-button:hover {
-        background-color: #005bb5;
-        }
-        .message {
-        animation: fadeIn 0.3s ease-in;
-        }
-
-        keyframes fadeIn {
-        from {
-        opacity: 0;
-        transform: translateY(10px);
-        }
-        to {
-        opacity: 1;
-        transform: translateY(0);
-        }
-        }
-
-        /////////
-        .incoming::before {
-        content: '';
-        position: absolute;
-        top: 15px;
-        left: -10px;
-        width: 10px;
-        height: 10px;
-        background-color: #e4e6eb;
-        clip-path: polygon(0 0, 100% 50%, 0 100%);
-        }
-
-        .outgoing::before {
-        content: '';
-        position: absolute;
-        top: 15px;
-        right: -10px;
-        width: 10px;
-        height: 10px;
-        background-color: #0084ff;
-        clip-path: polygon(100% 0, 0 50%, 100% 100%);
-        }
-
-        /////////////////
         body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f0f2f5;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .chat-container {
-        CONTAIN-INTRINSIC-BLOCK-SIZE: AUTO 100PX;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        width: 1200px;
-        padding: 50px;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow-y: auto;
-        position: relative;
-        align-content: space-around;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 90%;
+            max-width: 1000px;
+            padding: 30px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            overflow-y: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
-
-
         .message {
-        max-width: 80%;
-        padding: 8px 12px;
-        border-radius: 15px;
-        position: relative;
-        font-family: Arial, sans-serif;
-        font-size: 12px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in;
+            word-break: break-word;
         }
 
         .incoming {
-        background-color: #e4e6eb;
-        align-self: flex-start;
-        max-width: 80%;
-        padding: 8px 12px;
-        border-radius: 15px;
-        position: relative;
-        font-family: Arial, sans-serif;
-        font-size: 12px;
+            background-color: #2a2a2a;
+            align-self: flex-start;
+            color: #dcdcdc;
         }
 
         .outgoing {
-        background-color: #0084ff;
-        color: white;
-        align-self: flex-end;
+            background-color: #0084ff;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .incoming::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -10px;
+            width: 10px;
+            height: 10px;
+            background-color: #2a2a2a;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        .outgoing::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: -10px;
+            width: 10px;
+            height: 10px;
+            background-color: #0084ff;
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
         }
 
         .message .timestamp {
-        font-size: 9px;
-        color: #666;
-        margin-top: 3px;
-        display: block;
-        text-align: right;
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 4px;
+            display: block;
+            text-align: right;
         }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            padding-top: 15px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 1000px;
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-top: 1px solid #333;
         }
+
+        .message-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+
+            .message-input::placeholder {
+                color: #888;
+            }
+
+        .send-button {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+            .send-button:hover {
+                background-color: #1565c0;
+            }
+
+        keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        :root {
+            --bg-color: #121212;
+            --container-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --input-bg: #2a2a2a;
+            --border-color: #444;
+            --incoming-bg: #2a2a2a;
+            --outgoing-bg: #0084ff;
+            --timestamp-color: #aaa;
+            --placeholder-color: #888;
+            --shadow: rgba(0, 0, 0, 0.6);
+        }
+
+        body.light-mode {
+            --bg-color: #f0f2f5;
+            --container-color: white;
+            --text-color: #333;
+            --input-bg: #ffffff;
+            --border-color: #ccc;
+            --incoming-bg: #e4e6eb;
+            --outgoing-bg: #0084ff;
+            --timestamp-color: #555;
+            --placeholder-color: #999;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .chat-container {
+            background-color: var(--container-color);
+            box-shadow: 0 0 15px var(--shadow);
+        }
+
+        .message-input {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+            .message-input::placeholder {
+                color: var(--placeholder-color);
+            }
+
+        .incoming {
+            background-color: var(--incoming-bg);
+            color: var(--text-color);
+        }
+
+        .outgoing {
+            background-color: var(--outgoing-bg);
+            color: #fff;
+        }
+
+        .incoming::before {
+            background-color: var(--incoming-bg);
+        }
+
+        .outgoing::before {
+            background-color: var(--outgoing-bg);
+        }
+
+        .message .timestamp {
+            color: var(--timestamp-color);
+        }
+
     </style>
+
     @*   <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded " style="height:500px">
         @if (!usermessages.Any())
         {
@@ -222,6 +307,12 @@
 
     </div> *@
 }
+<script>
+    function toggleMode() {
+        document.body.classList.toggle('light-mode');
+    }
+</script>
+
 <script src="/js/signalr/dist/browser/signalr.js"></script>
 <script src="/js/chat.js"></script>
 @code {
@@ -327,14 +418,14 @@
         }
     }
 
-    // public async ValueTask DisposeAsync()
-    //  {
-    //      if(hubConnection is not null)
-    //      {
-    //          await hubConnection.DisposeAsync();
-    //      }
+    public async ValueTask DisposeAsync()
+     {
+         if(hubConnection is not null)
+         {
+             await hubConnection.DisposeAsync();
+         }
 
-    //  }
+     }
 
 
     public async Task setconid()

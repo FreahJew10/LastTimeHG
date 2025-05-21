@@ -100,6 +100,7 @@
     <div class="sidebar-content">
         <p><strong>Student:</strong> @SelectedStudentName</p>
         <p><strong>Lesson Topic:</strong> @SelectedEventName</p>
+        <p><strong>time of:</strong> @SelectedEventDate</p>
         @if (SelectedNotification != null && SelectedNotification.enddate > DateTime.Now)
         {
             @if (userT != null && string.Equals(SelectedNotification.kinofevent, "notification-private lesson"))
@@ -125,6 +126,7 @@
     private bool IsSidebarOpen = false;
     private string? SelectedStudentName;
     private string? SelectedEventName;
+    private string? SelectedEventDate;
     private Event? SelectedNotification;
 
     List<Event> notifications = new List<Event>();
@@ -171,6 +173,8 @@
             SelectedStudentName = studentsthatsent[0].first_name + " " + studentsthatsent[0].first_name[0];
         SelectedEventName = notification.kinofevent;
         SelectedNotification = notification;
+        int index = SelectedNotification.eventname.LastIndexOf('/');
+        SelectedEventDate= SelectedNotification.eventname.Substring(index+1);
         await Task.Delay(50); // Small delay for smoother UI transition
         StateHasChanged();
     }

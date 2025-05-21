@@ -9,28 +9,32 @@ namespace DBL
 {
     public class PersonStudentDB : BaseDB<Person>
     {
+        public async Task<List<Person>> GetAllStudents()
+        {
 
+            return await base.SelectAllAsync();
+        }
         public async Task<List<Person>> GetAllPersonStudentThatTeacherTaught(int teacherid)
         {
             EventDB eventDB = new EventDB();
             List<Event> eventList = await eventDB.GetAllEventForTeacher(teacherid);
-            StudentInEventDB studentInEventDB =new StudentInEventDB ();
-            List < StudentInEvent >thestudentsineachevent= await studentInEventDB.GetAllStudentsInEventForListOfEvents(eventList);
+            StudentInEventDB studentInEventDB = new StudentInEventDB();
+            List<StudentInEvent> thestudentsineachevent = await studentInEventDB.GetAllStudentsInEventForListOfEvents(eventList);
             return await GetAllPersonForStudentInEvent(thestudentsineachevent);
 
 
         }
-        private async Task<List<Person>> GetAllPersonForStudentInEvent(List <StudentInEvent> lst)
+        public async Task<List<Person>> GetAllPersonForStudentInEvent(List<StudentInEvent> lst)
         {
             List<Person> list = new List<Person>();
-            //for (int i = 0; i < lst.Count-1; i++) 
-            //{
-
-
-            //}
-            foreach (StudentInEvent e in lst) {
+            List<StudentInEvent> ll = lst
+            .GroupBy(s => s.studentid)
+             .Select(g => g.First())
+              .ToList();
+            foreach (StudentInEvent e in ll)
+            {
                 list.Add(await SelectByPkAsync(e.studentid));
-            
+
             }
             return list;
         }
@@ -69,7 +73,7 @@ From
          mylastyear.student.studentid = @studentid";
             Dictionary<string, object> p = new Dictionary<string, object>();
             p.Add("studentid", id);
-            List<Person> list = await SelectAllAsync(q,p);
+            List<Person> list = await SelectAllAsync(q, p);
             if (list.Count == 1)
                 return list[0];
             else
@@ -91,9 +95,9 @@ From
              Where
              student1.studentid = @studentid";
 
-            Dictionary<string,object> dic = new Dictionary<string,object>();
+            Dictionary<string, object> dic = new Dictionary<string, object>();
             dic.Add("studentid", studentid);
-            List<Person> list =await SelectAllAsync(q, dic);
+            List<Person> list = await SelectAllAsync(q, dic);
             return list;
 
         }
@@ -126,20 +130,31 @@ From
         //}
         protected override async Task<Person> CreateModelAsync(object[] row)
         {
-            Person student_friends=new Person();
-            
-            student_friends.first_name = row[0].ToString();
-            student_friends.last_name = row[1].ToString();
-            student_friends.email = row[2].ToString();
-            if (row.Length > 4)//כאשר אתה רוצה לראות את החברים שלי
+            Person student_friends = new Person();
+            if (row[0] is not int)
             {
-                student_friends.Id = int.Parse(row[4].ToString());
+                student_friends.first_name = row[0].ToString();
+                student_friends.last_name = row[1].ToString();
+                student_friends.email = row[2].ToString();
+                if (row.Length > 4)//כאשר אתה רוצה לראות את החברים שלי
+                {
+                    student_friends.Id = int.Parse(row[4].ToString());
+                }
+                else// כאשר אתה נכנס לדף שיחה
+                {
+                    student_friends.Id = int.Parse(row[3].ToString());
+                }
+                return student_friends;
             }
-            else// כאשר אתה נכנס לדף שיחה
+            else
             {
-                student_friends.Id = int.Parse(row[3].ToString());
+                student_friends.Id = int.Parse(row[0].ToString());
+                student_friends.first_name = row[1].ToString();
+                student_friends.last_name = row[2].ToString();
+                student_friends.email = row[3].ToString();
+                student_friends.password = "";
+                return student_friends;
             }
-            return student_friends;
         }
 
         protected override List<string> GetPrimaryKeyName()

@@ -9,11 +9,13 @@
 @using Hubs
 @page "/DetailsOfDay/{Date}"
 
-@if (events!=null)
+@if (events != null)
 {
     <div class="details-container">
         @*  <h4>Events for @selectedDate.ToString("dddd, MMM dd, yyyy")</h4> *@
 
+        @if(events!=null)
+        {
         <table class="events-table">
             <thead>
                 <tr>
@@ -32,14 +34,12 @@
                         <td>@ev.date.ToString("HH:mm")</td>
                         <td>@ev.kinofevent</td>
                         <td>@ev.teacherid</td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="() => DeleteEvent(ev.randomuniqcode)">Delete</button>
-                        </td>
+                        
                     </tr>
                 }
             </tbody>
         </table>
-
+        }
         <h5>Add New Event</h5>
         <EditForm Model="newEvent" OnValidSubmit="AddEvent">
             <DataAnnotationsValidator />
@@ -63,10 +63,11 @@
     </div>
 
 }
-else 
+else
 {
 
-    <body style="background-image:url('https://files.oaiusercontent.com/file-PiQRyXAyVisnvB4X2AiZuJ?se=2025-01-29T00%3A01%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D6f3a34c5-c404-40dc-adf4-4525e23e3150.webp&sig=o2zceawf9Fmdr2IZ6aJsk8dQLQg9lKUp0qYokYNzpAc%3D')"></body>
+    <body style="background-image:url('https://files.oaiusercontent.com/file-PiQRyXAyVisnvB4X2AiZuJ?se=2025-01-29T00%3A01%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D6f3a34c5-c404-40dc-adf4-4525e23e3150.webp&sig=o2zceawf9Fmdr2IZ6aJsk8dQLQg9lKUp0qYokYNzpAc%3D')">
+    </body>
     <h5>Add New Event</h5>
     <EditForm Model="newEvent" OnValidSubmit="AddEvent">
         <DataAnnotationsValidator />
@@ -215,9 +216,10 @@ else
     public string Date { get; set; }
     public DateTime selectedDate = new DateTime();
     public Student userS = null;
+    public Teacher userT = null;
     //   private List<Event> dayEvents = new List<Event>();
     private Event newEvent = new Event();
-    private List<Event> events = new List<Event>();
+    private List<Event>events = new List<Event>();
     public DateTime SelectedTime;
     protected override async void OnParametersSet()
     {
@@ -240,14 +242,23 @@ else
     {
         try
         {
-            Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
-            EventDB eventDB = new EventDB();
-            List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id, date);
-            //      Console.WriteLine($"Fetched {events.Count} events from database.");
-            return events;
+            if (userS != null)
+            {
+                Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
+                EventDB eventDB = new EventDB();
+                List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id, date);
+                //      Console.WriteLine($"Fetched {events.Count} events from database.");
+                 return events ?? new List<Event>(); 
+            }
+            else{
+                Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
+                EventDB eventDB = new EventDB();
+                List<Event> events = await eventDB.GetAllEventsForSpecificTeacherAndDate(userT.Id, date);
+                return events ?? new List<Event>();
+            }
 
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
 
@@ -259,6 +270,8 @@ else
     {
         try
         {
+            bool s = true;
+            bool success = false;
             Console.WriteLine("Attempting to add a new event...");
             EventDB eventDB = new EventDB();
             DateTime dateTime = selectedDate;
@@ -269,16 +282,25 @@ else
             newEvent.randomuniqcode = "The sum total of stupid people is somewhere around the population of the planet. Plus one.".GetHashCode(); // Generate a unique code
             newEvent.kinofevent = "private event";
             newEvent.enddate = dateTime.AddHours(1);
-            bool success = await eventDB.insertEvent(newEvent);
-            StudentInEventDB studentInEventDB = new StudentInEventDB();
-            StudentInEvent studentInEvent = new StudentInEvent(userS.Id, newEvent.randomuniqcode);
-            bool s = await studentInEventDB.insertStedentInEvent(studentInEvent);
-            if (success&&s)
+            if (userT != null)
+            {
+                newEvent.teacherid = userT.Id;
+                 success = await eventDB.insertEvent(newEvent);
+            }
+           
+            else if (userS != null)
+            {
+                StudentInEventDB studentInEventDB = new StudentInEventDB();
+                StudentInEvent studentInEvent = new StudentInEvent(userS.Id, newEvent.randomuniqcode);
+                success = await eventDB.insertEvent(newEvent);
+                s = await studentInEventDB.insertStedentInEvent(studentInEvent);
+            }
+            if (success && s)
             {
                 Console.WriteLine("Event added successfully to the database.");
                 // if (events==null)
                 // {
-                   
+
                 // }
                 // else
                 events.Add(newEvent);
@@ -290,7 +312,7 @@ else
                 Console.WriteLine("Failed to add event to the database.");
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
         }
@@ -301,7 +323,7 @@ else
     {
         Console.WriteLine($"Attempting to delete event with unique code: {uniqueCode}");
         var eventDB = new EventDB();
-       // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
+        // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
         events.RemoveAll(e => e.randomuniqcode == uniqueCode);
         Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
 
@@ -320,12 +342,13 @@ else
 
                 StateHasChanged();
             }
-            // var user2 = await MySession.GetAsync<teacher>("teacher");
-            // if (user2.Success)
-            // {
-            //     userT = user2.Value;
-            //     StateHasChanged();
-            // }
+            var user2 = await MySession.GetAsync<Teacher>("teacher");
+            if (user2.Success)
+            {
+                userT = user2.Value;
+                events = await LoadEventsForDay(selectedDate);
+                StateHasChanged();
+            }
 
         }
         // else if (!string.IsNullOrEmpty(myConId))

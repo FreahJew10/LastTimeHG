@@ -9,6 +9,21 @@ namespace DBL
 {
     public class teacherDB : BaseDB<Teacher>
     {
+        public async Task<Teacher>GetTeacherByemail(string email)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("email", email);
+            List<Teacher> d = await base.SelectAllAsync(dic);
+            return d[0];
+        }
+        public async Task<List<Teacher>> GetAllPublicTeachers()
+        {
+
+            Dictionary<string,object> data = new Dictionary<string,object>();
+            data.Add("isprivate", 0);
+            return await SelectAllAsync(data);
+        }
+
         public async Task<Teacher>GetTeacherByEvent(int randomuniqcode)
         {
             string q = @$"Select
@@ -70,7 +85,7 @@ From
     mylastyear.teachers teachers1 On mylastyear.sub_to_teachers.teacherid = teachers1.teacherid Inner Join
     mylastyear.subject On mylastyear.sub_to_teachers.subjectId = mylastyear.subject.subjectId
 Where
-    teachers1.isprivate = 1 and mylastyear.subject.subjectId=@id and teachers1.hourly_rate<= @hourly_rate";
+    (teachers1.isprivate = 1 or teachers1.isprivate = 3 )and mylastyear.subject.subjectId=@id and teachers1.hourly_rate<= @hourly_rate";
             Dictionary<string, object> properties = new Dictionary<string, object>();
             properties.Add("id", subjectId);
             properties.Add("hourly_rate", hourly_rate);

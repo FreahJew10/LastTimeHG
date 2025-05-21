@@ -59,17 +59,25 @@
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
                         <li><a href="/Notifications" @onclick="wiildel"> friends</a></li>
                     }
-                    else if (userT != null)
+                    else if (userT != null &&(userT.isprivate==1 ||userT.isprivate==3))
                     {
+
                         <li><a href="#section1">hello! @userT.first_name</a></li>
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
                         <li><a @onclick="calender" href="SearchForFriends">show my clander</a></li>
                         <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
-                        if(userT.isprivate==3)
+                        if (userT.isprivate == 3)
                         {
-
+                            <li><a href="/teacher-search" @onclick="movetoAdmin"> go to admin page</a></li>
                         }
                     }
+                    else if(userT!=null&&userT.isprivate==0)
+                    {
+                        <li><a @onclick="calender" href="SearchForFriends">show my clander</a></li>
+                        <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
+                        <li><a href="/teacher-search" @onclick="movetoTeacherClasses"> go to your classes</a></li>
+                    }
+
                     else
                     {
                         <li class="active"><a href="#section1">Home</a></li>
@@ -574,7 +582,7 @@
                         <div class="col-md-6 align-self-center">
                             <div class="left-content">
 
-                                <h4>register here please <em>about Grad School</em></h4>
+                                <h4>register here please <em>to know about TLL</em></h4>
                                 <p>
                                     To use "Tll School," users must review and agree to the Terms of Service. These terms outline the rules, responsibilities, and rights related to the platform's use. They ensure a safe, fair, and transparent environment for all users. By continuing to use the platform, you acknowledge acceptance of these terms. Please take time to read the full document to understand your rights and obligations.
                                     <br><br>
@@ -611,10 +619,8 @@
 
                                         <th>name</th>
                                         <th>email</th>
-                                        <th>is my friend</th>
-                                        <th>does i am his friend</th>
-                                        <th> are we both friends?</th>
-                                        <th>add as my friend</th>
+                                        <th>make friendship</th>
+                                       
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -817,7 +823,14 @@
         hubConnection.On<string, string,int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification,eventrandomcod) =>
         {
             this.notification = email + " " + notification;
-            await js.InvokeVoidAsync("alert", @$"{this.notification}");
+           
+            ToastService.ShowInfo($"{email}: {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
+        hubConnection.On<string, string>("GetNotificationToInformAboutNewEvent", async (email, notification) =>
+        {
+            this.notification = email + " " + notification;
+ await js.InvokeVoidAsync("alert", @$"{this.notification}");
             ToastService.ShowInfo($"{email}: {notification}");
             await InvokeAsync(StateHasChanged);
         });
@@ -879,6 +892,14 @@
             navigationManager.NavigateTo("/login");
         }
 
+    }
+    public async Task movetoAdmin()
+    {
+        navigationManager.NavigateTo("/admin");
+    }
+    public async Task movetoTeacherClasses()
+    {
+        navigationManager.NavigateTo("/teacher-classes");
     }
     public async Task movetoEventChat()
     {

@@ -47,7 +47,7 @@ namespace BlazorApp1.Hubs
         public async Task SendMessageToFriend(List<string>friendcon, string massage,Person me)//פעולה כדי לשלוח לחבר ספציפי בחיבור ספציפי
         {
 
-            await Clients.Clients(friendcon[0]).SendAsync("ReceiveMassage",me,massage);
+            await Clients.Clients(friendcon).SendAsync("ReceiveMassage",me,massage);
         }
         public async Task SendMessageToFriendisFriendconnected(List<string> friendcon)//ברגע שהחבר מתחבר הפעולה תשלח שהוא אכן מחובר
         {

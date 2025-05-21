@@ -67,7 +67,7 @@ From
             comment comment = new comment();
             comment.id_of_comment = int.Parse(row[0].ToString());
             comment.thecomment = row[1].ToString();
-            if (row[2] != null)
+            if (!string.IsNullOrEmpty(row[2].ToString()) )
             {
                 comment.student_senderID = int.Parse(row[2].ToString());
                 comment.teacher_senderID = 0;

@@ -11,6 +11,18 @@ namespace DBL
 {
     public class SubjectDB : BaseDB<Subject>
     {
+        public async Task<bool> InsertSubject(string subjectname)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("subjectName", subjectname);
+            int num = await base.InsertAsync(data);
+            if (num > 0)
+            {
+                return true;
+            }
+            else { return false; }
+
+        }
         public async Task<List<Subject>> SelectAllSubjects()
         {
             return await base.SelectAllAsync();

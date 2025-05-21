@@ -50,7 +50,7 @@
                             <strong>@teacher.first_name @teacher.last_name</strong><br />
                             @*   Subjects: @string.Join(", ", Subjects.Select(s => s.subjectName))<br /> *@
                             Hourly Rate: $@teacher.hourly_rate<br />
-                            <a href="ViewTeacherProfileAndRequest/@teacher.Id">set a meting </a>
+                            <a href="ViewTeacherProfileAndRequest/@teacher.Id">set a meeting </a>
                         </li>
                     }
                 </ul>
@@ -237,7 +237,7 @@
 
     private string SearchQuery { get; set; } = string.Empty;
     private string SelectedSubject { get; set; } = string.Empty;
-    private int? MaxHourlyRate { get; set; } = null;
+    private int? MaxHourlyRate { get; set; } =0;
     private bool IsPrivateOnly { get; set; } = false;
     private List<Subject> Subjects { get; set; } = new List<Subject>();
     private List<Teacher> SearchResults { get; set; } = new List<Teacher>();
@@ -258,15 +258,7 @@
         if(!string.IsNullOrEmpty(SelectedSubject))
         {
         int mysub=0;
-        // if (MaxHourlyRate==0)
-      //   foreach (Subject s in Subjects)
-      //   {
-
-      //       if(s.subjectName==SelectedSubject)
-      //       {
-      //           mysub = s.subjectid;
-      //       }
-      // }
+     
       if(MaxHourlyRate==0)
       {
         SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(int.Parse(SelectedSubject));
