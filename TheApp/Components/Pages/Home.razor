@@ -50,7 +50,7 @@
         </div>
 
         <!-- header section strats -->
-      
+
         <!-- end header section -->
         <!-- slider section -->
         <section class="slider_section ">
@@ -62,16 +62,28 @@
                                 <div class="col-md-6 ">
                                     <div class="detail-box">
                                         <h1>
-                                           your new <br>
+                                            your new <br>
                                             way to learn
                                         </h1>
                                         <p>
                                             this is the true option to learn and know witj your friends, do not be scared but 
                                         </p>
                                         <div class="btn-box">
-                                            <a href="" class="btn1">
-                                                Read More
-                                            </a>
+                                            @if (userS != null)
+                                            {
+                                                <a  class="btn1">
+                                                    @userS.first_name + @userS.last_name
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                 <a  class="btn1">
+                                                    learn more by login
+                                                </a>
+                                            }
+                                            <a href="#"></a>{
+
+                                           
                                         </div>
                                     </div>
                                 </div>
@@ -96,9 +108,18 @@
                                             Explicabo esse amet tempora quibusdam laudantium, laborum eaque magnam fugiat hic? Esse dicta aliquid error repudiandae earum suscipit fugiat molestias, veniam, vel architecto veritatis delectus repellat modi impedit sequi.
                                         </p>
                                         <div class="btn-box">
-                                            <a href="" class="btn1">
-                                                Read More
-                                            </a>
+                                            @if (userS != null)
+                                            {
+                                                <a class="btn1">
+                                                    @userS.first_name + @userS.last_name
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn1">
+                                                    learn more by login
+                                                </a>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -123,9 +144,18 @@
                                             Explicabo esse amet tempora quibusdam laudantium, laborum eaque magnam fugiat hic? Esse dicta aliquid error repudiandae earum suscipit fugiat molestias, veniam, vel architecto veritatis delectus repellat modi impedit sequi.
                                         </p>
                                         <div class="btn-box">
-                                            <a href="" class="btn1">
-                                                Read More
-                                            </a>
+                                             @if (userS != null)
+                                            {
+                                                <a class="btn1">
+                                                    @userS.first_name  @userS.last_name
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn1">
+                                                    learn more by login
+                                                </a>
+                                            }
                                         </div>
                                     </div>
                                 </div>

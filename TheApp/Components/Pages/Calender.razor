@@ -149,10 +149,7 @@
     // }
 
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+   
     string ResultStr = " Loading... ";
     protected override async Task OnInitializedAsync()
     {
@@ -201,7 +198,7 @@
             DateTime startOfWeek = weekStartDate;
             DateTime endOfWeek = weekStartDate.AddDays(7);
 
-            var fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
+            List<Event> fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
             events = fetchedEvents?.ToList() ?? new List<Event>();
 
             isLoading = false;
@@ -213,7 +210,7 @@
         }
     }
 
-    private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
+    private async Task<List<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
     {
         try
         {

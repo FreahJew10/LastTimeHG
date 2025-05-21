@@ -191,11 +191,11 @@
         }
     }
 
-    private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
+    private async Task<List<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
     {
         EventDB eventDB = new EventDB();
         List<Event> result = await eventDB.GetEventsForStudentInRangeForStudent(userS.Id, start, end);
-        return result ?? Enumerable.Empty<Event>();
+        return result;
     }
 
     private async Task PreviousWeek()

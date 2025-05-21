@@ -7,6 +7,8 @@
 @using Models
 @using DBL
 @using Hubs
+@inject IToastService ToastService
+
 @page "/DetailsOfDay/{Date}"
 
 @if (events != null)
@@ -16,29 +18,29 @@
 
         @if(events!=null)
         {
-        <table class="events-table">
-            <thead>
-                <tr>
-                    <th>Event Name</th>
-                    <th>Time</th>
-                    <th>Kind of Event</th>
-                    <th>Teacher ID</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Event ev in events)
-                {
+            <table class="events-table">
+                <thead>
                     <tr>
-                        <td>@ev.eventname</td>
-                        <td>@ev.date.ToString("HH:mm")</td>
-                        <td>@ev.kinofevent</td>
-                        <td>@ev.teacherid</td>
-                        
+                        <th>Event Name</th>
+                        <th>Time</th>
+                        <th>Kind of Event</th>
+                        <th>Teacher ID</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (Event ev in events)
+                    {
+                        <tr>
+                            <td>@ev.eventname</td>
+                            <td>@ev.date.ToString("HH:mm")</td>
+                            <td>@ev.kinofevent</td>
+                            <td>@ev.teacherid</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
         <h5>Add New Event</h5>
         <EditForm Model="newEvent" OnValidSubmit="AddEvent">
@@ -221,6 +223,44 @@ else
     private Event newEvent = new Event();
     private List<Event>events = new List<Event>();
     public DateTime SelectedTime;
+    private HubConnection hubConnection;
+    string notification = "";
+    string conid = "";
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(navigationManager.ToAbsoluteUri("/NotificationHub"))
+        .WithAutomaticReconnect()
+        .Build();
+
+        hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
+        {
+            this.notification = email + " " + notification;
+            await js.InvokeVoidAsync("alert", @$"{this.notification}");
+            ToastService.ShowInfo($"{email}: {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
+        hubConnection.On<string, string, int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification, eventrandomcod) =>
+        {
+            this.notification = email + " " + notification;
+
+            ToastService.ShowInfo($"{email}: {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
+        hubConnection.On<string, string>("GetNotificationToInformAboutNewEvent", async (email, notification) =>
+        {
+            this.notification = email + " " + notification;
+            await js.InvokeVoidAsync("alert", @$"{this.notification}");
+            ToastService.ShowInfo($"{email}: {notification}");
+            await InvokeAsync(StateHasChanged);
+        });
+        Console.WriteLine("RRR");
+        await hubConnection.StartAsync();
+
+
+
+
+    }
     protected override async void OnParametersSet()
     {
         if (Date == null)
@@ -319,7 +359,7 @@ else
         StateHasChanged();
     }
 
-    private async Task DeleteEvent(int uniqueCode)
+   /*private async Task DeleteEvent(int uniqueCode)
     {
         Console.WriteLine($"Attempting to delete event with unique code: {uniqueCode}");
         var eventDB = new EventDB();
@@ -327,7 +367,7 @@ else
         events.RemoveAll(e => e.randomuniqcode == uniqueCode);
         Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
 
-    }
+    }*/
     protected override async Task OnAfterRenderAsync(bool firstRender)///
     {
 
@@ -339,7 +379,20 @@ else
             {
                 userS = user1.Value;
                 events = await LoadEventsForDay(selectedDate);
+                if (!await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotifications(userS.email))
+                {
 
+                    List<string> notifCon = new List<string>();
+                    notifCon.Add(hubConnection.ConnectionId);
+                    StaticNotificationHub.multyconidFORnotificationsForstudents.Add(userS.email, notifCon);
+                }
+                else
+                {
+                    conid = hubConnection.ConnectionId;
+                    List<string> strings = StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email];
+                    strings.Add(conid);
+                    StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email] = strings;
+                }
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<Teacher>("teacher");
@@ -347,6 +400,20 @@ else
             {
                 userT = user2.Value;
                 events = await LoadEventsForDay(selectedDate);
+                if (!await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotificationsFORteacher(userT.email))
+                {
+
+                    List<string> notifCon = new List<string>();
+                    notifCon.Add(hubConnection.ConnectionId);
+                    StaticNotificationHub.multyconidFORnotificationsForteacher.Add(userT.email, notifCon);
+                }
+                else
+                {
+                    conid = hubConnection.ConnectionId;
+                    List<string> strings = StaticNotificationHub.multyconidFORnotificationsForteacher[userT.email];
+                    strings.Add(conid);
+                    StaticNotificationHub.multyconidFORnotificationsForteacher[userT.email] = strings;
+                }
                 StateHasChanged();
             }
 

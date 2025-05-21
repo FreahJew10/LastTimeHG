@@ -584,6 +584,7 @@
             {
                 userT = user2.Value;
                 basicuser = user2.Value;
+                if(userT.isprivate==3||userT.isprivate==1)
                 student_that_i_teach = await personStudentDB.GetAllPersonStudentThatTeacherTaught(userT.Id);
                 await LoadTeacherSubjects();
                 StateHasChanged();

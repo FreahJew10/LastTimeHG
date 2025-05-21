@@ -45,7 +45,7 @@
                 <div class="friend-item">
                     <input type="checkbox"
                     checked="@selectedstudent.Contains(friend)"
-                    @onchange="(e) => ToggleFriendSelection(friend, (bool?)e.Value)" />
+                    @onchange="(e) => ToggleStudentSelection(friend, (bool?)e.Value)" />
                     <label>@friend.first_name @friend.email</label>
                 </div>
             }
@@ -58,7 +58,7 @@
         </div>
         <input type="text" placeholder="give class name" @bind="classname" />
 
-        <button @onclick="CreateEvent">Create Event</button>
+        <button @onclick="CreateEvent">Create class</button>
     </div>
 
 </div>
@@ -180,20 +180,17 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-    
-    }
-    private void ToggleFriendSelection(Person friend, bool? isChecked)
+   
+    private void ToggleStudentSelection(Person student, bool? isChecked)
     {
         if (isChecked == true)
         {
-            if (!selectedstudent.Contains(friend))
-                selectedstudent.Add(friend);
+            if (!selectedstudent.Contains(student))
+                selectedstudent.Add(student);
         }
         else
         {
-            selectedstudent.Remove(friend);
+            selectedstudent.Remove(student);
         }
     }
     private async Task AddSubject()

@@ -333,22 +333,22 @@
     private string currentUserId;
     string mycon="";
     
-    protected override async Task OnInitializedAsync()
-    {
-        hubConnection = new HubConnectionBuilder()
-        .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
-        .WithAutomaticReconnect()
-        .Build();
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     hubConnection = new HubConnectionBuilder()
+    //     .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+    //     .WithAutomaticReconnect()
+    //     .Build();
 
 
-        hubConnection.On<string>("ReceiveMessage",async(message) =>
-        {
-            mycon = message;
-            await InvokeAsync(StateHasChanged);
-        });
+    //     hubConnection.On<string>("ReceiveMessage",async(message) =>
+    //     {
+    //         mycon = message;
+    //         await InvokeAsync(StateHasChanged);
+    //     });
 
-        await hubConnection.StartAsync();
-    }
+    //     await hubConnection.StartAsync();
+    // }
 
 
     public  async Task LogInToSudent()

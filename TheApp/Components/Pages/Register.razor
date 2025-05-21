@@ -12,7 +12,7 @@
 			<form>
 				<label for="chk" aria-hidden="true">Sign up</label>
 				<input @bind-value="name" type="text" name="txt" placeholder="User name" required="">
-				<input @bind-value="lastname" type="text" name="laft name" placeholder="Email" required="">
+				<input @bind-value="lastname" type="text" name="laft name" placeholder="last name" required="">
 				<input @bind-value="email" type="text" name="email" placeholder="Email" required="">
 				<input @bind-value="password" type="password" name="pswd" placeholder="Password" required="">
 				<button @onclick="register" >Sign up</button>
@@ -122,6 +122,7 @@
 				{
 					await Application.Current.MainPage.DisplayAlert("Success", "Registration completed!", "OK");
 					// Optionally navigate to login page
+					navigateMgr.NavigateTo("/login", replace: true);
 				}
 				else
 				{
