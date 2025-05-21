@@ -775,6 +775,26 @@
             $(window).scroll(function () {
             checkSection();
             });
+                       (function() {
+              if (window.location.pathname === "/" || window.location.pathname === "") {
+                // only on the root path do we inject the Grad-School assets
+                const assets = [
+                  'try/assets/js/isotope.min.js',
+                  'try/assets/js/owl-carousel.js',
+                  'try/assets/js/lightbox.js',
+                  'try/assets/js/tabs.js',
+                  'try/assets/js/video.js',
+                  'try/assets/js/slick-slider.js',
+                  'try/assets/js/custom.js'
+                ];
+                assets.forEach(src => {
+                  const s = document.createElement('script');
+                  s.src = src;
+                  s.defer = true;
+                  document.body.appendChild(s);
+                });
+              }
+            })();
         </script>
 
         <div id="lightboxOverlay" class="lightboxOverlay" style="display: none;"></div>
