@@ -74,15 +74,29 @@ namespace TheAPI.Controllers
             return await eventDB.GetEventsForStudentInRangeForStudent(modelForAPIIDEndStartDate.studentid, modelForAPIIDEndStartDate.startdate, modelForAPIIDEndStartDate.enddate);
 
         }
-      
 
 
-       
+
+
 
         // DELETE api/<LastYearController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{studentid:int},{friendid:int}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Delete(int studentid, int friendid)
         {
+            //await Console.Out.WriteLineAsync("del3");
+            friendsDB friendsDB = new friendsDB();
+            if (await friendsDB.DeleteFriendship(studentid, friendid))
+            {
+                return Ok();
+
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

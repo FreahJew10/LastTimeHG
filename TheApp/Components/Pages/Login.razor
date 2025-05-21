@@ -56,7 +56,7 @@
             //CustomerList.Add(customer);
          
 
-            var apiResponse = await httpClient.PostAsJsonAsync<Person>(DataConstLink.APIs.Updateurl,LoginCustomer);
+            var apiResponse = await httpClient.PostAsJsonAsync<Person>(DataConstLink.APIs.LoginURL,LoginCustomer);
             
             if (apiResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {

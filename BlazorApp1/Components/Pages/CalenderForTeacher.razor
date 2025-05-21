@@ -233,10 +233,10 @@
         {
             isLoading = true;
 
-            var startOfWeek = weekStartDate;
-            var endOfWeek = weekStartDate.AddDays(7);
+            DateTime startOfWeek = weekStartDate;
+            DateTime endOfWeek = weekStartDate.AddDays(7);
 
-            var fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
+            IEnumerable<Event> fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
             events = fetchedEvents?.ToList() ?? new List<Event>();
 
             isLoading = false;

@@ -73,23 +73,32 @@
 
                         @if (friendlist!=null)
                         {
-                            <table class="w3-table w3-striped w3-bordered">
+                            <div style="overflow-x:auto;">
+                                <table class="w3-table w3-striped w3-bordered friend-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
+                                        
+                                        <th style="width: 40%;">Email</th>
+                                        <th style="width: 30%; text-align: center;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var friend in friendlist)
                                     {
                                         <tr>
-                                            <td>@friend.first_name @friend.last_name</td>
+                                           
                                             <td>@friend.email</td>
+                                            <td>
+                                                <button class="w3-button w3-red w3-round-small" @onclick="() => RemoveFriend(friend.Id)">
+                                                    <i class="fa fa-trash"></i> Delete
+                                                </button>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
+                            </div>
+
                         }
                         else
                         {
@@ -101,7 +110,39 @@
         </div>
     </body>
 }
+<style>
+    .friend-table td, .friend-table th {
+        vertical-align: middle;
+        text-align: left;
+        padding: 8px;
+        white-space: nowrap;
+    }
 
+        .friend-table td:last-child {
+            text-align: center;
+        }
+
+    .friend-table .w3-button {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+
+    media (max-width: 768px) {
+        .friend-table th, .friend-table td
+
+    {
+        font-size: 14px;
+        padding: 6px;
+    }
+
+    .friend-table .w3-button {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    }
+ 
+    </style>
 
 @code {
     private string repeatPassword;
@@ -176,7 +217,23 @@
         }
     }
 
-
+    private async Task RemoveFriend(int friendId)
+    {
+        bool confirmed = await js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete this friend?");
+        if (confirmed)
+        {
+            var response = await httpClient.DeleteAsync($"{DataConstLink.APIs.DeleteFriends}/{userS.Id},{friendId}");
+            if (response.IsSuccessStatusCode)
+            {
+                friendlist = friendlist.Where(f => f.Id != friendId).ToList();
+                StateHasChanged();
+            }
+            else
+            {
+                await js.InvokeVoidAsync("alert", "Failed to delete friend.");
+            }
+        }
+    }
 }
 
 

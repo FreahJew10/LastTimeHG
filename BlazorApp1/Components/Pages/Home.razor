@@ -620,7 +620,7 @@
                                         <th>name</th>
                                         <th>email</th>
                                         <th>make friendship</th>
-                                       
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -775,25 +775,25 @@
             $(window).scroll(function () {
             checkSection();
             });
-                       (function() {
-              if (window.location.pathname === "/" || window.location.pathname === "") {
-                // only on the root path do we inject the Grad-School assets
-                const assets = [
-                  'try/assets/js/isotope.min.js',
-                  'try/assets/js/owl-carousel.js',
-                  'try/assets/js/lightbox.js',
-                  'try/assets/js/tabs.js',
-                  'try/assets/js/video.js',
-                  'try/assets/js/slick-slider.js',
-                  'try/assets/js/custom.js'
-                ];
-                assets.forEach(src => {
-                  const s = document.createElement('script');
-                  s.src = src;
-                  s.defer = true;
-                  document.body.appendChild(s);
-                });
-              }
+            (function() {
+            if (window.location.pathname === "/" || window.location.pathname === "") {
+            // only on the root path do we inject the Grad-School assets
+            const assets = [
+            'try/assets/js/isotope.min.js',
+            'try/assets/js/owl-carousel.js',
+            'try/assets/js/lightbox.js',
+            'try/assets/js/tabs.js',
+            'try/assets/js/video.js',
+            'try/assets/js/slick-slider.js',
+            'try/assets/js/custom.js'
+            ];
+            assets.forEach(src => {
+            const s = document.createElement('script');
+            s.src = src;
+            s.defer = true;
+            document.body.appendChild(s);
+            });
+            }
             })();
         </script>
 
@@ -802,14 +802,6 @@
     </div>
 </div>
 
-@if (userS != null && userS.friends != null)
-{
-    foreach (Person friend in userS.friends)
-    {
-        <h3>@friend.first_name</h3>
-
-    }
-}
 
 @code {
     public Student userS = null;
@@ -843,14 +835,14 @@
         hubConnection.On<string, string,int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification,eventrandomcod) =>
         {
             this.notification = email + " " + notification;
-           
+
             ToastService.ShowInfo($"{email}: {notification}");
             await InvokeAsync(StateHasChanged);
         });
         hubConnection.On<string, string>("GetNotificationToInformAboutNewEvent", async (email, notification) =>
         {
             this.notification = email + " " + notification;
- await js.InvokeVoidAsync("alert", @$"{this.notification}");
+            await js.InvokeVoidAsync("alert", @$"{this.notification}");
             ToastService.ShowInfo($"{email}: {notification}");
             await InvokeAsync(StateHasChanged);
         });
@@ -861,10 +853,8 @@
 
 
     }
-    public async Task wiildel()
-    {
-        navigationManager.NavigateTo("/friends");
-    }
+    public async Task wiildel() => navigationManager.NavigateTo("/friends");
+
     public async Task search()
     {
         if (userS != null)
@@ -913,34 +903,20 @@
         }
 
     }
-    public async Task movetoAdmin()
-    {
-        navigationManager.NavigateTo("/admin");
-    }
-    public async Task movetoTeacherClasses()
-    {
-        navigationManager.NavigateTo("/teacher-classes");
-    }
-    public async Task movetoEventChat()
-    {
-        navigationManager.NavigateTo("/eventschat");
-    }
-    public async Task movetoSearchForFriends()
-    {
-        navigationManager.NavigateTo("/calender");
-    }
-    public async Task movetoSearchForteachers()
-    {
-        navigationManager.NavigateTo("/teacher-search");
-    }
-    public async Task movetoNotification()
-    {
-        navigationManager.NavigateTo("/Notifications");
-    }
-    public async Task calender()
-    {
-        navigationManager.NavigateTo("/calenderteacher");
-    }
+    public async Task movetoAdmin() => navigationManager.NavigateTo("/admin");
+
+    public async Task movetoTeacherClasses() => navigationManager.NavigateTo("/teacher-classes");
+
+    public async Task movetoEventChat() => navigationManager.NavigateTo("/eventschat");
+   
+    public async Task movetoSearchForFriends() => navigationManager.NavigateTo("/calender");
+   
+    public async Task movetoSearchForteachers() => navigationManager.NavigateTo("/teacher-search");
+   
+    public async Task movetoNotification() => navigationManager.NavigateTo("/Notifications");
+    
+public async Task calender() => navigationManager.NavigateTo("/calenderteacher");
+   
     protected override async Task OnAfterRenderAsync(bool firstRender)///  גם אם זה מורה זה יהיה סטודנט תחילה כי ישנה ירושה
     {
 
