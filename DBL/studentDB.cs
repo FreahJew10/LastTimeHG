@@ -15,9 +15,18 @@ namespace DBL
        
         public async Task<Student>GetSudentByEmail(string email)
         {
+            string q= $@"Select
+    student.studentid,
+    student.first_name,
+    student.last_name,
+    student.email
+From
+    student
+Where
+    student.email = @email";
             Dictionary<string, object> dic = new Dictionary<string, object>();
             dic.Add("email", email);
-            List<Student>d = await base.SelectAllAsync( dic);
+            List<Student>d = await base.SelectAllAsync(q, dic);
             return d[0];
 
         }

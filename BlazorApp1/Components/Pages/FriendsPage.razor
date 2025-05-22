@@ -8,6 +8,9 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 @using Microsoft.AspNetCore.SignalR.Client
 @using Hubs
+@using Blazored.Toast.Services
+
+@inject IToastService ToastService
 <!-- Make sure you have W3.CSS loaded globally, e.g. in _Host.cshtml:
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
 
@@ -196,6 +199,7 @@
         bool B = await friendsDB.DeleteFriendship(userS.Id, friendId);
         if(B)
         {
+            ToastService.ShowSuccess("he is not your friends");
             await LoadFriendsAsync();
         }
     }

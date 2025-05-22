@@ -146,35 +146,45 @@
     string confirmPassword;
     int putcode=0;
     Student userS = null;
-    
+
     async Task SendCode()
     {
         if (string.IsNullOrEmpty(email))
         {
+
             ToastService.ShowError("must enter email");
+
             return;
         }
-
-        code = new Random().Next(100000, 999999);
-
-        try
+        studentDB studentDB = new studentDB();
+        Student student = await studentDB.GetSudentByEmail(email);
+        if (student != null)
         {
-            var emailService = new EmailService();
-            await emailService.SendEmailAsync(
-                email,
-                "Password Reset Request",
-                $"Your code : {code}",
-                "lirant108@gmail.com"
-            );
+            code = new Random().Next(100000, 999999);
 
-            step = 2;
-            ToastService.ShowSuccess("Code Sent");
+            try
+            {
+                var emailService = new EmailService();
+                await emailService.SendEmailAsync(
+                    email,
+                    "Password Reset Request",
+                    $"Your code : {code}",
+                    "lirant108@gmail.com"
+                );
+
+                step = 2;
+                ToastService.ShowSuccess("Code Sent");
+            }
+            catch (Exception ex)
+            {
+                ToastService.ShowError($"Error in Sending: {ex.Message}");
+            }
+
         }
-        catch (Exception ex)
+        else
         {
-            ToastService.ShowError($"Error in Sending: {ex.Message}");
+            ToastService.ShowError("email does not exist");
         }
-
     }
 
     async Task VerifyCode()

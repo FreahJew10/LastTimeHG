@@ -5,6 +5,9 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage MySession
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@using Blazored.Toast.Services
+
+@inject IToastService ToastService
 @page "/Usermenegment"
 <head>
     <title>wait a minute</title>
@@ -15,14 +18,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         html, body, h1, h2, h3, h4, h5, h6 {
-            font-family: "Roboto", sans-serif
+        font-family: "Roboto", sans-serif
         }
     </style>
 </head>
 @if (userS!=null||userT!=null)
 {
 
-    
+
     <div class="w3-light-grey">
 
         <!-- Page Container -->
@@ -33,7 +36,7 @@
 
                 <!-- Left Column -->
                 <div class="w3-third">
-                  
+
                     <div class="w3-white w3-text-grey w3-card-4">
                         <div class="w3-display-container">
                             <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" style="width:100%" alt="Avatar">
@@ -58,7 +61,7 @@
                                     <p><i class="fa fa-briefcase fa-fw w3-margin-right w3-large w3-text-teal"></i>private teacher</p>
                                 }
                             }
-                         
+
                             <p><i class="fa fa-home fa-fw w3-margin-right w3-large w3-text-teal"></i>London, UK</p>
                             <p><i class="fa fa-envelope fa-fw w3-margin-right w3-large w3-text-teal"></i>@basicuser.email</p>
 
@@ -130,7 +133,7 @@
                             <div class="form__group field">
                                 <button type="button" @onclick="UpdateBio" class="btn btn-success">update bio</button>
                                 <input @bind-value="newbio" type="input" class="form__field" placeholder="new bio" name="name" id='name' required />
-                                
+
                             </div>
                         }
                         else if (userT != null && string.IsNullOrEmpty(userT.bio))
@@ -209,7 +212,7 @@
 
                                     </tbody>
                                 </table>
-                               
+
                             </div>
                         }
                         else if(userT!=null &&userT.isprivate!=0)
@@ -222,7 +225,7 @@
 
                                             <th>name</th>
                                             <th>email</th>
-                                            
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -231,13 +234,13 @@
 
                                             <tr>
 
-                                             
+
                                                 <td>@person.first_name</td>
 
                                                 <td>
                                                     @person.email
                                                 </td>
-                                               
+
                                             </tr>
                                         }
 
@@ -484,10 +487,15 @@
             {
                 Console.WriteLine("yy");
                 student.password = new_password;
-                await s.updateAsync(student);
+                if( await s.updateAsync(student))
+                {
 
-                await js.InvokeVoidAsync("alert", @$"nice");
-
+                    ToastService.ShowSuccess("password has been changed");
+                }
+                else
+                {
+                    ToastService.ShowError("data base problem try again");
+                }
             }
             else
             {
@@ -520,9 +528,16 @@
             {
 
                 teacher.password = new_password;
-                await   s.updateAsync(teacher);
+                if(  await   s.updateAsync(teacher))
+                {
+                    ToastService.ShowSuccess("password has been changed");
+                }
+                else
+                {
+                    ToastService.ShowError("data base problem try again");
+                }
 
-                await js.InvokeVoidAsync("alert", @$"nice");
+               
 
             }
             else
@@ -549,6 +564,10 @@
             Sub_to_teacherDB sub_To_TeacherDB = new Sub_to_teacherDB();
             await sub_To_TeacherDB.Insertsubtoteacher(sub_To_Teacher);
         }
+        else
+        {
+            ToastService.ShowError("choose subject");
+        }
     }
     public async Task UpdateBio()
     {
@@ -559,7 +578,14 @@
         teacher.first_name = userS.first_name;
         teacher.last_name = userS.last_name;
         teacher.bio = newbio;
-        await teacherDb.updateAsyncbio(teacher);
+        if( await teacherDb.updateAsyncbio(teacher))
+        {
+            ToastService.ShowSuccess("bio has been changed");
+        }
+        else
+        {
+            ToastService.ShowError("somthing went wrong try again");
+        }
         StateHasChanged();
     }
 
