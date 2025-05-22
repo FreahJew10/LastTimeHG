@@ -21,21 +21,7 @@
             }
             return false;
         }
-        /*public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, List<string> conid)//עבור רשימה של חיבורים
-        {
-            if (multyconidFORnotificationsForstudents.ContainsKey(email))
-            {
-                foreach (string con in conid)
-                {
-                    if (await IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(email, con))
-                    {
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        }*/
+       
 
         public static async Task<bool> IsThisSpesificConTO_Email_ExistIn_multyconidFORnotifications(string email, string conid)// תחת האמייל של היוזרmultyconidFORnotifications האם נמצא כבר חיבור לדף ב
         {
@@ -55,40 +41,6 @@
 
         }
 
-       /* public static async Task<List<string>> GiveMyFriendConFORnotifications(string email)// multyconidFORnotifications עבור 
-        {
-            List<string> list = new List<string>();
-            if (await IsMyFriendHereOrmeFORnotifications(email) > 0)
-            {
-                foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotificationsForstudents)
-                {
-                    if (entry.Key == email)
-                    {
-                        foreach (string con in entry.Value)
-                        {
-                            list.Add(con);
-                        }
-                    }
-
-                }
-            }
-            return list;
-
-        }*/
-       /* public static async Task<int> IsMyFriendHereOrmeFORnotifications(string email)//עבורmultyconidFORnotifications 
-        {
-            int count = 0;
-            foreach (KeyValuePair<string, List<string>> entry in multyconidFORnotificationsForstudents)
-            {
-                if (entry.Key == email)
-                {
-                    count++;
-                }
-
-            }
-            return await Task.FromResult(count);
-
-        }*/
-
+     
     }
 }
