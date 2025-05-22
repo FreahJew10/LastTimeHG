@@ -860,41 +860,55 @@
     {
         if (userS != null)
         {
-            showfriends = await personStudentDB.SelectstudentByString(searchfriend);
-            List<Person> temp = new List<Person>();
-            foreach (Person person in showfriends)
+            if (!string.IsNullOrEmpty(searchfriend))
             {
-                bool[] arr = new bool[3];
-                if (await friendsDB.AreWeBothFriends(userS.Id, person.Id) == 1)//חברים אחד של השני
+                showfriends = await personStudentDB.SelectstudentByString(searchfriend);
+                if(showfriends.Count!=0)
                 {
-                    arr[0] = true;
-                    arr[1] = true;
-                    arr[2] = true;
-                }
-                else if (await friendsDB.DoesRelationshipExist(userS.Id, person.Id))//האם אני חבר שלו
-                {
+                    List<Person> temp = new List<Person>();
+                    foreach (Person person in showfriends)
+                    {
+                        bool[] arr = new bool[3];
+                        if (await friendsDB.AreWeBothFriends(userS.Id, person.Id) == 1)//חברים אחד של השני
+                        {
+                            arr[0] = true;
+                            arr[1] = true;
+                            arr[2] = true;
+                        }
+                        else if (await friendsDB.DoesRelationshipExist(userS.Id, person.Id))//האם אני חבר שלו
+                        {
 
-                    arr[0] = true;
-                    arr[1] = false;
-                    arr[2] = false;
-                }
-                else if (await friendsDB.DoesRelationshipExist(person.Id, userS.Id))
-                {
-                    arr[0] = false;
-                    arr[1] = true;
-                    arr[2] = false;
+                            arr[0] = true;
+                            arr[1] = false;
+                            arr[2] = false;
+                        }
+                        else if (await friendsDB.DoesRelationshipExist(person.Id, userS.Id))
+                        {
+                            arr[0] = false;
+                            arr[1] = true;
+                            arr[2] = false;
+                        }
+                        else
+                        {
+                            arr[0] = false;
+                            arr[1] = false;
+                            arr[2] = false;
+                        }
+
+                        is_my_friend__arewebothfriends.Add(person.email, arr);
+                    }
+                    
                 }
                 else
                 {
-                    arr[0] = false;
-                    arr[1] = false;
-                    arr[2] = false;
+                    ToastService.ShowError("the requested user does not exist");
                 }
-
-                is_my_friend__arewebothfriends.Add(person.email, arr);
-
+                StateHasChanged();
             }
-            StateHasChanged();
+            else
+            {
+                ToastService.ShowError("must fill the search bar");
+            }
         }
         else
         {

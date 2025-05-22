@@ -201,7 +201,9 @@
         userS =await studentDB.GetSudentByEmail(email);
         Person newpass = userS;
         newpass.password = newPassword;
-        await studentDB.updateAsync(newpass);
-        ToastService.ShowSuccess("updated");
+        if (await studentDB.updateAsync(newpass))
+            ToastService.ShowSuccess("updated");
+        else ToastService.ShowError("somthing went wrong");
+
     }
 }

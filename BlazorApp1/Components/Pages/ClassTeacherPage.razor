@@ -202,30 +202,41 @@
     {
         if (!string.IsNullOrEmpty(newEventTitle) && !string.IsNullOrEmpty(newEventType) && newEndEventTime != DateTime.Now)
         {
-            EventDB eventDB = new EventDB();
-            StudentInEventDB studentInEventDB = new StudentInEventDB();
-            Random random = new Random();
-            int x = new Random().Next(-1000000, int.MaxValue);
-            Event @event = new Event(newEventTitle, newEndEventTime.AddHours(-1), userT.Id, newEventType, x, newEndEventTime);
-            List<StudentInEvent> studentInEvents = new List<StudentInEvent>();
-            List<string> emails = new List<string>();
-            foreach (Person stu in studentsInClass)
+            if (newEndEventTime > DateTime.Now)
             {
-                studentInEvents.Add(new StudentInEvent(stu.Id, x));
-                emails.Add(stu.email);
+                EventDB eventDB = new EventDB();
+                StudentInEventDB studentInEventDB = new StudentInEventDB();
+                Random random = new Random();
+                int x = new Random().Next(-1000000, int.MaxValue);
+                Event @event = new Event(newEventTitle, newEndEventTime.AddHours(-1), userT.Id, newEventType, x, newEndEventTime);
+                List<StudentInEvent> studentInEvents = new List<StudentInEvent>();
+                List<string> emails = new List<string>();
+                foreach (Person stu in studentsInClass)
+                {
+                    studentInEvents.Add(new StudentInEvent(stu.Id, x));
+                    emails.Add(stu.email);
+                }
+                if (await eventDB.insertEvent(@event))
+                {
+                    await studentInEventDB.insertStedentInEvent(studentInEvents);
+
+
+
+                    await hubConnection.SendAsync("SendNotificationToInformAboutNewEvent", emails, "new " + @event.kinofevent, userT.email);
+                    ToastService.ShowSuccess("you set new " + @event.kinofevent);
+
+
+                }
             }
-             if(await eventDB.insertEvent(@event))
-             {
-              await   studentInEventDB.insertStedentInEvent(studentInEvents);
-
-
-
-            await hubConnection.SendAsync("SendNotificationToInformAboutNewEvent", emails, "new " + @event.kinofevent, userT.email);
-            ToastService.ShowSuccess("you set new " + @event.kinofevent);
-
-
+            else
+            {
+                ToastService.ShowError("You can not enter date before today");
             }
 
+        }
+        else
+        {
+            ToastService.ShowError("fiLl all the values");
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -216,7 +216,7 @@ else
 @code {
     [Parameter]
     public string Date { get; set; }
-    public DateTime selectedDate = new DateTime();
+    public DateTime selectedDate;
     public Student userS = null;
     public Teacher userT = null;
     //   private List<Event> dayEvents = new List<Event>();
@@ -285,10 +285,11 @@ else
             if (userS != null)
             {
                 Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
+                selectedDate = DateTime.Parse(Date);
                 EventDB eventDB = new EventDB();
-                List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id, date);
+                List<Event> events = await eventDB.GetAllEventsForSpecificStudenAndDate(userS.Id, selectedDate);
                 //      Console.WriteLine($"Fetched {events.Count} events from database.");
-                 return events ?? new List<Event>(); 
+                return events ?? new List<Event>(); 
             }
             else{
                 Console.WriteLine($"Fetching events for {date:yyyy-MM-dd}");
@@ -310,6 +311,9 @@ else
     {
         try
         {
+            Random random = new Random();
+            int x = random.Next(-10000000, 10000000);
+
             bool s = true;
             bool success = false;
             Console.WriteLine("Attempting to add a new event...");
@@ -319,15 +323,15 @@ else
             dateTime = dateTime + timeSpan;
             Console.WriteLine(dateTime.Hour);
             newEvent.date = dateTime; // Keep the same day
-            newEvent.randomuniqcode = "The sum total of stupid people is somewhere around the population of the planet. Plus one.".GetHashCode(); // Generate a unique code
+            newEvent.randomuniqcode = x.GetHashCode(); // Generate a unique code
             newEvent.kinofevent = "private event";
             newEvent.enddate = dateTime.AddHours(1);
             if (userT != null)
             {
                 newEvent.teacherid = userT.Id;
-                 success = await eventDB.insertEvent(newEvent);
+                success = await eventDB.insertEvent(newEvent);
             }
-           
+
             else if (userS != null)
             {
                 StudentInEventDB studentInEventDB = new StudentInEventDB();
@@ -359,26 +363,30 @@ else
         StateHasChanged();
     }
 
-   /*private async Task DeleteEvent(int uniqueCode)
-    {
-        Console.WriteLine($"Attempting to delete event with unique code: {uniqueCode}");
-        var eventDB = new EventDB();
-        // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
-        events.RemoveAll(e => e.randomuniqcode == uniqueCode);
-        Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
+        /*private async Task DeleteEvent(int uniqueCode)
+         {
+             Console.WriteLine($"Attempting to delete event with unique code: {uniqueCode}");
+             var eventDB = new EventDB();
+    // await eventDB.DeleteAsync(new Dictionary<string, object> { { "randomuniqcode", uniqueCode } });
+    events.RemoveAll(e => e.randomuniqcode == uniqueCode);
+             Console.WriteLine($"Event with unique code {uniqueCode} deleted.");
 
-    }*/
+         }*/
     protected override async Task OnAfterRenderAsync(bool firstRender)///
     {
 
-        if (firstRender)
+    if (firstRender)
+    {
+        Console.WriteLine("first re");
+
+
+
+        var user1 = await MySession.GetAsync<Student>("student");
+        if (user1.Success)
         {
-            Console.WriteLine("first re");
-            var user1 = await MySession.GetAsync<Student>("student");
-            if (user1.Success)
-            {
-                userS = user1.Value;
-                events = await LoadEventsForDay(selectedDate);
+            userS = user1.Value;
+            
+            events = await LoadEventsForDay(selectedDate);
                 if (!await StaticNotificationHub.IsThisSpecificEmailExistIn_multyconidFORnotifications(userS.email))
                 {
 
@@ -393,6 +401,7 @@ else
                     strings.Add(conid);
                     StaticNotificationHub.multyconidFORnotificationsForstudents[userS.email] = strings;
                 }
+
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<Teacher>("teacher");
@@ -424,4 +433,6 @@ else
         // }
 
     }
+        
+
 }
