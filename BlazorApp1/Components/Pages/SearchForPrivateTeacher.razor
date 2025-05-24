@@ -22,7 +22,7 @@
     <div class="container">
         <h3>Search for Teachers</h3>
         <form class="search-bar" onsubmit="return false;">
-
+            <button type="button" @onclick="SearchForAllTeachersinsubject">get all teacher subject</button>
             <button type="button" @onclick="SearchTeachers">Search</button>
         </form>
         <div class="filter-section">
@@ -75,170 +75,170 @@
 </div>
 <style>
     :root {
-    font-size: 16px;
-    --primary-color: #3b82f6;
-    --secondary-color: #1f2937;
-    --background-color: #111827;
-    --container-bg: #1e293b;
-    --border-color: #374151;
-    --text-color: #f9fafb;
-    --accent-color: #60a5fa;
+        font-size: 16px;
+        --primary-color: #3b82f6;
+        --secondary-color: #1f2937;
+        --background-color: #111827;
+        --container-bg: #1e293b;
+        --border-color: #374151;
+        --text-color: #f9fafb;
+        --accent-color: #60a5fa;
     }
 
     * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
     body {
-    background: var(--background-color);
-    font-family: Arial, sans-serif;
-    color: var(--text-color);
+        background: var(--background-color);
+        font-family: Arial, sans-serif;
+        color: var(--text-color);
     }
 
     .container {
-    width: 100%;
-    max-width: 900px;
-    background: var(--container-bg);
-    padding: 24px;
-    border-radius: 12px;
-    margin: 40px auto;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 900px;
+        background: var(--container-bg);
+        padding: 24px;
+        border-radius: 12px;
+        margin: 40px auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
     h3 {
-    text-align: center;
-    margin-bottom: 24px;
-    color: var(--accent-color);
-    font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 24px;
+        color: var(--accent-color);
+        font-size: 1.8rem;
     }
 
     .search-bar {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 24px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
     }
 
-    .search-bar button {
-    background: var(--primary-color);
-    color: #fff;
-    padding: 10px 24px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-    }
+        .search-bar button {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
 
-    .search-bar button:hover {
-    background: var(--accent-color);
-    }
+            .search-bar button:hover {
+                background: var(--accent-color);
+            }
 
     .filter-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
     }
 
-    .filter-section label {
-    font-weight: 600;
-    font-size: 0.95rem;
-    }
+        .filter-section label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
 
-    .filter-section input,
-    .filter-section select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background: var(--background-color);
-    color: var(--text-color);
-    font-size: 1rem;
-    }
+        .filter-section input,
+        .filter-section select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--background-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
 
-    .filter-section input[type="checkbox"] {
-    width: auto;
-    margin-right: 8px;
-    }
+            .filter-section input[type="checkbox"] {
+                width: auto;
+                margin-right: 8px;
+            }
 
     .results {
-    margin-top: 24px;
+        margin-top: 24px;
     }
 
-    .results h4 {
-    margin-bottom: 16px;
-    color: var(--accent-color);
-    font-size: 1.4rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-    }
+        .results h4 {
+            margin-bottom: 16px;
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
 
-    .results ul {
-    list-style: none;
-    padding: 0;
-    }
+        .results ul {
+            list-style: none;
+            padding: 0;
+        }
 
-    .results li {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    }
+        .results li {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    .results li:last-child {
-    border-bottom: none;
-    }
+            .results li:last-child {
+                border-bottom: none;
+            }
 
-    .results a {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-    }
+        .results a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
 
-    .results a:hover {
-    color: var(--primary-color);
-    }
+            .results a:hover {
+                color: var(--primary-color);
+            }
 
     .pagination {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 24px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
     }
 
-    .pagination button {
-    background: var(--primary-color);
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-    }
+        .pagination button {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
 
-    .pagination button:hover {
-    background: var(--accent-color);
-    }
+            .pagination button:hover {
+                background: var(--accent-color);
+            }
 
     p {
-    text-align: center;
-    font-size: 1rem;
-    color: var(--text-color);
+        text-align: center;
+        font-size: 1rem;
+        color: var(--text-color);
     }
 </style>
 
 
 @code {
-    teacherDB TeacherDB=new teacherDB();
-    SubjectDB SubjectDB=new SubjectDB();
+    teacherDB TeacherDB = new teacherDB();
+    SubjectDB SubjectDB = new SubjectDB();
 
     private string SearchQuery { get; set; } = string.Empty;
     private string SelectedSubject { get; set; } = string.Empty;
-    private int? MaxHourlyRate { get; set; } =0;
+    private int? MaxHourlyRate { get; set; } = 0;
     private bool IsPrivateOnly { get; set; } = false;
     private List<Subject> Subjects { get; set; } = new List<Subject>();
     private List<Teacher> SearchResults { get; set; } = new List<Teacher>();
@@ -256,19 +256,27 @@
 
     private async Task SearchTeachers()
     {
-        if(!string.IsNullOrEmpty(SelectedSubject))
+        if (!string.IsNullOrEmpty(SelectedSubject))
         {
-            int mysub=0;
+            int mysub = 0;
+            SearchResults = await TeacherDB.GetAllPrivateTeachersForThisSubjectId(int.Parse(SelectedSubject), int.Parse(MaxHourlyRate.ToString()));
 
-            if(MaxHourlyRate==0)
-            {
-                SearchResults= await TeacherDB.GetAllPrivateTeachersForThisSubjectId(int.Parse(SelectedSubject));
-            }
-            else 
-            {
-                SearchResults = await TeacherDB.GetAllPrivateTeachersForThisSubjectId(int.Parse(SelectedSubject),int.Parse(MaxHourlyRate.ToString()));
-            }
 
+
+        }
+        else
+        {
+            ToastService.ShowError("choose subject");
+        }
+        CurrentPage = 1;
+        SearchExecuted = true;
+    }
+    private async Task SearchForAllTeachersinsubject()
+    {
+        if (!string.IsNullOrEmpty(SelectedSubject))
+        {
+            int mysub = 0;
+            SearchResults = await TeacherDB.GetAllPrivateTeachersForThisSubjectId(int.Parse(SelectedSubject));
 
         }
         else
@@ -291,7 +299,7 @@
             if (user1.Success)
             {
                 userS = user1.Value;
-              
+
                 StateHasChanged();
             }
         }

@@ -112,5 +112,12 @@
 
 	initializeClock(((new Date()).getFullYear()+1) + "/1/1")
 	})()
-
+	//window.initializeGradSchool = function () {
+	//	try {
+	//		$('.owl-carousel').owlCarousel();
+	//		// Add more plugin initializations if needed
+	//	} catch (e) {
+	//		console.error("Init failed:", e);
+	//	}
+	//};
 })(jQuery);

@@ -12,31 +12,7 @@
 @inject IToastService ToastService
 
 <div lang="en">
-    <HeadContent>
-
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-
-        <title>gadi can you see it?</title>
-
-        <!-- Bootstrap core CSS -->
-        <!-- Additional CSS Files -->
-        <link rel="stylesheet" href="try/assets/css/fontawesome.css">
-        <link rel="stylesheet" href="try/assets/css/templatemo-grad-school.css">
-        <link rel="stylesheet" href="try/assets/css/owl.css">
-        <link rel="stylesheet" href="try/assets/css/lightbox.css">
-        <link href="try/assets/css/mybucss.css" rel="stylesheet" />
-        <!--
-
-        TemplateMo 557 Grad School
-
-        https://templatemo.com/tm-557-grad-school
-
-        -->
-    </HeadContent>
+    
 
     <div class="js">
 
@@ -718,90 +694,81 @@
 
         <!-- Scripts -->
 
-        <script src="try/assets/js/isotope.min.js"></script>
-        <script src="try/assets/js/owl-carousel.js"></script>
-        <script src="try/assets/js/lightbox.js"></script>
-        <script src="try/assets/js/tabs.js"></script>
-        <script src="try/assets/js/video.js"></script>
-        <script src="try/assets/js/slick-slider.js"></script>
-        <script src="try/assets/js/custom.js"></script>
-        <script>
-            //according to loftblog tut
-            $('.nav li:first').addClass('active');
-
-            var showSection = function showSection(section, isAnimate) {
-            var
-            direction = section.replace(/#/, ''),
-            reqSection = $('.section').filter('[data-section="' + direction + '"]'),
-            reqSectionPos = reqSection.offset().top - 0;
-
-            if (isAnimate) {
-            $('body, html').animate({
-            scrollTop: reqSectionPos
-            },
-            800);
-            } else {
-            $('body, html').scrollTop(reqSectionPos);
-            }
-
-            };
-
-            var checkSection = function checkSection() {
-            $('.section').each(function () {
-            var
-            $this = $(this),
-            topEdge = $this.offset().top - 80,
-            bottomEdge = topEdge + $this.height(),
-            wScroll = $(window).scrollTop();
-            if (topEdge < wScroll && bottomEdge > wScroll) {
-            var
-            currentId = $this.data('section'),
-            reqLink = $('a').filter('[href*=\\#' + currentId + ']');
-            reqLink.closest('li').addClass('active').
-            siblings().removeClass('active');
-            }
-            });
-            };
-
-            $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
-            if ($(e.target).hasClass('external')) {
-            return;
-            }
-            e.preventDefault();
-            $('#menu').removeClass('active');
-            showSection($(this).attr('href'), true);
-            });
-
-            $(window).scroll(function () {
-            checkSection();
-            });
-            (function() {
-            if (window.location.pathname === "/" || window.location.pathname === "") {
-            // only on the root path do we inject the Grad-School assets
-            const assets = [
-            'try/assets/js/isotope.min.js',
-            'try/assets/js/owl-carousel.js',
-            'try/assets/js/lightbox.js',
-            'try/assets/js/tabs.js',
-            'try/assets/js/video.js',
-            'try/assets/js/slick-slider.js',
-            'try/assets/js/custom.js'
-            ];
-            assets.forEach(src => {
-            const s = document.createElement('script');
-            s.src = src;
-            s.defer = true;
-            document.body.appendChild(s);
-            });
-            }
-            })();
-        </script>
-
         <div id="lightboxOverlay" class="lightboxOverlay" style="display: none;"></div>
         <div id="lightbox" class="lightbox" style="display: none;"><div class="lb-outerContainer"><div class="lb-container"><img class="lb-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="><div class="lb-nav"><a class="lb-prev" href=""></a><a class="lb-next" href=""></a></div><div class="lb-loader"><a class="lb-cancel"></a></div></div></div><div class="lb-dataContainer"><div class="lb-data"><div class="lb-details"><span class="lb-caption"></span><span class="lb-number"></span></div><div class="lb-closeContainer"><a class="lb-close"></a></div></div></div></div>
     </div>
 </div>
+<script>
+    //according to loftblog tut
+    $('.nav li:first').addClass('active');
 
+    var showSection = function showSection(section, isAnimate) {
+    var
+    direction = section.replace(/#/, ''),
+    reqSection = $('.section').filter('[data-section="' + direction + '"]'),
+    reqSectionPos = reqSection.offset().top - 0;
+
+    if (isAnimate) {
+    $('body, html').animate({
+    scrollTop: reqSectionPos
+    },
+    800);
+    } else {
+    $('body, html').scrollTop(reqSectionPos);
+    }
+
+    };
+
+    var checkSection = function checkSection() {
+    $('.section').each(function () {
+    var
+    $this = $(this),
+    topEdge = $this.offset().top - 80,
+    bottomEdge = topEdge + $this.height(),
+    wScroll = $(window).scrollTop();
+    if (topEdge < wScroll && bottomEdge > wScroll) {
+    var
+    currentId = $this.data('section'),
+    reqLink = $('a').filter('[href*=\\#' + currentId + ']');
+    reqLink.closest('li').addClass('active').
+    siblings().removeClass('active');
+    }
+    });
+    };
+
+    $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
+    if ($(e.target).hasClass('external')) {
+    return;
+    }
+    e.preventDefault();
+    $('#menu').removeClass('active');
+    showSection($(this).attr('href'), true);
+    });
+
+    $(window).scroll(function () {
+    checkSection();
+    });
+    (function() {
+    if (window.location.pathname === "/" || window.location.pathname === "") {
+    // only on the root path do we inject the Grad-School assets
+    const assets = [
+    'try/assets/js/isotope.min.js',
+    'try/assets/js/owl-carousel.js',
+    'try/assets/js/lightbox.js',
+    'try/assets/js/tabs.js',
+    'try/assets/js/video.js',
+    'try/assets/js/slick-slider.js',
+    'try/assets/js/custom.js'
+    ];
+    assets.forEach(src => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.defer = true;
+    document.body.appendChild(s);
+    });
+    }
+    })();
+</script>
 
 @code {
     public Student userS = null;
@@ -937,6 +904,14 @@ public async Task calender() => navigationManager.NavigateTo("/calenderteacher")
 
         if (firstRender)
         {
+            // try
+            // {
+            //     await js.InvokeVoidAsync("initializeGradSchool");
+            // }
+            // catch (Exception ex)
+            // {
+            //     Console.WriteLine("JS Init Error: " + ex.Message);
+            // }
             var user1 = await MySession.GetAsync<Student>("student");
             if (user1.Success)
             {

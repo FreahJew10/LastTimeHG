@@ -223,7 +223,7 @@
             {
                 @foreach (Event evt in Events)
                 {
-                    if (evt.enddate > DateTime.Now && evt.kinofevent != "homework" && evt.kinofevent != "test" && evt.kinofevent != "private event")
+                    if (evt.enddate > DateTime.Now && evt.kinofevent != "homework" && evt.kinofevent != "test" && evt.kinofevent != "private event"&&!evt.kinofevent.Contains("notification"))
                     {
                         <div class="event-item @(SelectedEvent == evt.randomuniqcode ? "active" : "")"
                         @onclick="() => SelectEvent(evt.randomuniqcode)">
