@@ -49,7 +49,18 @@ namespace DBL
             return (num > 0);
 
         }
-    
+
+        public async Task<Rate> GetMyRate(int studentid,int teacherid)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("studentid", studentid);
+            data.Add("teacherid", teacherid);
+            List < Rate >my=await SelectAllAsync(data);
+            if(my.Count>0)
+            return my[0];
+
+            return null;
+        }
         private async Task<bool>IsMyRateExist(int studentid,int teacherid)
         {
             List<Rate> rateList =await SelectAllAsync();
