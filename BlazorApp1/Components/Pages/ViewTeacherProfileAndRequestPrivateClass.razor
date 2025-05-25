@@ -476,9 +476,9 @@
             {
                 userS = user1.Value;
                 doubleDBforRate doubleDBforRate = new doubleDBforRate();
-                // RateDB rateDB = new RateDB();
-                // Rate r = await rateDB.GetMyRate(userS.Id, id);
-                // yourCurrentRatingForThisteacher = r.rate;
+                RateDB rateDB = new RateDB();
+                 Rate r = await rateDB.GetMyRate(userS.Id, id);
+                yourCurrentRatingForThisteacher = r.rate;
                 // DoubleRate rateResult = await doubleDBforRate.GetRate(privateteacher.Id);
                 // CurrentRating = rateResult?.Rate ?? 0;
             }
