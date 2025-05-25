@@ -145,10 +145,10 @@ namespace DBL
         private async Task PreQueryAsync(string query)
         {
             cmd.CommandText = query;
-            if (DB.conn.State != System.Data.ConnectionState.Open)
-                await DB.conn.OpenAsync();
+            if (base.conn.State != System.Data.ConnectionState.Open)
+                await base.conn.OpenAsync();
             if (cmd.Connection.State != System.Data.ConnectionState.Open)
-                cmd.Connection = DB.conn;
+                cmd.Connection = base.conn;
         }
 
         /// <summary>
@@ -160,8 +160,8 @@ namespace DBL
                 await reader.CloseAsync();
 
             cmd.Parameters.Clear();
-            if (DB.conn.State == System.Data.ConnectionState.Open)
-                await DB.conn.CloseAsync();
+            if (base.conn.State == System.Data.ConnectionState.Open)
+                await base.conn.CloseAsync();
         }
 
         /// <summary>
