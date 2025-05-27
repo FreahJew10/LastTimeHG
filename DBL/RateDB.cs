@@ -14,9 +14,23 @@ namespace DBL
         {
             if (await IsMyRateExist(rate.studentid, rate.teacherid))
             {
-              bool b=  await UpdateRate(rate);
-                if(b)
-                return true;
+              bool b=  await DellRate(rate.studentid,rate.teacherid);
+                if (b)
+                {
+                    Dictionary<string, object> dict = new Dictionary<string, object>();
+                    dict.Add("rate", rate.rate);
+                    dict.Add("teacherid", rate.teacherid);
+                    dict.Add("studentid", rate.studentid);
+                    int num = await base.InsertAsync(dict);
+                    if (num > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
             else
             {
@@ -35,6 +49,18 @@ namespace DBL
 
 
 
+        }
+        public async Task<bool>DellRate(int studentid ,int teacherid)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("teacherid", teacherid);
+            dict.Add("studentid", studentid);
+            int num = await base.DeleteAsync(dict);
+            if (num > 0)
+            {
+                return true;
+            }
+            return false;
         }
         private async Task<bool>UpdateRate(Rate rate)
         {
@@ -63,16 +89,9 @@ namespace DBL
         }
         private async Task<bool>IsMyRateExist(int studentid,int teacherid)
         {
-            List<Rate> rateList =await SelectAllAsync();
-            foreach (Rate rate in rateList)
-            {
-                if (rate.studentid == studentid && rate.teacherid == teacherid)
-                {
-                    return true;
-
-                }
-                }
-                return false;
+            Rate rateList =await GetMyRate(studentid,teacherid);
+            return rateList != null;
+                
 
         }
         protected  override async Task<List<Rate>> CreateListModelAsync(List<object[]> rows)
