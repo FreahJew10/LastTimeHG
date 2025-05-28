@@ -9,6 +9,20 @@ namespace DBL
 {
     public class teacherDB : BaseDB<Teacher>
     {
+        public async Task<bool>updatehourlyrate(int teacherid,int hourlyrate)
+        {
+
+
+            Dictionary<string, object> fillValues = new Dictionary<string, object>();
+            fillValues.Add("hourly_rate", hourlyrate);
+
+
+            Dictionary<string, object> filterValues = new Dictionary<string, object>();
+            filterValues.Add("teacherid", teacherid);
+
+            int num = await base.UpdateAsync(fillValues, filterValues);
+            return (num > 0);
+        }
         public async Task<Teacher>GetTeacherByemail(string email)
         {
             string q = $@"Select

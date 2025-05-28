@@ -62,121 +62,121 @@
 
 <style>
     body {
-        background-color: #121212;
-        color: #e0e0e0;
+    background-color: #121212;
+    color: #e0e0e0;
     }
 
     .scheduler-container {
-        max-width: 1200px;
-        margin: 20px auto;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        padding: 0 10px;
-        background-color: #1e1e1e;
-        border-radius: 8px;
-        box-shadow: 0 0 10px #000;
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0 10px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #000;
     }
 
     .scheduler-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
     }
 
-        .scheduler-header h4 {
-            color: #ffffff;
-            font-size: 18px;
-        }
+    .scheduler-header h4 {
+    color: #ffffff;
+    font-size: 18px;
+    }
 
-        .scheduler-header button {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+    .scheduler-header button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    }
 
-            .scheduler-header button:hover {
-                background-color: #555;
-            }
+    .scheduler-header button:hover {
+    background-color: #555;
+    }
 
     .scheduler-grid {
-        display: grid;
-        grid-template-columns: 80px repeat(7, 1fr);
-        border: 1px solid #444;
-        overflow-x: auto;
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    border: 1px solid #444;
+    overflow-x: auto;
     }
 
     .time-column {
-        font-weight: bold;
-        text-align: center;
-        padding: 5px;
-        background-color: #2a2a2a;
-        border: 1px solid #444;
-        color: #ccc;
-        min-width: 80px;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #ccc;
+    min-width: 80px;
     }
 
     .day-header {
-        font-weight: bold;
-        text-align: center;
-        padding: 10px;
-        background-color: #2d2d2d;
-        border: 1px solid #444;
-        color: #00bcd4;
-        min-width: 150px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    color: #00bcd4;
+    min-width: 150px;
     }
 
     .scheduler-cell {
-        border: 1px solid #444;
-        padding: 5px;
-        background-color: #1a1a1a;
-        height: 60px;
-        min-width: 150px;
-        overflow: hidden; /* Disable vertical/horizontal scroll inside cell */
+    border: 1px solid #444;
+    padding: 5px;
+    background-color: #1a1a1a;
+    height: 60px;
+    min-width: 150px;
+    overflow: hidden; /* Disable vertical/horizontal scroll inside cell */
     }
 
 
     .scheduler-event {
-        background-color: #007bff;
-        color: #fff;
-        padding: 4px 6px;
-        border-radius: 4px;
-        font-size: 12px;
-        margin-bottom: 4px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 4px;
     }
 
     media (max-width: 768px) {
-        .scheduler-header
+    .scheduler-header
 
     {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     }
 
     .scheduler-header h4 {
-        font-size: 16px;
+    font-size: 16px;
     }
 
     .scheduler-grid {
-        grid-template-columns: 60px repeat(7, 200px);
-        overflow-x: scroll;
+    grid-template-columns: 60px repeat(7, 200px);
+    overflow-x: scroll;
     }
 
     .time-column,
     .day-header,
     .scheduler-cell {
-        min-width: 120px;
+    min-width: 120px;
     }
 
     .scheduler-event {
-        font-size: 10px;
-        padding: 3px;
+    font-size: 10px;
+    padding: 3px;
     }
 
     }
@@ -199,7 +199,7 @@
         .WithAutomaticReconnect()
         .Build();
 
-       
+
         hubConnection.On<string, string, int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification, eventrandomcod) =>
         {
             this.notification = email + " " + notification;
@@ -223,6 +223,11 @@
             {
                 userT = userResult.Value;
                 await LoadEventsForWeekAsync();
+                
+            }
+            else
+            {
+                navigationManager.NavigateTo("/");
             }
         }
     }
@@ -236,7 +241,7 @@
             DateTime startOfWeek = weekStartDate;
             DateTime endOfWeek = weekStartDate.AddDays(7);
 
-            IEnumerable<Event> fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
+            List<Event> fetchedEvents = await GetEventsForTimeRange(startOfWeek, endOfWeek);
             events = fetchedEvents?.ToList() ?? new List<Event>();
 
             isLoading = false;
@@ -244,11 +249,11 @@
         }
     }
 
-    private async Task<IEnumerable<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
+    private async Task<List<Event>> GetEventsForTimeRange(DateTime start, DateTime end)
     {
         EventDB eventDB = new EventDB();
         List<Event> result = await eventDB.GetEventsForInRangeForTeacher(userT.Id, start, end);
-        return result ?? Enumerable.Empty<Event>();
+        return result;
     }
 
     private async Task PreviousWeek()

@@ -12,10 +12,11 @@
 @using Blazored.Toast.Services
 @inject IToastService ToastService
 
+
 <HeadContent>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Search</title>
+    <title>so this is it? </title>
 
 </HeadContent>
 <div>
@@ -28,7 +29,7 @@
         <div class="filter-section">
             <label for="subjectFilter">Filter by Subject:</label>
             <select id="subjectFilter" @bind="SelectedSubject">
-                <option value="">All Subjects</option>
+                <option value="">select Subject</option>
                 @foreach (Subject subject in Subjects)
                 {
                     <option value="@subject.subjectid">@subject.subjectName</option>
@@ -42,28 +43,26 @@
         </div>
         @if (SearchResults?.Any() ?? false)
         {
+            
             <div class="results">
                 <h4>Results:</h4>
+                <button @onclick="ToggleSort">
+                    Sort by Hourly Rate @(SortAscending ? "(Low to High)" : "(High to Low)")
+                </button>
                 <ul>
-                    @foreach (Teacher teacher in SearchResults)
+                    @foreach (Teacher teacher in PaginatedResults)
                     {
                         <li>
                             <strong>@teacher.first_name @teacher.last_name</strong><br />
-                            @*   Subjects: @string.Join(", ", Subjects.Select(s => s.subjectName))<br /> *@
                             Hourly Rate: $@teacher.hourly_rate<br />
                             <a href="ViewTeacherProfileAndRequest/@teacher.Id">set a meeting </a>
                         </li>
                     }
                 </ul>
                 <div class="pagination">
-                    @if (CurrentPage > 1)
-                    {
-                        <button @onclick="() => ChangePage(CurrentPage - 1)">Previous</button>
-                    }
-                    @if (CurrentPage < TotalPages)
-                    {
-                        <button @onclick="() => ChangePage(CurrentPage + 1)">Next</button>
-                    }
+                    <button @onclick="() => ChangePage(CurrentPage - 1)" disabled="@(CurrentPage == 1)">Previous</button>
+                    <span>Page @CurrentPage of @TotalPages</span>
+                    <button @onclick="() => ChangePage(CurrentPage + 1)" disabled="@(CurrentPage == TotalPages)">Next</button>
                 </div>
             </div>
         }
@@ -74,6 +73,60 @@
     </div>
 </div>
 <style>
+    .results button {
+        background-color: var(--accent-color); /* Accent color (light blue) */
+        color: var(--text-color); /* Light text on dark bg */
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 16px; /* Space below button */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .results button:hover {
+            background-color: var(--primary-color); /* Stronger color on hover */
+            transform: scale(1.05); /* Slight zoom effect */
+        }
+
+        .results button:active {
+            transform: scale(0.98); /* Click-down effect */
+        }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+        .pagination button {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+            .pagination button[disabled] {
+                background-color: #6b7280; /* Disabled color */
+                cursor: not-allowed;
+            }
+
+        .pagination span {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+
+
+
     :root {
         font-size: 16px;
         --primary-color: #3b82f6;
@@ -235,16 +288,22 @@
 @code {
     teacherDB TeacherDB = new teacherDB();
     SubjectDB SubjectDB = new SubjectDB();
-
+    private bool SortAscending { get; set; } = true;  // Default sort order
     private string SearchQuery { get; set; } = string.Empty;
     private string SelectedSubject { get; set; } = string.Empty;
     private int? MaxHourlyRate { get; set; } = 0;
     private bool IsPrivateOnly { get; set; } = false;
     private List<Subject> Subjects { get; set; } = new List<Subject>();
     private List<Teacher> SearchResults { get; set; } = new List<Teacher>();
-    private List<Teacher> PaginatedResults => SearchResults.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
+    private List<Teacher> PaginatedResults =>
+     (SortAscending
+         ? SearchResults.OrderBy(t => t.hourly_rate)
+         : SearchResults.OrderByDescending(t => t.hourly_rate))
+     .Skip((CurrentPage - 1) * PageSize)
+     .Take(PageSize)
+     .ToList();
     private int CurrentPage { get; set; } = 1;
-    private int PageSize { get; set; } = 15;
+    private int PageSize { get; set; } = 4;
     private int TotalPages => (int)Math.Ceiling((double)(SearchResults?.Count ?? 0) / PageSize);
     private bool SearchExecuted { get; set; } = false;
 
@@ -252,6 +311,11 @@
     protected override async Task OnInitializedAsync()
     {
         Subjects = await SubjectDB.SelectAllSubjects();
+    }
+    private void ToggleSort()
+    {
+        SortAscending = !SortAscending;   // Flip between true and false
+        CurrentPage = 1;  // Optional: reset to first page after sorting
     }
 
     private async Task SearchTeachers()
@@ -266,7 +330,7 @@
         }
         else
         {
-            ToastService.ShowError("choose subject");
+            ToastService.ShowError("choose a subject");
         }
         CurrentPage = 1;
         SearchExecuted = true;
@@ -281,7 +345,8 @@
         }
         else
         {
-            ToastService.ShowError("choose subject");
+
+            ToastService.ShowError("choose a subject");
         }
         CurrentPage = 1;
         SearchExecuted = true;
@@ -289,7 +354,10 @@
 
     private void ChangePage(int newPage)
     {
-        CurrentPage = newPage;
+        if (newPage >= 1 && newPage <= TotalPages)
+        {
+            CurrentPage = newPage;
+        }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

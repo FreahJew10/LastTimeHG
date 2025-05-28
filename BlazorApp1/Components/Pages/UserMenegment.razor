@@ -10,7 +10,7 @@
 @inject IToastService ToastService
 @page "/Usermenegment"
 <head>
-    <title>wait a minute</title>
+    <title>wait a minute, go to chats</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -256,11 +256,22 @@
                                         <option value="@subject.subjectid">@subject.subjectName</option>
                                     }
                                 </select>
-                                <button type="button" @onclick="choosesub" class="btn btn-dark">Dark</button>
+                                <button type="button" @onclick="choosesub" class="btn btn-dark">add subject</button>
                             </div>
 
 
                         }
+                        @if(userT!=null&&userT.isprivate==1||userT.isprivate==3)
+                        {
+
+                            <div class="w3-container">
+                                <h5 class="w3-opacity"><b>set hourly rate, yout currnt hourly rate= @userT.hourly_rate</b></h5>
+                                <input type="number" name="name" @bind-value="hourlyrate" />
+                                <button class="btn btn-success" @onclick="sethourlyrate">set your hourly rate</button>
+                            </div>
+                        }
+
+
                         <div class="w3-container">
                             <h5 class="w3-opacity"><b>School of Coding</b></h5>
                             <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>2010 - 2013</h6>
@@ -453,7 +464,24 @@
     private List<Subject> Subjects { get; set; } = new List<Subject>();
     private string SelectedSubject { get; set; } = string.Empty;
     List<Subject> MySubjects = new List<Subject>();
+    int hourlyrate = 0;
 
+    public async Task sethourlyrate()
+    {
+        teacherDB teacherDB = new teacherDB();
+        if(await teacherDB.updatehourlyrate(userT.Id,hourlyrate))
+        {
+            userT.hourly_rate = hourlyrate;
+            await MySession.SetAsync("teacher", userT);
+            ToastService.ShowSuccess("hourly rate has been updated");
+            StateHasChanged();
+        }
+        else
+        {
+            ToastService.ShowError("data base error");
+        }
+
+    }
     public async Task LoadTeacherSubjects()
     {
         Sub_to_teacherDB subToTeacherDB = new Sub_to_teacherDB();
@@ -464,8 +492,11 @@
     public async Task DeleteSubject(int subjectId)
     {
         Sub_to_teacherDB subToTeacherDB = new Sub_to_teacherDB();
-        await subToTeacherDB.DellsubtoT(userT.Id, subjectId);
-        await LoadTeacherSubjects(); // Refresh list
+       if(await subToTeacherDB.DellsubtoT(userT.Id, subjectId))
+        {
+            ToastService.ShowSuccess("subject was removed");
+            await LoadTeacherSubjects(); // Refresh list
+       }
     }
     protected override async Task OnInitializedAsync()
     {
@@ -537,7 +568,7 @@
                     ToastService.ShowError("data base problem try again");
                 }
 
-               
+
 
             }
             else
@@ -562,7 +593,16 @@
         {
             Sub_to_teacher sub_To_Teacher = new Sub_to_teacher(userT.Id, int.Parse(SelectedSubject));
             Sub_to_teacherDB sub_To_TeacherDB = new Sub_to_teacherDB();
-            await sub_To_TeacherDB.Insertsubtoteacher(sub_To_Teacher);
+            if(await sub_To_TeacherDB.Insertsubtoteacher(sub_To_Teacher))
+            {
+                ToastService.ShowSuccess("added subject");
+                await LoadTeacherSubjects();
+
+            }
+            else
+            {
+                ToastService.ShowError("you already have this subject");
+            }
         }
         else
         {

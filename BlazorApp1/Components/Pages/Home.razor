@@ -10,7 +10,7 @@
 @using Blazored.Toast.Services
 
 @inject IToastService ToastService
-
+<title>wait did you see it?</title>
 <div lang="en">
     
 
@@ -576,6 +576,8 @@
 
         <section class="section contact" data-section="section6">
             <div class="container">
+                @if(userS!=null)
+                {
                 <div class="row">
                     <div class="col-md-12">
                         <div class="section-heading">
@@ -586,8 +588,7 @@
                             </div>
                         </div>
                     </div>
-                    @if (userS != null)
-                    {
+                   
                         <div class="w3-container">
                             <table class="table table-striped table-dark">
                                 <thead>
@@ -633,7 +634,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    }
+                   
 
 
 
@@ -674,6 +675,7 @@
                     </div>
                     </div> *@
                 </div>
+                }
             </div>
         </section>
 
