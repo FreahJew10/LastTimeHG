@@ -1,4 +1,5 @@
 ﻿using Models;
+using Mysqlx.Crud;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -11,6 +12,16 @@ namespace DBL
 {
     public class SubjectDB : BaseDB<Subject>
     {
+        public async Task<bool> DellSub(int subid)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("subjectid", subid);
+            if (await base.DeleteAsync(dict) > 0)
+            {
+                return true;
+            }
+            return false;
+        }
         public async Task<bool> InsertSubject(string subjectname)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();

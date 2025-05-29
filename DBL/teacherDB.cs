@@ -123,6 +123,33 @@ Where
             return null;
 
         }
+        public async Task<List<Teacher>> GetAllTeachersForThisSubjectId(int subjectId)
+        {
+            string q = $@"Select
+teachers1.teacherid,
+    teachers1.first_name,
+    teachers1.last_name,
+    teachers1.email,
+    teachers1.bio,
+    teachers1.hourly_rate,
+    teachers1.isprivate
+From
+    mylastyear.sub_to_teachers Inner Join
+    mylastyear.teachers teachers1 On mylastyear.sub_to_teachers.teacherid = teachers1.teacherid Inner Join
+    mylastyear.subject On mylastyear.sub_to_teachers.subjectId = mylastyear.subject.subjectId
+Where
+     mylastyear.subject.subjectId=@id";
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            properties.Add("id", subjectId);
+            List<Teacher> lst = await SelectAllAsync(q, properties);
+
+            if (lst.Count > 0)
+                return lst;
+
+            return null;
+
+        }
+
         public async Task<List<Teacher>> GetAllPrivateTeachersForThisSubjectId(int subjectId)
         {
             string q = $@"Select

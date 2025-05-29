@@ -12,56 +12,65 @@
 <h3>Admin</h3>
 @if(userT!=null&&userT.isprivate==3)
 {
-<div class="admin-container">
+    <div class="admin-container">
 
-    <div class="section">
-        <h2>Add New Subject</h2>
-        <input placeholder="Subject Name" @bind="newSubject" />
-        <button @onclick="AddSubject">Add Subject</button>
-        <div class="list-box">
-            <ul>
-                @foreach (Subject subject in subjects)
+        <div class="section">
+            <h2>Add New Subject</h2>
+            <input placeholder="Subject Name" @bind="newSubject" />
+            <button @onclick="AddSubject">Add Subject</button>
+
+            <div class="list-box">
+                <ul>
+                    @foreach (Subject subject in subjects)
+                    {
+                        <li>
+                            @subject.subjectName
+                            <button class="w3-button w3-round w3-red" style="background-color: #e53935; color: white; border-radius: 50%; width: 36px; height: 36px; font-size: 16px; line-height: 1;" @onclick="() => DeleteSubject(subject.subjectid)">
+                                &times;
+                            </button>
+
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <h2>create new class</h2>
+        <div class="section">
+
+            <h6>select teacher</h6>
+            <select @bind="TeacherId">
+                <option value="">-- Select Teacher --</option>
+                @foreach (Teacher teacher in teachers)
                 {
-                    <li>@subject.subjectName</li>
+                    <option value="@teacher.Id">@teacher.first_name @teacher.last_name</option>
                 }
-            </ul>
+            </select>
+            <h6>select student</h6>
+            <div class="friends-list">
+                @foreach (Person friend in pagedStudents)
+                {
+                    <div class="friend-item">
+                        <input type="checkbox"
+                        checked="@selectedstudent.Contains(friend)"
+                        @onchange="(e) => ToggleStudentSelection(friend, (bool?)e.Value)" />
+                        <label>@friend.first_name @friend.email</label>
+                    </div>
+                }
+            </div>
+
+            <div class="pagination">
+                <button @onclick="()=> ChangePage(currentPage - 1)" disabled="@(currentPage == 1)">Previous</button>
+                <span>Page @currentPage of @totalPages</span>
+                <button @onclick="()=> ChangePage(currentPage + 1)" disabled="@(currentPage == totalPages)">Next</button>
+            </div>
+            <input type="text" placeholder="give class name" @bind="classname" />
+
+            <label for="class-date">Select Class Date:</label>
+            <input type="date" id="class-date" @bind="EndTime" />
+            <button @onclick="CreateEvent">Create class</button>
         </div>
+
     </div>
-    <h2>create new class</h2>
-    <div class="section">
-
-        <h6>select teacher</h6>
-        <select @bind="TeacherId">
-            <option value="">-- Select Teacher --</option>
-            @foreach (Teacher teacher in teachers)
-            {
-                <option value="@teacher.Id">@teacher.first_name @teacher.last_name</option>
-            }
-        </select>
-        <h6>select student</h6>
-        <div class="friends-list">
-            @foreach (Person friend in pagedStudents)
-            {
-                <div class="friend-item">
-                    <input type="checkbox"
-                    checked="@selectedstudent.Contains(friend)"
-                    @onchange="(e) => ToggleStudentSelection(friend, (bool?)e.Value)" />
-                    <label>@friend.first_name @friend.email</label>
-                </div>
-            }
-        </div>
-
-        <div class="pagination">
-            <button @onclick="()=> ChangePage(currentPage - 1)" disabled="@(currentPage == 1)">Previous</button>
-            <span>Page @currentPage of @totalPages</span>
-            <button @onclick="()=> ChangePage(currentPage + 1)" disabled="@(currentPage == totalPages)">Next</button>
-        </div>
-        <input type="text" placeholder="give class name" @bind="classname" />
-
-        <button @onclick="CreateEvent">Create class</button>
-    </div>
-
-</div>
 }
 <style>
 
@@ -179,8 +188,32 @@
             currentPage = newPage;
         }
     }
+    private async Task DeleteSubject(int subid)
+    {
+        bool confirmed = await js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete this subject?");
+        if (confirmed)
+        {
+            teacherDB subjectDB = new teacherDB();
+            SubjectDB s = new SubjectDB();
+            List<Teacher> to_Teachers = await subjectDB.GetAllTeachersForThisSubjectId(subid);
+            Sub_to_teacherDB sub_To_TeacherDB = new Sub_to_teacherDB();
+            foreach (Teacher teacher in to_Teachers)
+            {
+                await sub_To_TeacherDB.DellsubtoT(teacher.Id, subid);
 
-   
+            }
+            if (await s.DellSub(subid))
+            {
+                ToastService.ShowSuccess("sub has been deleted");
+                subjects = await s.SelectAllSubjects();
+            }
+            else
+            {
+                ToastService.ShowError("Failed to delete subject.");
+            }
+        }
+    }
+
     private void ToggleStudentSelection(Person student, bool? isChecked)
     {
         if (isChecked == true)
@@ -207,7 +240,7 @@
     {
         if (firstRender)
         {
-           
+
             {
                 var user2 = await MySession.GetAsync<Teacher>("teacher");
                 if (user2.Success)
@@ -230,24 +263,30 @@
 
         Random random = new Random();
         int x = random.Next(int.MinValue, int.MaxValue);
-        Nevent = new Event(classname, StartTime, TeacherId,"class", x, EndTime);
-        List<StudentInEvent> studentInclass = new List<StudentInEvent>();
-        foreach (Person item in selectedstudent)
+        if (EndTime > DateTime.Now)
         {
-            StudentInEvent studentInEvent = new StudentInEvent(item.Id, x);
-            studentInclass.Add(studentInEvent);
+            Nevent = new Event(classname, StartTime, TeacherId, "class", x, EndTime);
+            List<StudentInEvent> studentInclass = new List<StudentInEvent>();
+            foreach (Person item in selectedstudent)
+            {
+                StudentInEvent studentInEvent = new StudentInEvent(item.Id, x);
+                studentInclass.Add(studentInEvent);
 
-        }
+            }
 
-        if( await eventDB.insertEvent(Nevent))
-        {
-            await studentInEventDB.insertStedentInEvent(studentInclass);
-            ToastService.ShowSuccess("success");
+
+            if (await eventDB.insertEvent(Nevent))
+            {
+                await studentInEventDB.insertStedentInEvent(studentInclass);
+                ToastService.ShowSuccess("success");
+            }
+            else
+            {
+                ToastService.ShowError("something went wrong");
+            }
         }
-        else{
-            ToastService.ShowError("something went wrong");
-        }
-        
+        else { ToastService.ShowError("the date connot be today/lower date"); }
+
 
     }
 }
