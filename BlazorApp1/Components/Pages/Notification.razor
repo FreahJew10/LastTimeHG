@@ -148,13 +148,13 @@
         hubConnection.On<string, string>("GetNotificationToInformIAdedYouAsFriend", async (email, notification) =>
         {
             this.notification = email + " " + notification;
-           
-           
+
+
             await InvokeAsync(StateHasChanged);
         });
         hubConnection.On<string, string,int>("GetToInformTeacherThatIwantPrivateClass", async (email, notification, eventrandomcod) =>
         {
-            
+
             notifications.Add(await eventDB.GetEventByPK(eventrandomcod));
             await InvokeAsync(StateHasChanged);
         });
@@ -307,7 +307,10 @@
                 notifications = await eventDB.GetAllNotificationsForTeacher(userT.Id);
                 notifications = notifications?.OrderByDescending(n => n.enddate).ToList() ?? new List<Event>(); //
             }
-
+            if (!studentSession.Success && !teacherSession.Success)
+            {
+                navigationManager.NavigateTo("/");
+            }
             StateHasChanged();
         }
     }

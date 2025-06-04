@@ -252,6 +252,10 @@
                     classes = await eventDB.GetAllClassesForTeacer(userT.Id);
                     StateHasChanged();
                 }
+                else
+                {
+                    navigationManager.NavigateTo("/");
+                }
 
             }
             StateHasChanged();

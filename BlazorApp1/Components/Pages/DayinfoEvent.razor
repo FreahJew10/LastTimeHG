@@ -425,6 +425,13 @@ else
                 }
                 StateHasChanged();
             }
+            if (!user1.Success&&!user2.Success)
+            {
+            
+               
+                    navigationManager.NavigateTo("/");
+                
+            }
 
         }
         // else if (!string.IsNullOrEmpty(myConId))

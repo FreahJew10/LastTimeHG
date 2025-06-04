@@ -485,7 +485,10 @@
                 // DoubleRate rateResult = await doubleDBforRate.GetRate(privateteacher.Id);
                 // CurrentRating = rateResult?.Rate ?? 0;
             }
-
+            else
+            {
+                navigationManager.NavigateTo("/");
+            }
 
             StateHasChanged();
             _loadedExtras = true;

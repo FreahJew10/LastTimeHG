@@ -251,6 +251,10 @@
                     subjects = await subjectDB.SelectAllSubjects();
                     StateHasChanged();
                 }
+                else
+                {
+                    navigationManager.NavigateTo("/");
+                }
 
             }
             StateHasChanged();

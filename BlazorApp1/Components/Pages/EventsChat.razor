@@ -203,7 +203,8 @@
     font-weight: 500;
     }
 </style>
-
+@if(userS!=null||userT!=null)
+{
 <div class="app-container">
     <!-- Sidebar -->
     <div class="menu">
@@ -283,7 +284,12 @@
         }
     </div>
 </div>
+}
+else
+{
 
+<h1 style="position:center">you are bot supposed to be here</h1>
+}
 @code {
     // Student or Teacher from session
     public Student? userS;

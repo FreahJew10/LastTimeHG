@@ -483,11 +483,9 @@
 
                 StateHasChanged();
             }
-            var user2 = await MySession.GetAsync<Teacher>("teacher");
-            if (user2.Success)
+            else
             {
-                userT = user2.Value;
-                StateHasChanged();
+                navigationManager.NavigateTo("/");
             }
 
         }

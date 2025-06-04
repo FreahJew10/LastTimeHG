@@ -274,6 +274,10 @@
                 arewebothfriends = await friendsDB.AreWeBothFriends(userS.Id, id);
                 StateHasChanged();
             }
+            else
+            {
+                navigationManager.NavigateTo("/");
+            }
         }
     }
 }
