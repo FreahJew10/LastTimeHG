@@ -22,7 +22,7 @@
         }
     </style>
 </head>
-@if (userS!=null||userT!=null)
+@if (userS != null || userT != null)
 {
 
 
@@ -123,7 +123,7 @@
 
                         </div>
 
-                        @if (userT != null &&!string.IsNullOrEmpty(userT.bio))
+                        @if (userT != null && !string.IsNullOrEmpty(userT.bio))
                         {
                             <div class="w3-container">
                                 <h5 class="w3-opacity"><b>bio</b></h5>
@@ -153,7 +153,7 @@
                             <p>Web Development! All I need to know in one place</p>
                             <hr>
                         </div>
-                        @if (userT != null && MySubjects!=null)
+                        @if (userT != null && MySubjects != null)
                         {
                             <div class="w3-container w3-card w3-white w3-margin-top">
                                 <h2 class="w3-text-grey w3-padding-16">
@@ -215,7 +215,7 @@
 
                             </div>
                         }
-                        else if(userT!=null &&userT.isprivate!=0)
+                        else if (userT != null && userT.isprivate != 0)
                         {
 
                             <div class="w3-container">
@@ -261,7 +261,7 @@
 
 
                         }
-                        @if(userT!=null&&userT.isprivate==1||userT.isprivate==3)
+                        @if (userT != null && (userT.isprivate == 1 || userT.isprivate == 3))
                         {
 
                             <div class="w3-container">
@@ -309,7 +309,7 @@
             padding: 7px 0;
             background: transparent;
             transition: border-color 0.2s;
-            ::placeholder
+            :: placeholder
 
             {
             color: transparent;
@@ -348,7 +348,7 @@
 
             /* reset input */
             .form__field {
-            :required,&:invalid
+            : required,&:invalid
 
             {
             box-shadow: none;
@@ -368,7 +368,7 @@
             }
 
 
-            /* the css of the input new password */ 
+            /* the css of the input new password */
             .input {
             border: 2px solid #e8e8e8;
             padding: 15px;
@@ -452,7 +452,7 @@
     public Teacher userT = null;
     public Person basicuser = null;
     SubjectDB SubjectDB = new SubjectDB();
-    public  friendsDB friendsD = new friendsDB();
+    public friendsDB friendsD = new friendsDB();
     public PersonStudentDB personStudentDB = new PersonStudentDB();
     string new_password = "";
     string repeat_password = "";
@@ -469,7 +469,7 @@
     public async Task sethourlyrate()
     {
         teacherDB teacherDB = new teacherDB();
-        if(await teacherDB.updatehourlyrate(userT.Id,hourlyrate))
+        if (await teacherDB.updatehourlyrate(userT.Id, hourlyrate))
         {
             userT.hourly_rate = hourlyrate;
             await MySession.SetAsync("teacher", userT);
@@ -492,11 +492,11 @@
     public async Task DeleteSubject(int subjectId)
     {
         Sub_to_teacherDB subToTeacherDB = new Sub_to_teacherDB();
-       if(await subToTeacherDB.DellsubtoT(userT.Id, subjectId))
+        if (await subToTeacherDB.DellsubtoT(userT.Id, subjectId))
         {
             ToastService.ShowSuccess("subject was removed");
             await LoadTeacherSubjects(); // Refresh list
-       }
+        }
     }
     protected override async Task OnInitializedAsync()
     {
@@ -511,21 +511,33 @@
         student.last_name = userS.last_name;
         studentDB s = new studentDB();
 
-        if (new_password!=""&&repeat_password!="")
+        if (new_password != "" && repeat_password != "")
         {
 
-            if (new_password==repeat_password)
+            if (new_password == repeat_password)
             {
-                Console.WriteLine("yy");
-                student.password = new_password;
-                if( await s.updateAsync(student))
+                bool isStrongPassword = new_password.Length >= 8 &&
+                                        new_password.Any(char.IsUpper) &&
+                                        new_password.Any(char.IsLower) &&
+                                        new_password.Any(char.IsDigit) &&
+                                        new_password.Any(ch => "!@#$%^&*()-_=+[{]}|;:'\",<.>/?".Contains(ch));
+                if (isStrongPassword)
                 {
+                    Console.WriteLine("yy");
+                    student.password = new_password;
+                    if (await s.updateAsync(student))
+                    {
 
-                    ToastService.ShowSuccess("password has been changed");
+                        ToastService.ShowSuccess("password has been changed");
+                    }
+                    else
+                    {
+                        ToastService.ShowError("data base problem try again");
+                    }
                 }
                 else
                 {
-                    ToastService.ShowError("data base problem try again");
+                    ToastService.ShowError("Password must include upper, lower, number, special char, and be at least 8 chars.");
                 }
             }
             else
@@ -557,17 +569,27 @@
 
             if (new_password == repeat_password)
             {
-
-                teacher.password = new_password;
-                if(  await   s.updateAsync(teacher))
+                bool isStrongPassword = new_password.Length >= 8 &&
+                                         new_password.Any(char.IsUpper) &&
+                                         new_password.Any(char.IsLower) &&
+                                         new_password.Any(char.IsDigit) &&
+                                         new_password.Any(ch => "!@#$%^&*()-_=+[{]}|;:'\",<.>/?".Contains(ch));
+                if (isStrongPassword)
                 {
-                    ToastService.ShowSuccess("password has been changed");
+                    teacher.password = new_password;
+                    if (await s.updateAsync(teacher))
+                    {
+                        ToastService.ShowSuccess("password has been changed");
+                    }
+                    else
+                    {
+                        ToastService.ShowError("data base problem try again");
+                    }
                 }
                 else
                 {
-                    ToastService.ShowError("data base problem try again");
+                    ToastService.ShowError("Password must include upper, lower, number, special char, and be at least 8 chars.");
                 }
-
 
 
             }
@@ -589,11 +611,11 @@
     }
     public async Task choosesub()
     {
-        if(!string.IsNullOrEmpty(SelectedSubject))
+        if (!string.IsNullOrEmpty(SelectedSubject))
         {
             Sub_to_teacher sub_To_Teacher = new Sub_to_teacher(userT.Id, int.Parse(SelectedSubject));
             Sub_to_teacherDB sub_To_TeacherDB = new Sub_to_teacherDB();
-            if(await sub_To_TeacherDB.Insertsubtoteacher(sub_To_Teacher))
+            if (await sub_To_TeacherDB.Insertsubtoteacher(sub_To_Teacher))
             {
                 ToastService.ShowSuccess("added subject");
                 await LoadTeacherSubjects();
@@ -618,7 +640,7 @@
         teacher.first_name = userS.first_name;
         teacher.last_name = userS.last_name;
         teacher.bio = newbio;
-        if( await teacherDb.updateAsyncbio(teacher))
+        if (await teacherDb.updateAsyncbio(teacher))
         {
             ToastService.ShowSuccess("bio has been changed");
         }
@@ -642,7 +664,7 @@
                 basicuser = user1.Value;
                 Student S = await studentDB.LoginAsync(basicuser.email, basicuser.password);
                 userS = S;
-                my_friends_that_im_their_friend_to =await friendsD.GiveAll_AreWeBothFriends_(userS);
+                my_friends_that_im_their_friend_to = await friendsD.GiveAll_AreWeBothFriends_(userS);
                 StateHasChanged();
             }
             var user2 = await MySession.GetAsync<Teacher>("teacher");
@@ -650,19 +672,19 @@
             {
                 userT = user2.Value;
                 basicuser = user2.Value;
-                if(userT.isprivate==3||userT.isprivate==1)
-                student_that_i_teach = await personStudentDB.GetAllPersonStudentThatTeacherTaught(userT.Id);
+                if (userT.isprivate == 3 || userT.isprivate == 1)
+                    student_that_i_teach = await personStudentDB.GetAllPersonStudentThatTeacherTaught(userT.Id);
                 await LoadTeacherSubjects();
                 StateHasChanged();
 
                 StateHasChanged();
             }
-            if(!user1.Success&&!user2.Success)
+            if (!user1.Success && !user2.Success)
             {
                 navigationManager.NavigateTo("/");
             }
 
         }
-       
+
     }
 }

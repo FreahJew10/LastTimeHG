@@ -6,6 +6,8 @@
 @inject ProtectedSessionStorage MySession
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 @using Blazored.Toast.Services
+@using System.ComponentModel.DataAnnotations
+
 
 @inject IToastService ToastService
 <br>
@@ -364,19 +366,34 @@
         studentDB studentDB = new DBL.studentDB();
         if (password != "" && first_name != "" && email != "" && last_name != "")
         {
-            if (email.Contains("@"))
+            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            bool isValidEmail = System.Text.RegularExpressions.Regex.IsMatch(email, pattern);
+            if (isValidEmail)
             {
-                if (await studentDB.insertstudent(student))
+                bool isStrongPassword = password.Length >= 8 &&
+                          password.Any(char.IsUpper) &&
+                          password.Any(char.IsLower) &&
+                          password.Any(char.IsDigit) &&
+                          password.Any(ch => "!@#$%^&*()-_=+[{]}|;:'\",<.>/?".Contains(ch));
+                if (isStrongPassword)
                 {
-                    msg = "welcome " + student.first_name;
-                    await Task.Delay(1000);
-                    navigationManager.NavigateTo("/login");
+                    if (await studentDB.insertstudent(student))
+                    {
+                        ToastService.ShowSuccess(@$"welcome the student  {student.first_name}");
+                        await Task.Delay(1000);
+                        navigationManager.NavigateTo("/login");
+                    }
+                    else
+                    {
+
+                        ToastService.ShowError("email already in use");
+                    }
                 }
                 else
                 {
-
-                    await js.InvokeVoidAsync("Registration failed: database error");
+                    ToastService.ShowError("Password must include upper, lower, number, special char, and be at least 8 chars.");
                 }
+
             }
             else
             {
@@ -406,18 +423,31 @@
         teacherDB teacherDB = new DBL.teacherDB();
         if (password != "" && first_name != "" && email != "" && last_name != "")
         {
-            if (email.Contains("@"))
+            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            bool isValidEmail = System.Text.RegularExpressions.Regex.IsMatch(email, pattern);
+            if (isValidEmail)
             {
-                if (await teacherDB.inserteacher(teacher))
+                bool isStrongPassword = password.Length >= 8 &&
+                         password.Any(char.IsUpper) &&
+                         password.Any(char.IsLower) &&
+                         password.Any(char.IsDigit) &&
+                         password.Any(ch => "!@#$%^&*()-_=+[{]}|;:'\",<.>/?".Contains(ch));
+                if (isStrongPassword)
                 {
-                    msg = "welcome the teacher " + teacher.first_name;
-                    await Task.Delay(1000);
-                    navigationManager.NavigateTo("/login");
+                    if (await teacherDB.inserteacher(teacher))
+                    {
+                        ToastService.ShowSuccess(@$"welcome the teacher {teacher.first_name}");
+                        await Task.Delay(1000);
+                        navigationManager.NavigateTo("/login");
 
+                    }
+                    else
+                    {
+                        ToastService.ShowError("email already in use");
+                    }
                 }
-                else
-                {
-                    msg = "Registration failed: database error";
+                else{
+                      ToastService.ShowError("Password must include upper, lower, number, special char, and be at least 8 chars.");
                 }
             }
             else
