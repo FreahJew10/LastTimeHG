@@ -39,7 +39,7 @@
                     {
 
                         <li><a href="#section1">hello! @userS.first_name</a></li>
-                        <li><a @onclick="movetoSearchForFriends" href="SearchForFriends">show my clander</a></li>
+                        <li><a href ="/calender" @onclick ="movetoSearchForFriends" >show my clander</a></li>
                         <li><a href="/teacher-search" @onclick="movetoSearchForteachers"> search for private teacher</a></li>
                         <li><a href="/teacher-search" @onclick="movetoEventChat"> go to chats</a></li>
                         <li><a href="/Notifications" @onclick="movetoNotification"> notfication</a></li>
@@ -711,75 +711,92 @@
     </div>
 </div>
 <script>
-    //according to loftblog tut
-    $('.nav li:first').addClass('active');
+    // according to loftblog tut (fixed for Blazor routing)
+    $(function () {
+      $('.nav li:first').addClass('active');
 
-    var showSection = function showSection(section, isAnimate) {
-    var
-    direction = section.replace(/#/, ''),
-    reqSection = $('.section').filter('[data-section="' + direction + '"]'),
-    reqSectionPos = reqSection.offset().top - 0;
+      var showSection = function showSection(section, isAnimate) {
+        // Only handle hash links like "#section1"
+        if (!section || section[0] !== '#') return;
 
-    if (isAnimate) {
-    $('body, html').animate({
-    scrollTop: reqSectionPos
-    },
-    800);
-    } else {
-    $('body, html').scrollTop(reqSectionPos);
-    }
+        var direction = section.replace(/#/, '');
+        var reqSection = $('.section').filter('[data-section="' + direction + '"]');
 
-    };
+        // If the section does not exist on this page, do nothing (prevents crash)
+        if (!reqSection.length) return;
 
-    var checkSection = function checkSection() {
-    $('.section').each(function () {
-    var
-    $this = $(this),
-    topEdge = $this.offset().top - 80,
-    bottomEdge = topEdge + $this.height(),
-    wScroll = $(window).scrollTop();
-    if (topEdge < wScroll && bottomEdge > wScroll) {
-    var
-    currentId = $this.data('section'),
-    reqLink = $('a').filter('[href*=\\#' + currentId + ']');
-    reqLink.closest('li').addClass('active').
-    siblings().removeClass('active');
-    }
+        var reqSectionPos = reqSection.offset().top;
+
+        if (isAnimate) {
+          $('body, html').animate({ scrollTop: reqSectionPos }, 800);
+        } else {
+          $('body, html').scrollTop(reqSectionPos);
+        }
+      };
+
+      var checkSection = function checkSection() {
+        $('.section').each(function () {
+          var $this = $(this);
+          var off = $this.offset();
+          if (!off) return;
+
+          var topEdge = off.top - 80;
+          var bottomEdge = topEdge + $this.height();
+          var wScroll = $(window).scrollTop();
+
+          if (topEdge < wScroll && bottomEdge > wScroll) {
+            var currentId = $this.data('section');
+            // highlight only hash-links that point to sections
+            var reqLink = $('a').filter('[href*=\\#' + currentId + ']');
+            reqLink.closest('li').addClass('active')
+              .siblings().removeClass('active');
+          }
+        });
+      };
+
+      // Click handler: ONLY intercept hash links. Let Blazor routes navigate normally.
+      $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
+        var href = $(this).attr('href');
+
+        // allow normal navigation for Blazor routes and full URLs
+        if (!href || href[0] !== '#') return;
+
+        if ($(e.target).hasClass('external')) return;
+
+        e.preventDefault();
+        $('#menu').removeClass('active');
+        showSection(href, true);
+      });
+
+      $(window).on('scroll', function () {
+        checkSection();
+      });
+
+      // Optional: only inject Grad-School assets on "/"
+      (function () {
+        if (window.location.pathname === "/" || window.location.pathname === "") {
+          const assets = [
+            'try/assets/js/isotope.min.js',
+            'try/assets/js/owl-carousel.js',
+            'try/assets/js/lightbox.js',
+            'try/assets/js/tabs.js',
+            'try/assets/js/video.js',
+            'try/assets/js/slick-slider.js',
+            'try/assets/js/custom.js'
+          ];
+
+          assets.forEach(src => {
+            // Avoid injecting duplicates
+            if (document.querySelector('script[src="' + src + '"]')) return;
+
+            const s = document.createElement('script');
+            s.src = src;
+            s.defer = true;
+            document.body.appendChild(s);
+          });
+        }
+      })();
     });
-    };
-
-    $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
-    if ($(e.target).hasClass('external')) {
-    return;
-    }
-    e.preventDefault();
-    $('#menu').removeClass('active');
-    showSection($(this).attr('href'), true);
-    });
-
-    $(window).scroll(function () {
-    checkSection();
-    });
-    (function() {
-    if (window.location.pathname === "/" || window.location.pathname === "") {
-    // only on the root path do we inject the Grad-School assets
-    const assets = [
-    'try/assets/js/isotope.min.js',
-    'try/assets/js/owl-carousel.js',
-    'try/assets/js/lightbox.js',
-    'try/assets/js/tabs.js',
-    'try/assets/js/video.js',
-    'try/assets/js/slick-slider.js',
-    'try/assets/js/custom.js'
-    ];
-    assets.forEach(src => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.defer = true;
-    document.body.appendChild(s);
-    });
-    }
-    })();
 </script>
 
 
